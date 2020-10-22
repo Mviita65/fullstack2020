@@ -1,0 +1,29 @@
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 4em 4em 4em;
+    grid-template-rows: 2em 4em 4em 4em 2em;
+    padding: 0px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .grid-item {
+    background-color: whitesmoke;
+    border: 0.05em solid rgba(0, 0, 0, 0.8);
+    padding: 0.5em;
+    font-size: 2em;
+    text-align: center;
+  }
+
+header, footer {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    background-color: lightslategrey;
+    color: whitesmoke;
+    text-align: center;
+}
+
+p {
+    text-align: center;
+}
