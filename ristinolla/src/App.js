@@ -33,25 +33,25 @@ function App() {
     if (ruutu1 !== "" && ruutu1 === ruutu2 && ruutu2 === ruutu3){
          alert("Onnea "+ruutu1+" voitto tuli!")
     } 
-    if (ruutu1 !== "" && ruutu1 === ruutu5 && ruutu5 === ruutu9){
+    else if (ruutu1 !== "" && ruutu1 === ruutu5 && ruutu5 === ruutu9){
       alert("Onnea "+ruutu1+" voitto tuli!")
     } 
-    if (ruutu1 !== "" && ruutu1 === ruutu4 && ruutu4 === ruutu7){
+    else if (ruutu1 !== "" && ruutu1 === ruutu4 && ruutu4 === ruutu7){
       alert("Onnea "+ruutu1+" voitto tuli!")
     }
-    if (ruutu3 !== "" && ruutu3 === ruutu5 && ruutu5 === ruutu7){
+    else if (ruutu3 !== "" && ruutu3 === ruutu5 && ruutu5 === ruutu7){
       alert("Onnea "+ruutu3+" voitto tuli!")
     } 
-    if (ruutu3 !== "" && ruutu3 === ruutu6 && ruutu6 === ruutu9){
+    else if (ruutu3 !== "" && ruutu3 === ruutu6 && ruutu6 === ruutu9){
       alert("Onnea "+ruutu3+" voitto tuli!")
     } 
-    if (ruutu2 !== "" && ruutu2 === ruutu5 && ruutu5 === ruutu8){
+    else if (ruutu2 !== "" && ruutu2 === ruutu5 && ruutu5 === ruutu8){
       alert("Onnea "+ruutu2+" voitto tuli!")
     } 
-    if (ruutu4 !== "" && ruutu4 === ruutu5 && ruutu5 === ruutu6){
+    else if (ruutu4 !== "" && ruutu4 === ruutu5 && ruutu5 === ruutu6){
       alert("Onnea "+ruutu4+" voitto tuli!")
     } 
-    if (ruutu7 !== "" && ruutu7 === ruutu8 && ruutu8 === ruutu9){
+    else if (ruutu7 !== "" && ruutu7 === ruutu8 && ruutu8 === ruutu9){
       alert("Onnea "+ruutu7+" voitto tuli!")
     } 
   }
