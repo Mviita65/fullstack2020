@@ -178,17 +178,17 @@ function App() {
   return (
     <div>
       <br/>
-      <div class="grid-container">
+      <div className="grid-container">
         <header>Ristinolla</header>
-        <div class="grid-item" onClick={()=>merkitse(1)}>{ruutu1}</div>
-        <div class="grid-item" onClick={()=>merkitse(2)}>{ruutu2}</div>
-        <div class="grid-item" onClick={()=>merkitse(3)}>{ruutu3}</div>
-        <div class="grid-item" onClick={()=>merkitse(4)}>{ruutu4}</div>
-        <div class="grid-item" onClick={()=>merkitse(5)}>{ruutu5}</div>
-        <div class="grid-item" onClick={()=>merkitse(6)}>{ruutu6}</div>
-        <div class="grid-item" onClick={()=>merkitse(7)}>{ruutu7}</div>
-        <div class="grid-item" onClick={()=>merkitse(8)}>{ruutu8}</div>
-        <div class="grid-item" onClick={()=>merkitse(9)}>{ruutu9}</div>
+        <div className="grid-item" onClick={()=>merkitse(1)}>{ruutu1}</div>
+        <div className="grid-item" onClick={()=>merkitse(2)}>{ruutu2}</div>
+        <div className="grid-item" onClick={()=>merkitse(3)}>{ruutu3}</div>
+        <div className="grid-item" onClick={()=>merkitse(4)}>{ruutu4}</div>
+        <div className="grid-item" onClick={()=>merkitse(5)}>{ruutu5}</div>
+        <div className="grid-item" onClick={()=>merkitse(6)}>{ruutu6}</div>
+        <div className="grid-item" onClick={()=>merkitse(7)}>{ruutu7}</div>
+        <div className="grid-item" onClick={()=>merkitse(8)}>{ruutu8}</div>
+        <div className="grid-item" onClick={()=>merkitse(9)}>{ruutu9}</div>
         <footer>Mika Viitaniemi</footer>
       </div> 
       <p><button onClick={()=>tyhjenna()}>Aloita uusi</button></p>
