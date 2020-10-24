@@ -15,6 +15,8 @@ function App() {
   const [ruutu8,setRuutu8]=useState("")
   const [ruutu9,setRuutu9]=useState("")
   const [vuoro,setVuoro]=useState(0)
+  const [gameOver,setGameOver]=useState(0)
+  
 
   const tyhjenna = () => {
     setRuutu1("")
@@ -27,32 +29,41 @@ function App() {
     setRuutu8("")
     setRuutu9("")
     setVuoro(0)
+    setGameOver(0)
   }
 
   const tarkista = () => {
     if (ruutu1 !== "" && ruutu1 === ruutu2 && ruutu2 === ruutu3){
-         alert("Onnea "+ruutu1+" voitto tuli!")
+      alert("Onnea "+ruutu1+" voitto tuli!")
+      setGameOver(1)
     } 
     else if (ruutu1 !== "" && ruutu1 === ruutu5 && ruutu5 === ruutu9){
       alert("Onnea "+ruutu1+" voitto tuli!")
+      setGameOver(1)
     } 
     else if (ruutu1 !== "" && ruutu1 === ruutu4 && ruutu4 === ruutu7){
       alert("Onnea "+ruutu1+" voitto tuli!")
+      setGameOver(1)
     }
     else if (ruutu3 !== "" && ruutu3 === ruutu5 && ruutu5 === ruutu7){
       alert("Onnea "+ruutu3+" voitto tuli!")
+      setGameOver(1)
     } 
     else if (ruutu3 !== "" && ruutu3 === ruutu6 && ruutu6 === ruutu9){
       alert("Onnea "+ruutu3+" voitto tuli!")
+      setGameOver(1)
     } 
     else if (ruutu2 !== "" && ruutu2 === ruutu5 && ruutu5 === ruutu8){
       alert("Onnea "+ruutu2+" voitto tuli!")
+      setGameOver(1)
     } 
     else if (ruutu4 !== "" && ruutu4 === ruutu5 && ruutu5 === ruutu6){
       alert("Onnea "+ruutu4+" voitto tuli!")
+      setGameOver(1)
     } 
     else if (ruutu7 !== "" && ruutu7 === ruutu8 && ruutu8 === ruutu9){
       alert("Onnea "+ruutu7+" voitto tuli!")
+      setGameOver(1)
     } 
   }
 
@@ -64,7 +75,7 @@ function App() {
     let ruutu = paikka
     switch (ruutu){
       case 1:{
-        if (ruutu1 === ""){
+        if (ruutu1 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu1("X")
             setVuoro(1)
@@ -76,7 +87,7 @@ function App() {
         break;
       }
       case 2:{
-        if (ruutu2 === ""){
+        if (ruutu2 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu2("X")
             setVuoro(1)
@@ -88,7 +99,7 @@ function App() {
         break;
       }
       case 3:{
-        if (ruutu3 === ""){
+        if (ruutu3 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu3("X")
             setVuoro(1)
@@ -100,7 +111,7 @@ function App() {
         break;
       }
       case 4:{
-        if (ruutu4 === ""){
+        if (ruutu4 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu4("X")
             setVuoro(1)
@@ -112,7 +123,7 @@ function App() {
         break;
       }
       case 5:{
-        if (ruutu5 === ""){
+        if (ruutu5 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu5("X")
             setVuoro(1)
@@ -124,7 +135,7 @@ function App() {
         break;
       }
       case 6:{
-        if (ruutu6 === ""){
+        if (ruutu6 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu6("X")
             setVuoro(1)
@@ -136,7 +147,7 @@ function App() {
         break;
       }
       case 7:{
-        if (ruutu7 === ""){
+        if (ruutu7 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu7("X")
             setVuoro(1)
@@ -148,7 +159,7 @@ function App() {
         break;
       }
       case 8:{
-        if (ruutu8 === ""){
+        if (ruutu8 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu8("X")
             setVuoro(1)
@@ -160,7 +171,7 @@ function App() {
         break;
       }
       case 9:{
-        if (ruutu9 === ""){
+        if (ruutu9 === "" && gameOver === 0){
           if (vuoro === 0){
             setRuutu9("X")
             setVuoro(1)
@@ -171,7 +182,9 @@ function App() {
         }
         break;
       }
-      default: break;
+      default: {
+        break;
+      }
     }
   }
 
