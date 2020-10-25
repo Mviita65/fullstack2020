@@ -1,7 +1,7 @@
 import React from 'react';
 import {useState} from 'react'
 // import logo from './logo.svg';
-// import './App.css';
+import './oma.css';
 
 function App() {
 
@@ -34,29 +34,31 @@ function App() {
 
   return (
     <div>
-      <p>{nakyma}</p>
-      <p>
-        <button onClick={()=>nayta(0)}>0</button>
-        <button onClick={()=>nayta(1)}>1</button>
-        <button onClick={()=>nayta(2)}>2</button>
-        <button onClick={()=>nayta(3)}>3</button>
-        <button onClick={()=>nayta(4)}>4</button>
-        <button onClick={()=>nayta("(")}>(</button>
-        <br/>
-        <button onClick={()=>nayta(5)}>5</button>
-        <button onClick={()=>nayta(6)}>6</button>
-        <button onClick={()=>nayta(7)}>7</button>
-        <button onClick={()=>nayta(8)}>8</button>
-        <button onClick={()=>nayta(9)}>9</button>
-        <button onClick={()=>nayta(")")}>)</button>
-        <br/>
-        <button onClick={()=>nayta("+")}>+</button>
-        <button onClick={()=>nayta("-")}>-</button>
-        <button onClick={()=>nayta("*")}>*</button>
-        <button onClick={()=>nayta("/")}>/</button>
-        <button onClick={()=>nayta("=")}>=</button>
-        <button onClick={()=>nayta("C")}>C</button>
-      </p>
+      <div className="grid-container"> 
+        <header>Nelilaskin</header>
+        <div className="screen">{nakyma}</div>
+        <div className="grid-item" onClick={()=>nayta(1)}>1</div>
+        <div className="grid-item" onClick={()=>nayta(2)}>2</div>
+        <div className="grid-item" onClick={()=>nayta(3)}>3</div>
+        <div className="grid-item" onClick={()=>nayta(4)}>4</div>
+        <div className="grid-item" onClick={()=>nayta(5)}>5</div>
+        <div className="grid-item" onClick={()=>nayta(6)}>6</div>
+        <div className="grid-item" onClick={()=>nayta(7)}>7</div>
+        <div className="grid-item" onClick={()=>nayta(8)}>8</div>
+        <div className="grid-item" onClick={()=>nayta(9)}>9</div>
+        <div className="grid-item" onClick={()=>nayta(0)}>0</div>
+        <div className="grid-item" onClick={()=>nayta("+")}>+</div>
+        <div className="grid-item" onClick={()=>nayta("-")}>-</div>
+        <div className="grid-item" onClick={()=>nayta("*")}>*</div>
+        <div className="grid-item" onClick={()=>nayta("/")}>/</div>
+        <div className="grid-item" onClick={()=>nayta("=")}>=</div>
+        <div className="grid-item"></div>
+        <div className="grid-item" onClick={()=>nayta("(")}>(</div>
+        <div className="grid-item" onClick={()=>nayta(")")}>)</div>
+        <div className="grid-itemC" onClick={()=>nayta("C")}>C</div>
+        <div className="grid-item"></div>
+        <footer>© Mika Viitaniemi 2020</footer>
+      </div>
     </div>
   );
 }
