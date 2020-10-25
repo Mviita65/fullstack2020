@@ -52,7 +52,7 @@ function App() {
         <div className="grid-item" onClick={()=>nayta("*")}>*</div>
         <div className="grid-item" onClick={()=>nayta("/")}>/</div>
         <div className="grid-item" onClick={()=>nayta("=")}>=</div>
-        <div className="grid-item"></div>
+        <div className="grid-item" onClick={()=>nayta(".")}>.</div>
         <div className="grid-item" onClick={()=>nayta("(")}>(</div>
         <div className="grid-item" onClick={()=>nayta(")")}>)</div>
         <div className="grid-itemC" onClick={()=>nayta("C")}>C</div>
