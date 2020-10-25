@@ -76,7 +76,7 @@ function App() {
     tarkista,
   [vuoro])
 
-  const merkitse = (paikka) => {  // tyhjää ruudun klikkauksen jälkeen ruudun arvoksi vuoroa vastaava luku
+  const merkitse = (paikka) => {  // tyhjän ruudun klikkauksen jälkeen ruudun arvoksi vuoroa vastaava luku
     let ruutu = paikka
     let laskuri = siirrot
     console.log(laskuri)
