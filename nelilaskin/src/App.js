@@ -14,18 +14,38 @@ function App() {
         break;
       }
       case "=":{
+        try {
+          eval(nakyma)
+        } catch (e) {
+          if (e instanceof SyntaxError){
+            setNakyma("Error")
+            break;
+          } 
+        }
         let x = eval(nakyma)
         setNakyma(String(x))
         break;
       }
-      default:{
-        if (nakyma == 0){
-          setNakyma(painallus)
-        } else {
-          let naytto = String(nakyma)
-          let uusiNaytto = naytto.concat(painallus)
+      case "poista":{
+        let naytto = String(nakyma)
+        if (naytto !== "Error"){
+          let pituus = naytto.length - 1
+          let uusiNaytto = naytto.slice(0,pituus)
           setNakyma(uusiNaytto)
         }
+        break;
+      }
+      default:{
+        if (nakyma === "Error"){
+          setNakyma(painallus)
+          break;
+        } else if (nakyma === 0){
+          setNakyma(painallus)
+          break;
+        } 
+        let naytto = String(nakyma)
+        let uusiNaytto = naytto.concat(painallus)
+        setNakyma(uusiNaytto)
         break;
       }
     }
@@ -55,8 +75,8 @@ function App() {
         <div className="grid-item" onClick={()=>nayta(".")}>.</div>
         <div className="grid-item" onClick={()=>nayta("(")}>(</div>
         <div className="grid-item" onClick={()=>nayta(")")}>)</div>
+        <div className="grid-item" onClick={()=>nayta("poista")}>«</div>
         <div className="grid-itemC" onClick={()=>nayta("C")}>C</div>
-        <div className="grid-item"></div>
         <footer>© Mika Viitaniemi 2020</footer>
       </div>
     </div>
