@@ -32,6 +32,7 @@ function App() {
           let pituus = naytto.length - 1
           let uusiNaytto = naytto.slice(0,pituus)
           setNakyma(uusiNaytto)
+          break;
         }
         break;
       }
@@ -39,14 +40,16 @@ function App() {
         if (nakyma === "Error"){
           setNakyma(painallus)
           break;
-        } else if (nakyma === 0){
+        }
+        if (nakyma === "0"){
           setNakyma(painallus)
           break;
-        } 
-        let naytto = String(nakyma)
-        let uusiNaytto = naytto.concat(painallus)
-        setNakyma(uusiNaytto)
-        break;
+        } else {
+          let naytto = String(nakyma)
+          let uusiNaytto = naytto.concat(painallus)
+          setNakyma(uusiNaytto)
+          break;
+        }
       }
     }
   }
