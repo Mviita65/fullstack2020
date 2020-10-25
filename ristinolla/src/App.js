@@ -5,7 +5,7 @@ import './oma.css';
 
 function App() {
 
-  const [ruutu1,setRuutu1]=useState("")
+  const [ruutu1,setRuutu1]=useState("") // ruutu tyhjä tai merkitty joko X tai O
   const [ruutu2,setRuutu2]=useState("")
   const [ruutu3,setRuutu3]=useState("")
   const [ruutu4,setRuutu4]=useState("")
@@ -14,11 +14,12 @@ function App() {
   const [ruutu7,setRuutu7]=useState("")
   const [ruutu8,setRuutu8]=useState("")
   const [ruutu9,setRuutu9]=useState("")
-  const [vuoro,setVuoro]=useState(0)
-  const [gameOver,setGameOver]=useState(0)
+  const [vuoro,setVuoro]=useState(0)    // vuoro 0=X ja 1=O
+  const [gameOver,setGameOver]=useState(0)  // 0=peli kesken tai 1=peli pelattu
+  const [siirrot, setSiirrot]=useState(0)   // saa arvoksi pelin siirtojen määrän, maksimi on 9
   
 
-  const tyhjenna = () => {
+  const tyhjenna = () => {  // arvot asetetaan alkuarvoiksi (=nappi "Aloita uusi")
     setRuutu1("")
     setRuutu2("")
     setRuutu3("")
@@ -30,9 +31,10 @@ function App() {
     setRuutu9("")
     setVuoro(0)
     setGameOver(0)
+    setSiirrot(0)
   }
 
-  const tarkista = () => {
+  const tarkista = () => {  // tarkistetaan onko voittoriviä (8 kpl) vai päättyikö ratkaisemattomaan
     if (ruutu1 !== "" && ruutu1 === ruutu2 && ruutu2 === ruutu3){
       alert("Onnea "+ruutu1+" voitto tuli!")
       setGameOver(1)
@@ -65,17 +67,22 @@ function App() {
       alert("Onnea "+ruutu7+" voitto tuli!")
       setGameOver(1)
     } 
+    else if (siirrot === 9){
+      alert("Tasapeli, ei voittajaa!")
+    }
   }
 
-  useEffect(
+  useEffect(        // vuoron vaihtuessa tarkistetaan mikä on pelitilanne tehdyn siirron jälkeen
     tarkista,
   [vuoro])
 
-  const merkitse = (paikka) => {
+  const merkitse = (paikka) => {  // tyhjää ruudun klikkauksen jälkeen ruudun arvoksi vuoroa vastaava luku
     let ruutu = paikka
+    let laskuri = siirrot
+    console.log(laskuri)
     switch (ruutu){
       case 1:{
-        if (ruutu1 === "" && gameOver === 0){
+        if (ruutu1 === "" && gameOver === 0){   // ehtona ruutu tyhjä ja peli on kesken
           if (vuoro === 0){
             setRuutu1("X")
             setVuoro(1)
@@ -83,6 +90,8 @@ function App() {
             setRuutu1("O")
             setVuoro(0)
           }
+          laskuri++                             // merkitään laskuriin tehty onnistunut siirto
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -95,6 +104,8 @@ function App() {
             setRuutu2("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -107,6 +118,8 @@ function App() {
             setRuutu3("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -119,6 +132,8 @@ function App() {
             setRuutu4("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -131,6 +146,8 @@ function App() {
             setRuutu5("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -143,6 +160,8 @@ function App() {
             setRuutu6("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -155,6 +174,8 @@ function App() {
             setRuutu7("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -167,6 +188,8 @@ function App() {
             setRuutu8("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -179,6 +202,8 @@ function App() {
             setRuutu9("O")
             setVuoro(0)
           }
+          laskuri++
+          setSiirrot(laskuri)
         }
         break;
       }
@@ -188,10 +213,12 @@ function App() {
     }
   }
 
+  // JSX eli tässä on ruudulla näkyvät kilkkeet ja tieto mitä proseduuria kutsutaan kun peliruutua klikataan
+  // ja mitä tehdään kun klikataan nappia "Aloita uusi"
   return (
     <div>
       <br/>
-      <div className="grid-container">
+      <div className="grid-container"> 
         <header>Ristinolla</header>
         <div className="grid-item" onClick={()=>merkitse(1)}>{ruutu1}</div>
         <div className="grid-item" onClick={()=>merkitse(2)}>{ruutu2}</div>
