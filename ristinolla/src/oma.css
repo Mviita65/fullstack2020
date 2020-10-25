@@ -16,12 +16,22 @@
     text-align: center;
   }
 
-header, footer {
+header {
     grid-column-start: 1;
     grid-column-end: 4;
+    font-size: 1.15em;
     background-color: lightslategrey;
     color: whitesmoke;
     text-align: center;
+}
+
+footer {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  font-size: 0.85em;
+  background-color: lightslategrey;
+  color: whitesmoke;
+  text-align: center;
 }
 
 p {

@@ -79,7 +79,6 @@ function App() {
   const merkitse = (paikka) => {  // tyhjän ruudun klikkauksen jälkeen ruudun arvoksi vuoroa vastaava luku
     let ruutu = paikka
     let laskuri = siirrot
-    console.log(laskuri)
     switch (ruutu){
       case 1:{
         if (ruutu1 === "" && gameOver === 0){   // ehtona ruutu tyhjä ja peli on kesken
@@ -229,7 +228,7 @@ function App() {
         <div className="grid-item" onClick={()=>merkitse(7)}>{ruutu7}</div>
         <div className="grid-item" onClick={()=>merkitse(8)}>{ruutu8}</div>
         <div className="grid-item" onClick={()=>merkitse(9)}>{ruutu9}</div>
-        <footer>Mika Viitaniemi</footer>
+        <footer>© Mika Viitaniemi 2020</footer>
       </div> 
       <p><button onClick={()=>tyhjenna()}>Aloita uusi</button></p>
     </div>
