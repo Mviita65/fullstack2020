@@ -5,7 +5,7 @@ import './oma.css';
 
 function App() {
 
-  const [nakyma,setNakyma]=useState(0)
+  const [nakyma,setNakyma]=useState("0")
    
   const nayta = (painallus) => {
     switch(painallus){
