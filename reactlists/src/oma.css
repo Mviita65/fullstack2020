@@ -22,7 +22,9 @@
 header {
     font-weight: bold; 
     padding: 5%;
+    background-color: lightblue; 
 }
+
 span:hover, .siirrot-item:hover, .lista-item:hover {
     color: red;
 }
