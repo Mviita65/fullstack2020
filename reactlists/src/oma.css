@@ -1,0 +1,28 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: 35% 20% 35%;
+    justify-content: center;
+    padding: 5%;
+}
+.grid-lista {
+    text-align: left;
+    padding: 5%;
+    border: 0.05em solid rgba(0, 0, 0, 0.8);
+}
+.grid-siirrot {
+    text-align: center;
+    padding: 30%;
+}
+
+.siirrot-item {
+    font-weight: bold;
+    padding: 10%;
+}
+
+header {
+    font-weight: bold; 
+    padding: 5%;
+}
+span:hover, .siirrot-item:hover, .lista-item:hover {
+    color: red;
+}

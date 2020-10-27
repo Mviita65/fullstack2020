@@ -57,6 +57,7 @@ function App() {
 
   return (
     <div>
+      <br/>
       <div className="grid-container"> 
         <header>Nelilaskin</header>
         <div className="screen">{nakyma}</div>
