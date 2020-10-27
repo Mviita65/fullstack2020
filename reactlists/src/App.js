@@ -100,7 +100,7 @@ const siirra = (mihin) =>{
           <span> | filter </span>
         </header>
         {listaA.map((item,index)=>
-        <div className="lista-item" key={index} onClick={()=>{
+        <div className="lista-item" tabindex={index} key={index} onClick={()=>{
           merkitse("listaA",index)}}>{listaA[index]}
         </div>)}
       </div>
@@ -118,7 +118,7 @@ const siirra = (mihin) =>{
           <span> | filter </span>
         </header>
         {listaB.map((item,index)=>
-        <div className="lista-item" key={index} onClick={()=>{
+        <div className="lista-item" tabindex={index} key={index} onClick={()=>{
           merkitse("listaB",index)}}>{listaB[index]}
         </div>)}
       </div>

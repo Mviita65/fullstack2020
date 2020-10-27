@@ -28,3 +28,7 @@ header {
 span:hover, .siirrot-item:hover, .lista-item:hover {
     color: red;
 }
+
+div:focus {
+    background-color: lightgrey;
+}
