@@ -57,14 +57,6 @@ const siirra = (mihin) =>{
     case "listaA":{   
       uusiListaB = [...listaB]  // listaA:n ollessa kysymyksessä kopidaan B siirrettävän lisäystä varten  
       if (mihin==="toRight"){       // ollaan siirtämässä listalta A listalle B
-        // let pituus = listaA.length    // kuinka monta nimeä on listassa
-        // for (i = 0; i < pituus; i++){ // käydään lista läpi
-        //   if (i !== index) {            // jos kyseessä ei ole siirrettävän indeksi
-        //     uusiListaA.push(listaA[i])  // kerätään nimi listalle
-        //   } else {
-        //     siirrettava = listaA[i]     // jos on kyseessä siirrettävä indeksi otetaan nimi talteen
-        //   }
-        // }
         siirrettava = listaA[index] // otetaan merkitty siirrettäväksi
         uusiListaA = listaA.filter((item,Aindex)=>Aindex!==index)  // muista tehdään uusilista
         uusiListaB.push(siirrettava)    // lisätään talteen otettu nimi listalle B
