@@ -31,4 +31,5 @@ span:hover, .siirrot-item:hover, .lista-item:hover {
 
 div:focus {
     background-color: lightgrey;
+    outline: none;
 }
