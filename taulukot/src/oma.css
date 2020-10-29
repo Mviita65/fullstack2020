@@ -1,0 +1,48 @@
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 5em 25em 5em;
+  justify-content: center;
+  padding: 0.5em;
+}
+.grid-item {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  text-align: left;
+  padding: 0.2em;
+  border: 0.05em solid rgba(0, 0, 0, 0.8);
+}
+
+header {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  font-weight: bold; 
+  padding: 0.1em;
+  background-color: lightblue; 
+  text-align: center;
+}
+
+footer {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  background-color: lightblue; 
+  text-align: center;
+} 
+
+input {
+  float: right;
+}
+
+button {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+}
+
+p {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  padding:0.1em;
+  color: white;
+  background-color: white;
+}
