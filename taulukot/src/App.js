@@ -5,8 +5,12 @@ import './oma.css';
 function App() {
 
   const [korotusProsentti, setKorotusProsentti] = useState(0)
-  const [veroProsentti, setVeroProsentti] = useState(0)
+  const [veroProsentti, setVeroProsentti] = useState(20.00)
   const [bruttoJaNetto, setBruttoJaNetto] = useState([])
+  const [naytaTunnit, setNaytaTunnit] = useState(1)
+  const [naytaBrutto, setNaytaBrutto] = useState(0)
+  const [naytaNetto, setNaytaNetto] = useState(0)
+  
   
   const [kkPalkat,setKkPalkat] = useState([
     {kk: "Tammikuu", palkka: 1000},
@@ -79,7 +83,7 @@ function App() {
     return palautus
   }
 
-  // ----------------------- palkkaFunktiot ------------------------------
+  // ----------------------- kkPalkkaFunktiot ------------------------------
 
   const paivitaPalkka = (index, value) =>{
     let uudetPalkat = [...kkPalkat]
@@ -102,29 +106,35 @@ function App() {
   const laskeNetto = (e) =>{
     e.preventDefault()
     let newBruttoJaNetto = [...kkPalkat]
-    let netto = 0
-    let palautus = 0
     newBruttoJaNetto.forEach ((item,index)=>{
       newBruttoJaNetto[index].netto = Math.round((kkPalkat[index].palkka - kkPalkat[index].palkka * veroProsentti/100)*100)/100
     })
     setBruttoJaNetto(newBruttoJaNetto)
   }
 
-  return (
-    <div className="grid-container">
+  const Tunnit = () =>{
+    return <section>
       <header>Viikonpäivä/tehdyt tunnit</header>
-          {tyot.map((item,index)=><div className="grid-item" key={index}>{tyot[index].paiva}<input type="number" step=".25" onChange={e => paivitaTunnit(index,e.target.value)} value={tyot[index].tunnit} ></input></div>)}
+        {tyot.map((item,index)=><div className="grid-item" key={index}>{tyot[index].paiva}<input type="number" step=".25" onChange={e => paivitaTunnit(index,e.target.value)} value={tyot[index].tunnit} ></input></div>)}
       <footer>{paivatJaTunnitJaKa()}<br/>{minJaMax()}</footer>
-      <p></p>
+    </section>
+  }
+
+  const Brutto = () => {
+    return <section>
       <header>Kuukausipalkat</header>
-        {kkPalkat.map((item,index)=><div className="grid-item" key={index}>{kkPalkat[index].kk}<input type="number" step=".01" onChange={e => paivitaPalkka(index,e.target.value)} value={kkPalkat[index].palkka} ></input></div>)}
-        <form className="grid-item" onSubmit={e => ajaKorotus(e)}>
-          Anna korotusprosentti:
-          <input type="number" onChange={e => setKorotusProsentti(Number(e.target.value))} value={korotusProsentti}/>
-          <p><button type="submit">Aja korotus</button></p>
-        </form>
+      {kkPalkat.map((item,index)=><div className="grid-item" key={index}>{kkPalkat[index].kk}<input type="number" step=".01" onChange={e => paivitaPalkka(index,e.target.value)} value={kkPalkat[index].palkka} ></input></div>)}
+      <form className="grid-item" onSubmit={e => ajaKorotus(e)}>
+        Anna korotusprosentti:
+        <input type="number" onChange={e => setKorotusProsentti(Number(e.target.value))} value={korotusProsentti}/>
+        <p><button type="submit">Aja korotus</button></p>
+      </form>
       <footer><br></br></footer>
-      <p></p>
+    </section>
+  }
+
+  const Netto = () =>{
+    return <section>
       <header>Laske nettopalkka</header>
       <form className="grid-item" onSubmit={e => laskeNetto(e)}>
         Anna veroprosentti:
@@ -134,6 +144,19 @@ function App() {
           <b>{bruttoJaNetto[index].kk}</b> brutto: {bruttoJaNetto[index].palkka} netto: {bruttoJaNetto[index].netto}
         </div>)}
       </form>
+    </section>
+
+  }
+
+  return (
+    <div className="grid-container">
+      <nav>
+        <span onClick={e => {setNaytaTunnit(1);setNaytaBrutto(0);setNaytaNetto(0)}}>Tunnit </span>
+        <span onClick={e => {setNaytaBrutto(1);setNaytaTunnit(0);setNaytaNetto(0)}}>| Brutto </span>
+        <span onClick={e => {setNaytaNetto(1);setNaytaTunnit(0);setNaytaBrutto(0)}}>| Netto</span></nav>
+      <section>
+        {naytaTunnit ? <Tunnit/> : naytaBrutto ? <Brutto/> : <Netto/>}
+      </section>
     </div>
   )
 }

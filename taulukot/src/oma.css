@@ -13,6 +13,12 @@
   border: 0.05em solid rgba(0, 0, 0, 0.8);
 }
 
+section {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  text-align: left;
+}
+
 header {
   grid-column-start: 2;
   grid-column-end: 3;
@@ -20,6 +26,15 @@ header {
   padding: 0.1em;
   background-color: lightblue; 
   text-align: center;
+}
+
+nav {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  padding: 0.1em;
+  background-color: gray;
+  color: white; 
+  text-align: center; 
 }
 
 footer {
@@ -45,4 +60,8 @@ p {
   padding:0.1em;
   color: white;
   background-color: white;
+}
+
+span:hover {
+  color: red;
 }
