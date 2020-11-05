@@ -145,7 +145,6 @@ function App() {
         </div>)}
       </form>
     </section>
-
   }
 
   return (
