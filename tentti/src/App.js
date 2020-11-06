@@ -6,28 +6,21 @@ import './oma.css';
 function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi jos merkitään vastaukseksi
 
   const merkittyVastaukseksi = (event, props, veIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(props.data))
-    syväKopio[props.tenttiIndex].kysymykset[props.kysymysIndex].vaihtoehdot[veIndex].valittu = event.target.checked
-    props.vastausVaihtui(syväKopio)
+     props.vastausVaihtui(event, props, veIndex)
   }
 
-  let kopioData = JSON.parse(JSON.stringify(props.data))  // valitaan näytetäänkö myös vastaukset 
-  let tI = props.tenttiIndex
-  let kI = props.kysymysIndex
-  return <section>{props.naytaVastaukset ? kopioData[tI].kysymykset[kI].vaihtoehdot.map((item, veIndex) =>
+  return <section>{props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>
     <div key={veIndex} className="vastaus"><input type="checkbox" checked={item.valittu}></input><input type="checkbox" checked={item.korrekti}></input> {item.teksti}</div>) :
-    kopioData[props.tenttiIndex].kysymykset[props.kysymysIndex].vaihtoehdot.map((item, veIndex) =>
+    props.data.vaihtoehdot.map((item, veIndex) =>
       <div key={veIndex} className="vastaus"><input type="checkbox" checked={item.valittu} onChange={(event) => { merkittyVastaukseksi(event, props, veIndex) }}></input> {item.teksti}</div>)}
   </section>
 }
 
 function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot näyttäämään kysymysten vaihtoehdot
 
-  let kopioData = JSON.parse(JSON.stringify(props.data))
-  let tI = props.tenttiIndex
-  return <section>{kopioData[tI].kysymykset.map((item, kysymysIndex) =>
-    <div key={kysymysIndex} className="kysymys">{item.kysymys} <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} 
-    kysymysIndex={kysymysIndex} data={kopioData} oikeat={props.oikeat} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset}/>
+ return <section>{props.data.kysymykset.map((item, kysymysIndex) =>
+    <div key={kysymysIndex} className="kysymys">{item.kysymys} <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+    kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset}/>
     </div>)}<div><span className="button" onClick={()=>props.setNaytaVastaukset(1)}>Näytä vastaukset</span></div></section>
 }
 
@@ -41,6 +34,7 @@ function App() {
   const [tenttiA, setTenttiA] = useState(0)
   const [poistu, setPoistu] = useState(0)
   const [naytaVastaukset, setNaytaVastaukset] = useState(0)
+  const [aktiivinen, setAktiivinen] = useState(0)
 
   const initialData = [
     {
@@ -120,7 +114,13 @@ function App() {
     }
   }, [data])
 
-  const vastausVaihtui = (syväKopio) => {
+  const vaihdaTentti = (index) => {
+    setAktiivinen(index)
+  }
+
+  const vastausVaihtui = (event,props,veIndex) => {
+    let syväKopio = JSON.parse(JSON.stringify(data))
+    syväKopio[props.tenttiIndex].kysymykset[props.kysymysIndex].vaihtoehdot[veIndex].valittu = event.target.checked
     setData(syväKopio)
   }
 
@@ -139,9 +139,9 @@ function App() {
               <span className="t-nav-item" onClick={e => { setTenttiB(1); setTenttiA(0); setNaytaVastaukset(0) }}>TENTTI B </span>
             </nav>
           </div> : <section>Tietoa sovelluksesta</section>}
-      {tenttiA ? <Tentti vastausVaihtui={vastausVaihtui} data={data} tenttiIndex={0} 
+      {tenttiA ? <Tentti vastausVaihtui={vastausVaihtui} data={data[0]} tenttiIndex={0} 
           oikeat={0} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset}/> :
-        tenttiB ? <Tentti vastausVaihtui={vastausVaihtui} data={data} tenttiIndex={1} 
+        tenttiB ? <Tentti vastausVaihtui={vastausVaihtui} data={data[1]} tenttiIndex={1} 
           oikeat={0} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset}/> : ""}
     </div>
   )
