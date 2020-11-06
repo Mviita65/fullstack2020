@@ -146,7 +146,7 @@ function App() {
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => { setTentit(1); setTietoa(0); setNaytaVastaukset(0) }}>TENTIT </span>
         <span className="s-nav-item" onClick={e => { setTentit(0); setTietoa(1) }}>TIETOA SOVELLUKSESTA </span>
-        <span className="s-nav-item-right" onClick={e => { setPoistu(1) }}>POISTU </span>
+        <span className="s-nav-item-right" onClick={e => { setPoistu(1); setTentit(0)}}>POISTU </span>
       </nav>
       {poistu ? <section>Sovelluksen toiminta on päättynyt!</section> :
         tentit ?
@@ -156,7 +156,7 @@ function App() {
                 vaihdaTentti(index); setNaytaVastaukset(0)}}>{item.tentti}</span>)}
             </nav>
           </div> : tietoa ? <section>Tietoa sovelluksesta</section> :""}
-              {tentit ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset}/> : ""}
+              {(tentit && !poistu) ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset}/> : ""}
     </div>
   )
 }
