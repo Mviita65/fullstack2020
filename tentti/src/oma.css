@@ -1,9 +1,14 @@
-/* .grid-container {
+.grid-container {
   display: grid;
   grid-template-columns: 15% 70% 15%;
   justify-content: center;
   padding: 0.5em;
-} */
+}
+
+.grid-item {
+  grid-column-start: 2;
+  grid-column-end: 3;
+}
 
 nav {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -44,7 +49,7 @@ section {
   background-color: rgb(225, 245, 248)
 }
 
-.s-nav-item:hover, .s-nav-item-right:hover  {
+.s-nav-item:hover, .s-nav-item-right:hover, .button:hover {
   background-color: rgb(60, 60, 196);
 }
 
@@ -54,4 +59,13 @@ section {
 
 .vastaus {
   font-weight: normal;
+  padding: 0.25em;
+}
+
+.button {
+  float: left;
+  padding: 0.5rem;
+  width: 8rem;
+  background-color:#3f51b5;
+  color: #fafafa;
 }
