@@ -28,17 +28,15 @@ function App() {
 
   const [data, setData] = useState([])
   const [dataAlustettu, setDataAlustettu] = useState(false)
-  const [tentit, setTentit] = useState(1)
+  const [tentit, setTentit] = useState(0)
   const [tietoa, setTietoa] = useState(0)
-  const [tenttiB, setTenttiB] = useState(0)
-  const [tenttiA, setTenttiA] = useState(0)
   const [poistu, setPoistu] = useState(0)
   const [naytaVastaukset, setNaytaVastaukset] = useState(0)
   const [aktiivinen, setAktiivinen] = useState(0)
 
   const initialData = [
     {
-      tentti: "Tentti A",
+      tentti: "TENTTI A",
       kysymykset: [
         {
           kysymys: "Mitä kuuluu?",
@@ -64,7 +62,26 @@ function App() {
         }]
     },
     {
-      tentti: "Tentti B",
+      tentti: "TENTTI B",
+      kysymykset: [
+        {
+          kysymys: "Mikä maksaa?",
+          vaihtoehdot: [
+            { teksti: "Buginen koodi?", valittu: 0, korrekti: 1 },
+            { teksti: "Elämä!", valittu: 0, korrekti: 1 },
+            { teksti: "Vilkas mielikuvitus", valittu: 0, korrekti: 0 }]
+        },
+        {
+          kysymys: "Miten työpäivä meni?",
+          vaihtoehdot: [
+            { teksti: "Kiitos, uni maistui!", valittu: 0, korrekti: 0 },
+            { teksti: "Kiitos, hyvin!", valittu: 0, korrekti: 1 },
+            { teksti: "Pelastin maailman!", valittu: 0, korrekti: 0 },
+            { teksti: "Mikään ylläolevista vaihtoehdoista ei toteutunut.", valittu: 0, korrekti: 0 }]
+        }]
+    },
+    {
+      tentti: "TENTTI C",
       kysymykset: [
         {
           kysymys: "Kuis hurisee?",
@@ -128,21 +145,18 @@ function App() {
     <div className="grid-container">
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => { setTentit(1); setTietoa(0); setNaytaVastaukset(0) }}>TENTIT </span>
-        <span className="s-nav-item" onClick={e => { setTentit(0); setTietoa(1); setTenttiA(0); setTenttiB(0) }}>TIETOA SOVELLUKSESTA </span>
-        <span className="s-nav-item-right" onClick={e => { setPoistu(1); setTenttiA(0); setTenttiB(0) }}>POISTU </span>
+        <span className="s-nav-item" onClick={e => { setTentit(0); setTietoa(1) }}>TIETOA SOVELLUKSESTA </span>
+        <span className="s-nav-item-right" onClick={e => { setPoistu(1) }}>POISTU </span>
       </nav>
       {poistu ? <section>Sovelluksen toiminta on päättynyt!</section> :
         tentit ?
           <div className="grid-item">
             <nav className="tenttivalikko">
-              <span className="t-nav-item" onClick={e => { setTenttiA(1); setTenttiB(0); setNaytaVastaukset(0) }}>TENTTI A </span>
-              <span className="t-nav-item" onClick={e => { setTenttiB(1); setTenttiA(0); setNaytaVastaukset(0) }}>TENTTI B </span>
+              {data.map((item,index) => <span className="t-nav-item" onClick={()=>{
+                vaihdaTentti(index); setNaytaVastaukset(0)}}>{item.tentti}</span>)}
             </nav>
-          </div> : <section>Tietoa sovelluksesta</section>}
-      {tenttiA ? <Tentti vastausVaihtui={vastausVaihtui} data={data[0]} tenttiIndex={0} 
-          oikeat={0} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset}/> :
-        tenttiB ? <Tentti vastausVaihtui={vastausVaihtui} data={data[1]} tenttiIndex={1} 
-          oikeat={0} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset}/> : ""}
+          </div> : tietoa ? <section>Tietoa sovelluksesta</section> :""}
+              {tentit ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset}/> : ""}
     </div>
   )
 }
