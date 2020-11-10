@@ -60,6 +60,8 @@ section {
   background-color: white;
   padding: 0.75rem;
   border-radius: 15px;
+  border: solid;
+  border-color: #f7f5f5;;
 }
 
 .vastaus {
@@ -76,19 +78,23 @@ section {
 }
 
 .delButton {
+  vertical-align: middle;
   border-radius: 15px;
   border: none;
-  background-color: orangered;
+  background-color: gray;
   color: #fafafa;
 }
 
 .add {
   text-align: center;
+  vertical-align: middle;
   font-size: 1.25rem;
   font-weight: bold;
 }
 
 .add-item {
+  text-align:center;
+  vertical-align: middle;
   color:#fafafa;
   border-radius: 75px;
   border: none;
@@ -96,6 +102,7 @@ section {
 }
 
 .add-ve {
+  vertical-align: middle;
   color: #fafafa;
   border-radius: 75px;
   border: none;
@@ -104,6 +111,6 @@ section {
 
 img {
   vertical-align: middle;
-  width: 1.45rem;
-  height: 1.45rem;
+  width: 2rem;
+  height: 2rem;
  }

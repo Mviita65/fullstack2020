@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useState } from 'react'
 import './oma.css';
 import cathead from './img/cathead.jpg';
+import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
+import BuildIcon from '@material-ui/icons/Build';
 
 
 function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi jos merkitään vastaukseksi
@@ -28,7 +30,7 @@ return <section>
           muutettuVaihtoehto(event, props, veIndex) }}> 
         </input> <button className="delButton" onClick={()=>{
             props.poistaVaihtoehto(props.tenttiIndex, props.kysymysIndex, veIndex)
-        }}>poista</button> {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
+        }}><DeleteTwoToneIcon /></button> {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
     </div>):
       props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>
         <div key={veIndex} className="vastaus">
@@ -61,7 +63,7 @@ function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot n
         muutettuKysymys(event, props, kysymysIndex) }}>
       </input> <button className="delButton" onClick={()=>{
         props.poistaKysymys(props.tenttiIndex, kysymysIndex)
-      }}>poista</button> 
+      }}><DeleteTwoToneIcon /></button> 
       <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
         kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
     </div>):
@@ -206,31 +208,26 @@ function App() {
 
   const lisaaKysymys = (teIndex) => {
     let syväKopio = JSON.parse(JSON.stringify(data))
-    var uusiKysymysNimi = prompt("Anna uusi kysymys?", "");
-    if (uusiKysymysNimi !== null && uusiKysymysNimi !== ""){
-     let uusiKysymys = [{
-        kysymys: uusiKysymysNimi,
+    let uusiKysymys = [{
+        kysymys: "",
         vaihtoehdot: []
      }]
      var uudetKysymykset = syväKopio[teIndex].kysymykset.concat(uusiKysymys)
      syväKopio[teIndex].kysymykset = uudetKysymykset 
-     setData(syväKopio)
-    }
+     setData(syväKopio)    
   }
 
   const lisaaVaihtoehto = (teIndex, kyIndex) => {
     let syväKopio = JSON.parse(JSON.stringify(data))
-    var uusiVeNimi = prompt("Anna uusi vaihtoehto?", "");
-    if (uusiVeNimi !== null && uusiVeNimi !== ""){
-     let uusiVaihtoehto = [{
-        teksti: uusiVeNimi,
+    let uusiVaihtoehto = [{
+        teksti: "",
         valittu: 0,
         korrekti: 0
      }]
      var uudetVaihtoehdot = syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot.concat(uusiVaihtoehto)
      syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot = uudetVaihtoehdot 
      setData(syväKopio)
-    }
+
   }
 
   const muutaTenttiNimi = (event,index) => {
@@ -240,10 +237,17 @@ function App() {
   }
 
   const poistaTentti = (index) => {
+    let paluu = null
     let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio.splice(index,1)
-    setData(syväKopio)
+    if (window.confirm("Poistetaanko tentti ("+syväKopio[index].tentti+") kysymyksineen?")){
+      syväKopio.splice(index,1)
+      setData(syväKopio)    
+    } else {
+      paluu = index
+    }
+    return paluu
   }
+
   const muutaKysymys = (event, props, kyIndex) => {
     let syväKopio = JSON.parse(JSON.stringify(data))
     syväKopio[props.tenttiIndex].kysymykset[kyIndex].kysymys = event.target.value
@@ -252,14 +256,18 @@ function App() {
 
   const poistaKysymys = (teIndex,kyIndex) => {
     let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio[teIndex].kysymykset.splice(kyIndex,1)
-    setData(syväKopio)
+    if (window.confirm("Poistetaanko kysymys ("+syväKopio[teIndex].kysymykset[kyIndex].kysymys+") vastausvaihtoehtoineen?")){
+      syväKopio[teIndex].kysymykset.splice(kyIndex,1)
+      setData(syväKopio)
+    }
   }
 
   const poistaVaihtoehto = (teIndex,kyIndex,veIndex) => {
     let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot.splice(veIndex,1)
-    setData(syväKopio)
+    if (window.confirm("Poistetaanko vaihtoehto ("+syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot[veIndex].teksti+")?")){
+      syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot.splice(veIndex,1)
+      setData(syväKopio)
+    }
   }
 
   const vastausVaihtui = (event,props,veIndex) => {
@@ -285,7 +293,7 @@ function App() {
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => { setAktiivinen(null); setTentit(1); setTietoa(0); setNaytaVastaukset(0) }}>TENTIT </span>
         <span className="s-nav-item" onClick={e => { setTentit(0); setTietoa(1) }}>TIETOA SOVELLUKSESTA </span>
-        <span className="s-nav-item" onClick={e => { setHallinta(!hallinta) }}> </span>
+        <span className="s-nav-item" onClick={e => { setHallinta(!hallinta) }}><BuildIcon fontSize="small"/> </span>
         <span className="s-nav-item-right" onClick={e => { setPoistu(1); setTentit(0)}}>POISTU </span>
       </nav>
       {poistu ? <section className="vastaus">Sovelluksen toiminta on päättynyt!</section> :
@@ -296,14 +304,13 @@ function App() {
                 vaihdaTentti(index); setNaytaVastaukset(0)}}>{item.tentti}</span>) : 
                   hallinta && aktiivinen!=null ? <span><input type="text" value={data[aktiivinen].tentti} onChange={(event) =>{
                     muutaTenttiNimi(event,aktiivinen) }}></input> <button className="delButton" onClick={()=>{
-                      poistaTentti(aktiivinen); setAktiivinen(null)}}>poista</button>
+                      setAktiivinen(poistaTentti(aktiivinen))}}><DeleteTwoToneIcon /></button>
                     </span> : 
                     data[aktiivinen].tentti}
-              {hallinta && aktiivinen==null ? <span className="t-nav-item" onClick={() =>{ 
-                lisaaTentti()}}> + </span> : ""}
+              {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{lisaaTentti()}}> + </span> : ""}
             </nav>
-          </div> : tietoa ? <section className="vastaus">Tietoa sovelluksesta</section> :""}
-              {(aktiivinen!=null && !poistu) ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} muutaKysymys={muutaKysymys} poistaKysymys={poistaKysymys} lisaaKysymys={lisaaKysymys} muutaVaihtoehto={muutaVaihtoehto} oikeaVaihtui={oikeaVaihtui} poistaVaihtoehto={poistaVaihtoehto} lisaaVaihtoehto={lisaaVaihtoehto} /> : ""}
+          </div> : tietoa ? <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
+              {(aktiivinen!=null && !poistu && !tietoa) ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} muutaKysymys={muutaKysymys} poistaKysymys={poistaKysymys} lisaaKysymys={lisaaKysymys} muutaVaihtoehto={muutaVaihtoehto} oikeaVaihtui={oikeaVaihtui} poistaVaihtoehto={poistaVaihtoehto} lisaaVaihtoehto={lisaaVaihtoehto} /> : ""}
     </div>
   )
 }
