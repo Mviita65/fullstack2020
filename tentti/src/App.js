@@ -27,16 +27,14 @@ return <section>
         <input type="text" value={item.teksti} onChange={(event) =>{
           muutettuVaihtoehto(event, props, veIndex) }}> 
         </input> <button className="delButton" onClick={()=>{
-
+            props.poistaVaihtoehto(props.tenttiIndex, props.kysymysIndex, veIndex)
         }}>poista</button> {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
     </div>):
       props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>
         <div key={veIndex} className="vastaus">
           <input type="checkbox" checked={item.valittu}></input>
           <input type="checkbox" checked={item.korrekti}></input>
-          {item.teksti} 
-          {item.valittu && item.korrekti ? 
-            <img alt="cathead" src={cathead}/> : ""}
+          {item.teksti} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>) :
         props.data.vaihtoehdot.map((item, veIndex) =>
           <div key={veIndex} className="vastaus">
@@ -44,25 +42,39 @@ return <section>
               merkittyVastaukseksi(event, props, veIndex) }}></input> 
             {item.teksti}
         </div>)}
+        {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{
+          props.lisaaVaihtoehto(props.tenttiIndex, props.kysymysIndex)
+        }}>+</span></div> : ""}
   </section>
 }
 
 function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot näyttäämään kysymysten vaihtoehdot
 
+  const muutettuKysymys = (event,props,veIndex) => {
+    props.muutaKysymys(event,props,veIndex)
+  }
+
  return <section>
-   {props.data.kysymykset.map((item, kysymysIndex) =>
-    <div key={kysymysIndex} className="kysymys">{item.kysymys} 
-      {props.hallinta ? <span>
-        <button className="changeButton" onClick={()=>{props.muutaKysymys(props.tenttiIndex, kysymysIndex)}}>muuta kysymys</button>
-        <button className="delButton" onClick={()=>{props.poistaKysymys(props.tenttiIndex, kysymysIndex)}}>poista</button></span> :""}
-        <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
-          kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
+    {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>
+      <div key={kysymysIndex} className="kysymys">
+      <input type="text" value={item.kysymys} onChange={(event) =>{
+        muutettuKysymys(event, props, kysymysIndex) }}>
+      </input> <button className="delButton" onClick={()=>{
+        props.poistaKysymys(props.tenttiIndex, kysymysIndex)
+      }}>poista</button> 
+      <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+        kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
+    </div>):
+    props.data.kysymykset.map((item, kysymysIndex) =>
+      <div key={kysymysIndex} className="kysymys">{item.kysymys}
+      <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+        kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
     </div>)}
-    <div>{props.hallinta ? <span className="t-nav-item" onClick={()=>{
-      props.lisaaKysymys(props.tenttiIndex)}}> + </span> : ""}
-    </div>
+    {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{
+      props.lisaaKysymys(props.tenttiIndex)}}> + </span>
+    </div> : ""}
     <div>
-      <span className="button" onClick={()=>props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span>
+      {props.hallinta ? "" : <span className="button" onClick={()=>props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span>}
     </div>
   </section>
 }
@@ -71,7 +83,7 @@ function App() {
 
   const [data, setData] = useState([])
   const [dataAlustettu, setDataAlustettu] = useState(false)
-  const [tentit, setTentit] = useState(0)
+  const [tentit, setTentit] = useState(1)
   const [tietoa, setTietoa] = useState(0)
   const [poistu, setPoistu] = useState(0)
   const [naytaVastaukset, setNaytaVastaukset] = useState(0)
@@ -208,12 +220,12 @@ function App() {
 
   const lisaaVaihtoehto = (teIndex, kyIndex) => {
     let syväKopio = JSON.parse(JSON.stringify(data))
-    var uusiVeNimi = prompt("Anna uusi kysymys?", "");
+    var uusiVeNimi = prompt("Anna uusi vaihtoehto?", "");
     if (uusiVeNimi !== null && uusiVeNimi !== ""){
      let uusiVaihtoehto = [{
         teksti: uusiVeNimi,
-        valittu: [0],
-        korrekti: [0]
+        valittu: 0,
+        korrekti: 0
      }]
      var uudetVaihtoehdot = syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot.concat(uusiVaihtoehto)
      syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot = uudetVaihtoehdot 
@@ -221,21 +233,9 @@ function App() {
     }
   }
 
-  const muutaTentti = (index) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    var uusiTenttiNimi = prompt("Anna tentille uusi nimi?", "");
-    if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
-      syväKopio[index].tentti = uusiTenttiNimi.toUpperCase()
-    }
-    setData(syväKopio) 
-  }
-
-  const muutaKysymys = (teIndex,kyIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    var uusiKysymysNimi = prompt("Muotoile uusi kysymys?", "");
-    if (uusiKysymysNimi !== null && uusiKysymysNimi !== ""){
-      syväKopio[teIndex].kysymykset[kyIndex].kysymys = uusiKysymysNimi
-    }
+  const muutaTenttiNimi = (event,index) => {
+    let syväKopio = JSON.parse(JSON.stringify(data)) 
+    syväKopio[index].tentti = event.target.value.toUpperCase()
     setData(syväKopio) 
   }
 
@@ -243,6 +243,11 @@ function App() {
     let syväKopio = JSON.parse(JSON.stringify(data))
     syväKopio.splice(index,1)
     setData(syväKopio)
+  }
+  const muutaKysymys = (event, props, kyIndex) => {
+    let syväKopio = JSON.parse(JSON.stringify(data))
+    syväKopio[props.tenttiIndex].kysymykset[kyIndex].kysymys = event.target.value
+    setData(syväKopio) 
   }
 
   const poistaKysymys = (teIndex,kyIndex) => {
@@ -253,7 +258,7 @@ function App() {
 
   const poistaVaihtoehto = (teIndex,kyIndex,veIndex) => {
     let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot[veIndex].splice(veIndex,1)
+    syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot.splice(veIndex,1)
     setData(syväKopio)
   }
 
@@ -289,7 +294,11 @@ function App() {
             <nav className="tenttivalikko">
               {aktiivinen==null ? data.map((item,index) => <span className="t-nav-item" key={index} onClick={()=>{
                 vaihdaTentti(index); setNaytaVastaukset(0)}}>{item.tentti}</span>) : 
-                data[aktiivinen].tentti} {hallinta && aktiivinen!=null? <span><button className="changeButton" onClick={()=>{muutaTentti(aktiivinen)}}>muuta nimi</button> <button className="delButton" onClick={()=>{poistaTentti(aktiivinen); setAktiivinen(null)}}>poista</button></span> : ""}
+                  hallinta && aktiivinen!=null ? <span><input type="text" value={data[aktiivinen].tentti} onChange={(event) =>{
+                    muutaTenttiNimi(event,aktiivinen) }}></input> <button className="delButton" onClick={()=>{
+                      poistaTentti(aktiivinen); setAktiivinen(null)}}>poista</button>
+                    </span> : 
+                    data[aktiivinen].tentti}
               {hallinta && aktiivinen==null ? <span className="t-nav-item" onClick={() =>{ 
                 lisaaTentti()}}> + </span> : ""}
             </nav>
