@@ -21,30 +21,30 @@ function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi 
   }
 
 return <section>
-    {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) =>
+    {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) => // jos hallinta valittu
       <div key={veIndex} className="vastaus">
-        <input type="checkbox" checked={item.valittu}></input>
-        <input type="checkbox" checked={item.korrekti} onChange={(event) => {
+        <input type="checkbox" checked={item.valittu}></input>      {/* ei voida muuttaa annettuja vastauksia */}
+        <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
           vaihdettuOikea(event, props, veIndex) }}></input>
-        <input type="text" value={item.teksti} onChange={(event) =>{
+        <input type="text" value={item.teksti} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
           muutettuVaihtoehto(event, props, veIndex) }}> 
-        </input> <button className="delButton" onClick={()=>{
+        </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
             props.poistaVaihtoehto(props.tenttiIndex, props.kysymysIndex, veIndex)
         }}><DeleteTwoToneIcon /></button> {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
-    </div>):
-      props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>
+      </div>):                                                    // muu kuin hallintatila
+      props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) => // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
         <div key={veIndex} className="vastaus">
-          <input type="checkbox" checked={item.valittu}></input>
+          <input type="checkbox" checked={item.valittu}></input>            
           <input type="checkbox" checked={item.korrekti}></input>
           {item.teksti} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>) :
-        props.data.vaihtoehdot.map((item, veIndex) =>
+        props.data.vaihtoehdot.map((item, veIndex) =>           // tentti menossa (vastaukset poissa)
           <div key={veIndex} className="vastaus">
-            <input type="checkbox" checked={item.valittu} onChange={(event) => {
+            <input type="checkbox" checked={item.valittu} onChange={(event) => {  // vaihtoehto voidaan valita vastaukseksi tai poistaa
               merkittyVastaukseksi(event, props, veIndex) }}></input> 
             {item.teksti}
         </div>)}
-        {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{
+        {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{  // jos hallintatila, voi lisätä uuden vaihtoehdon
           props.lisaaVaihtoehto(props.tenttiIndex, props.kysymysIndex)
         }}>+</span></div> : ""}
   </section>
@@ -57,26 +57,31 @@ function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot n
   }
 
  return <section>
-    {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>
+    {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) => // jos hallinta valittu
       <div key={kysymysIndex} className="kysymys">
-      <input type="text" value={item.kysymys} onChange={(event) =>{
-        muutettuKysymys(event, props, kysymysIndex) }}>
-      </input> <button className="delButton" onClick={()=>{
-        props.poistaKysymys(props.tenttiIndex, kysymysIndex)
-      }}><DeleteTwoToneIcon /></button> 
-      <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
-        kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
-    </div>):
-    props.data.kysymykset.map((item, kysymysIndex) =>
-      <div key={kysymysIndex} className="kysymys">{item.kysymys}
-      <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
-        kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
+        <input type="text" value={item.kysymys} onChange={(event) =>{   // kysymystä voidaan muotoilla
+          muutettuKysymys(event, props, kysymysIndex) }}>
+        </input> <button className="delButton" onClick={()=>{           // kysymys voidaan poistaa
+          props.poistaKysymys(props.tenttiIndex, kysymysIndex)
+        }}><DeleteTwoToneIcon /></button> 
+        <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+          kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
+          setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
+          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
+      </div>):                                                          // tentti menossa
+      props.data.kysymykset.map((item, kysymysIndex) =>
+        <div key={kysymysIndex} className="kysymys">{item.kysymys}
+        <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+          kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
+          setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
+          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
     </div>)}
-    {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{
+    {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{  // jos hallintatila, voi lisätä uuden kysymyksen
       props.lisaaKysymys(props.tenttiIndex)}}> + </span>
     </div> : ""}
     <div>
-      {props.hallinta ? "" : <span className="button" onClick={()=>props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span>}
+      {props.hallinta ? "" : <span className="button" onClick={()=>     // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
+        props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span>}
     </div>
   </section>
 }
@@ -310,7 +315,10 @@ function App() {
               {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{lisaaTentti()}}> + </span> : ""}
             </nav>
           </div> : tietoa ? <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
-              {(aktiivinen!=null && !poistu && !tietoa) ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} muutaKysymys={muutaKysymys} poistaKysymys={poistaKysymys} lisaaKysymys={lisaaKysymys} muutaVaihtoehto={muutaVaihtoehto} oikeaVaihtui={oikeaVaihtui} poistaVaihtoehto={poistaVaihtoehto} lisaaVaihtoehto={lisaaVaihtoehto} /> : ""}
+              {(aktiivinen!=null && !poistu && !tietoa) ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen}
+               naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} 
+               muutaKysymys={muutaKysymys} poistaKysymys={poistaKysymys} lisaaKysymys={lisaaKysymys} muutaVaihtoehto={muutaVaihtoehto} 
+               oikeaVaihtui={oikeaVaihtui} poistaVaihtoehto={poistaVaihtoehto} lisaaVaihtoehto={lisaaVaihtoehto} /> : ""}
     </div>
   )
 }
