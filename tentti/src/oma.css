@@ -75,6 +75,9 @@ section {
   width: 5rem;
   background-color:#3f51b5;
   color: #fafafa;
+  border-radius: 15px;
+  border: solid;
+  border-color:#3f51b5;
 }
 
 .delButton {
@@ -114,3 +117,7 @@ img {
   width: 2rem;
   height: 2rem;
  }
+
+input[type=text] {
+  width: 270px;
+}

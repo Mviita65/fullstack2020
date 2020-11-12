@@ -24,14 +24,14 @@ function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi 
 return <section>
     {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) => // jos hallinta valittu
       <div key={veIndex} className="vastaus">
-        <input type="checkbox" checked={item.valittu}></input>      {/* ei voida muuttaa annettuja vastauksia */}
+        {/* <input type="checkbox" checked={item.valittu}></input>      */}
         <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
           vaihdettuOikea(event, props, veIndex) }}></input>
         <input type="text" value={item.teksti} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
           muutettuVaihtoehto(event, props, veIndex) }}> 
         </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
             props.poistaVaihtoehto(props.tenttiIndex, props.kysymysIndex, veIndex)
-        }}><DeleteTwoToneIcon /></button> {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
+        }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>):                                                    // muu kuin hallintatila
       props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) => // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
         <div key={veIndex} className="vastaus">
@@ -102,27 +102,22 @@ function App() {
 
   const initialData = 
   [{
-    id: 0,
     tentti: "TENTTI A",
     kysymykset: [
       {
-        id: 0,
         kysymys: "Mitä kuuluu?",
         vaihtoehdot: [
           {
-            id: 0,
             teksti: "Kiitos hyvää, entä sinulle?",
             valittu: 0,
             korrekti: 1
           },
           {
-            id: 1,
             teksti: "Siinähän se!",
             valittu: 0,
             korrekti: 0
           },
           {
-            id: 2,
             teksti: "Mitäs siinä kyselet, hoida omat asias!",
             valittu: 0,
             korrekti: 0
@@ -130,29 +125,24 @@ function App() {
         ]
       },
       {
-        id: 1,
         kysymys: "Miten nukuit?",
         vaihtoehdot: [
           {
-            id: 0,
             teksti: "Kiitos, uni maistui!",
             valittu: 0,
             korrekti: 1
           },
           {
-            id: 1,
             teksti: "Kiitos, hyvin!",
             valittu: 0,
             korrekti: 1
           },
           {
-            id: 2,
             teksti: "Kyljelläni!",
             valittu: 0,
             korrekti: 1
           },
           {
-            id: 3,
             teksti: "Mikään ylläolevista vaihtoehdoista ei toteutunut.",
             valittu: 0,
             korrekti: 1
@@ -160,23 +150,19 @@ function App() {
         ]
       },
       {
-        id: 2,
         kysymys: "Suomi on?",
         vaihtoehdot: [
           {
-            id: 0,
             teksti: "Itsenäinen muista riippumaton tasavalta!",
             valittu: 0,
             korrekti: 0
           },
           {
-            id: 1,
             teksti: "Kuningaskunta!",
             valittu: 0,
             korrekti: 0
           },
           {
-            id: 2,
             teksti: "Yksi EU:n jäsenvaltioista!",
             valittu: 0,
             korrekti: 1
@@ -226,7 +212,7 @@ function App() {
         console.log(exception)
       }
     }
-    
+
     if (dataAlustettu) {
       updateData();
     }  
