@@ -4,6 +4,7 @@ import './oma.css';
 import cathead from './img/cathead.jpg';
 import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
 import BuildIcon from '@material-ui/icons/Build';
+import Axios from 'axios';
 
 
 function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi jos merkitään vastaukseksi
@@ -67,14 +68,16 @@ function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot n
         <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
           kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
           setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
-          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
+          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} 
+          lisaaVaihtoehto={props.lisaaVaihtoehto}/>
       </div>):                                                          // tentti menossa
       props.data.kysymykset.map((item, kysymysIndex) =>
         <div key={kysymysIndex} className="kysymys">{item.kysymys}
         <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
           kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
           setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
-          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} lisaaVaihtoehto={props.lisaaVaihtoehto}/>
+          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto}
+          lisaaVaihtoehto={props.lisaaVaihtoehto}/>
     </div>)}
     {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{  // jos hallintatila, voi lisätä uuden kysymyksen
       props.lisaaKysymys(props.tenttiIndex)}}> + </span>
@@ -97,101 +100,137 @@ function App() {
   const [aktiivinen, setAktiivinen] = useState(null)
   const [hallinta, setHallinta] = useState(0)
 
-  const initialData = [
-    {
-      tentti: "TENTTI A",
-      kysymykset: [
-        {
-          kysymys: "Mitä kuuluu?",
-          vaihtoehdot: [
-            { teksti: "Kiitos hyvää, entä sinulle?", valittu: 0, korrekti: 1 },
-            { teksti: "Siinähän se!", valittu: 0, korrekti: 0 },
-            { teksti: "Mitäs siinä kyselet, hoida omat asias!", valittu: 0, korrekti: 0 }]
-        },
-        {
-          kysymys: "Miten nukuit?",
-          vaihtoehdot: [
-            { teksti: "Kiitos, uni maistui!", valittu: 0, korrekti: 1 },
-            { teksti: "Kiitos, hyvin!", valittu: 0, korrekti: 1 },
-            { teksti: "Kyljelläni!", valittu: 0, korrekti: 1 },
-            { teksti: "Mikään ylläolevista vaihtoehdoista ei toteutunut.", valittu: 0, korrekti: 1 }]
-        },
-        {
-          kysymys: "Suomi on?",
-          vaihtoehdot: [
-            { teksti: "Itsenäinen muista riippumaton tasavalta!", valittu: 0, korrekti: 0 },
-            { teksti: "Kuningaskunta!", valittu: 0, korrekti: 0 },
-            { teksti: "Yksi EU:n jäsenvaltioista!", valittu: 0, korrekti: 1 }]
-        }]
-    },
-    {
-      tentti: "TENTTI B",
-      kysymykset: [
-        {
-          kysymys: "Mikä maksaa?",
-          vaihtoehdot: [
-            { teksti: "Buginen koodi?", valittu: 0, korrekti: 1 },
-            { teksti: "Elämä!", valittu: 0, korrekti: 1 },
-            { teksti: "Vilkas mielikuvitus", valittu: 0, korrekti: 0 }]
-        },
-        {
-          kysymys: "Miten työpäivä meni?",
-          vaihtoehdot: [
-            { teksti: "Kiitos, uni maistui!", valittu: 0, korrekti: 0 },
-            { teksti: "Kiitos, hyvin!", valittu: 0, korrekti: 1 },
-            { teksti: "Pelastin maailman!", valittu: 0, korrekti: 0 },
-            { teksti: "Mikään ylläolevista vaihtoehdoista ei toteutunut.", valittu: 0, korrekti: 0 }]
-        }]
-    },
-    {
-      tentti: "TENTTI C",
-      kysymykset: [
-        {
-          kysymys: "Kuis hurisee?",
-          vaihtoehdot: [
-            { teksti: "Kiitos hyvin, entä sinulla?", valittu: 0, korrekti: 1 },
-            { teksti: "Siinähän se!", valittu: 0, korrekti: 0 },
-            { teksti: "Mitäs siinä kyselet, hoida omat asias!", valittu: 0, korrekti: 0 }]
-        },
-        {
-          kysymys: "Miten yö meni?",
-          vaihtoehdot: [
-            { teksti: "Kiitos, uni maistui!", valittu: 0, korrekti: 1 },
-            { teksti: "Kiitos, hyvin!", valittu: 0, korrekti: 1 },
-            { teksti: "Kyljelläni!", valittu: 0, korrekti: 1 },
-            { teksti: "Mikään ylläolevista vaihtoehdoista ei täsmää.", valittu: 0, korrekti: 1 }]
-        },
-        {
-          kysymys: "Teorian ja käytännön ero?",
-          vaihtoehdot: [
-            { teksti: "Teoria on sitä kun kaikki on tiedossa, mutta mitään ei saada toimimaan.", valittu: 0, korrekti: 1 },
-            { teksti: "Käytäntö on sitä kun kaikki pelittää, mutta kukaan ei osaa kertoa miksi.", valittu: 0, korrekti: 1 }]
-        },
-        {
-          kysymys: "Ruotsi on?",
-          vaihtoehdot: [
-            { teksti: "Tasavalta!", valittu: 0, korrekti: 0 },
-            { teksti: "Kuningaskunta!", valittu: 0, korrekti: 1 },
-            { teksti: "Norjan naapurimaa!", valittu: 0, korrekti: 1 }]
-        }]
-    }]
+  const initialData = 
+  [{
+    id: 0,
+    tentti: "TENTTI A",
+    kysymykset: [
+      {
+        id: 0,
+        kysymys: "Mitä kuuluu?",
+        vaihtoehdot: [
+          {
+            id: 0,
+            teksti: "Kiitos hyvää, entä sinulle?",
+            valittu: 0,
+            korrekti: 1
+          },
+          {
+            id: 1,
+            teksti: "Siinähän se!",
+            valittu: 0,
+            korrekti: 0
+          },
+          {
+            id: 2,
+            teksti: "Mitäs siinä kyselet, hoida omat asias!",
+            valittu: 0,
+            korrekti: 0
+          }
+        ]
+      },
+      {
+        id: 1,
+        kysymys: "Miten nukuit?",
+        vaihtoehdot: [
+          {
+            id: 0,
+            teksti: "Kiitos, uni maistui!",
+            valittu: 0,
+            korrekti: 1
+          },
+          {
+            id: 1,
+            teksti: "Kiitos, hyvin!",
+            valittu: 0,
+            korrekti: 1
+          },
+          {
+            id: 2,
+            teksti: "Kyljelläni!",
+            valittu: 0,
+            korrekti: 1
+          },
+          {
+            id: 3,
+            teksti: "Mikään ylläolevista vaihtoehdoista ei toteutunut.",
+            valittu: 0,
+            korrekti: 1
+          }
+        ]
+      },
+      {
+        id: 2,
+        kysymys: "Suomi on?",
+        vaihtoehdot: [
+          {
+            id: 0,
+            teksti: "Itsenäinen muista riippumaton tasavalta!",
+            valittu: 0,
+            korrekti: 0
+          },
+          {
+            id: 1,
+            teksti: "Kuningaskunta!",
+            valittu: 0,
+            korrekti: 0
+          },
+          {
+            id: 2,
+            teksti: "Yksi EU:n jäsenvaltioista!",
+            valittu: 0,
+            korrekti: 1
+          }
+        ]
+      }
+    ]
+  }]
 
   useEffect(() => {
 
-    let jemma = window.localStorage;
-    let tempData = JSON.parse(jemma.getItem("data"))
-    if (tempData == null) {
-      jemma.setItem("data", JSON.stringify(initialData))
-      tempData = initialData
+  const createData = async () => {
+    try {
+      let result = await Axios.post("http://localhost:3001/tentit",initialData)
+      setData(initialData)
+      setDataAlustettu(true)
+    } catch (exception) {
+      alert("Tietokannan alustaminen epäonnistui!")
     }
-    setData(tempData);
-    setDataAlustettu(true)
+  }
+
+  const fetchData = async () => {
+    try {
+      let result = await Axios.get("http://localhost:3001/tentit")
+      if (result.data.length>0){
+        setData(result.data);
+        setDataAlustettu(true)
+      } else {
+        throw("Nyt pitää data kyllä alustaa!")
+      }
+    }
+    catch(execption){
+      console.log(execption)
+      createData()
+    }
+  }
+    fetchData()
   }, [])
 
   useEffect(() => {
-    if (dataAlustettu) {
-      window.localStorage.setItem("data", JSON.stringify(data))
+
+    const updateData = async () => {
+
+      try {
+        let result = await Axios.put("http://localhost:3001/tentit",data)
+      } catch (exception) {
+        console.log(exception)
+      }
     }
+    
+    if (dataAlustettu) {
+      updateData();
+    }  
+
   }, [data])
 
   const vaihdaTentti = (index) => {
@@ -248,9 +287,9 @@ function App() {
       syväKopio.splice(index,1)
       setData(syväKopio)    
     } else {
-      paluu = index
+      paluu = index   // tenttiä ei poistettu, palautetaan tentin indeksi
     }
-    return paluu
+    return paluu      // tentti poistettu, palautetaan null (=siirrytään tenttivalikkoon)
   }
 
   const muutaKysymys = (event, props, kyIndex) => {
@@ -309,7 +348,7 @@ function App() {
                 vaihdaTentti(index); setNaytaVastaukset(0)}}>{item.tentti}</span>) : 
                   hallinta && aktiivinen!=null ? <span><input type="text" value={data[aktiivinen].tentti} onChange={(event) =>{
                     muutaTenttiNimi(event,aktiivinen) }}></input> <button className="delButton" onClick={()=>{
-                      setAktiivinen(poistaTentti(aktiivinen))}}><DeleteTwoToneIcon /></button>
+                      setAktiivinen(poistaTentti(aktiivinen))}}><DeleteTwoToneIcon /></button>  
                     </span> : 
                     data[aktiivinen].tentti}
               {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{lisaaTentti()}}> + </span> : ""}
