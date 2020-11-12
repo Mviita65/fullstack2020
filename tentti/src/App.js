@@ -35,8 +35,8 @@ return <section>
       </div>):                                                    // muu kuin hallintatila
       props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) => // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
         <div key={veIndex} className="vastaus">
-          <input type="checkbox" checked={item.valittu}></input>            
-          <input type="checkbox" checked={item.korrekti}></input>
+          <input type="checkbox" checked={item.valittu} readOnly></input>            
+          <input type="checkbox" checked={item.korrekti} readOnly></input>
           {item.teksti} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>) :
         props.data.vaihtoehdot.map((item, veIndex) =>           // tentti menossa (vastaukset poissa)
@@ -66,7 +66,7 @@ function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot n
           props.poistaKysymys(props.tenttiIndex, kysymysIndex)
         }}><DeleteTwoToneIcon /></button> 
         <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
-          kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
+          data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
           setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
           muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} 
           lisaaVaihtoehto={props.lisaaVaihtoehto}/>
@@ -74,7 +74,7 @@ function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot n
       props.data.kysymykset.map((item, kysymysIndex) =>
         <div key={kysymysIndex} className="kysymys">{item.kysymys}
         <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
-          kysymysIndex={kysymysIndex} data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
+          data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
           setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
           muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto}
           lisaaVaihtoehto={props.lisaaVaihtoehto}/>

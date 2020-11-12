@@ -33,7 +33,7 @@
             },
             {
               "teksti": "#@$%¤@£@@#",
-              "valittu": 0,
+              "valittu": false,
               "korrekti": false
             },
             {
@@ -43,7 +43,7 @@
             },
             {
               "teksti": "Tein töitä palkkani eteen",
-              "valittu": 0,
+              "valittu": false,
               "korrekti": 1
             }
           ]
@@ -114,10 +114,6 @@
           ]
         }
       ]
-    },
-    {
-      "tentti": "TENTTI C",
-      "kysymykset": []
     }
   ]
 }
