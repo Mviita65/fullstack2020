@@ -1,22 +1,27 @@
 {
   "tentit": [
     {
+      "uuid": "adfaa70-a8bb-8ef2-6adf-710c17fd677",
       "tentti": "TENTTI A",
       "kysymykset": [
         {
+          "uuid": "4b5c1c-1005-1732-0454-108d8c8d263f",
           "kysymys": "Mitä kuuluu?",
           "vaihtoehdot": [
             {
+              "uuid": "cb58d26-7773-e2f-a16d-05602afc8aa",
               "teksti": "Kiitos hyvää, entä sinulle?",
-              "valittu": true,
+              "valittu": 0,
               "korrekti": 1
             },
             {
+              "uuid": "bc1837d-ef6-456-2b7d-4df124387aac",
               "teksti": "Siinähän se!",
               "valittu": 0,
               "korrekti": 0
             },
             {
+              "uuid": "34242-e61f-4f33-8bc-bfe0003dcbd1",
               "teksti": "Mitäs siinä kyselet, hoida omat asias!",
               "valittu": 0,
               "korrekti": 0
@@ -24,92 +29,56 @@
           ]
         },
         {
+          "uuid": "bd8ac6d-f8f-3fe-265e-8b3da22a3c8",
           "kysymys": "Miten työpäivä meni?",
           "vaihtoehdot": [
             {
+              "uuid": "d46430-dcef-e4-a57-acf3b18ff3",
               "teksti": "Kiitos, uni maistui!",
-              "valittu": true,
-              "korrekti": false
-            },
-            {
-              "teksti": "#@$%¤@£@@#",
-              "valittu": false,
-              "korrekti": false
-            },
-            {
-              "teksti": "Pelastin maailman",
               "valittu": 0,
-              "korrekti": false
+              "korrekti": 0
             },
             {
-              "teksti": "Tein töitä palkkani eteen",
-              "valittu": false,
+              "uuid": "5ee1814-68f0-24ee-71b7-8f3723ba4a",
+              "teksti": "Pelastin maailman!",
+              "valittu": 0,
+              "korrekti": 0
+            },
+            {
+              "uuid": "8d1b22-b641-4ec2-f50-c125d25553",
+              "teksti": "Kuis ittelläs?",
+              "valittu": 0,
+              "korrekti": 0
+            },
+            {
+              "uuid": "1a422e-b47b-c772-e076-a6f4be0acc",
+              "teksti": "Tein töitä palkkani edestä.",
+              "valittu": 0,
               "korrekti": 1
             }
           ]
         },
         {
+          "uuid": "8eb4b88-df65-0218-b404-bf6c4ba30f4",
           "kysymys": "Suomi on?",
           "vaihtoehdot": [
             {
+              "uuid": "6217d6f-66cc-fc53-655-5f67aa2bee4a",
               "teksti": "Itsenäinen muista riippumaton tasavalta!",
               "valittu": 0,
               "korrekti": 0
             },
             {
+              "uuid": "bf08c0f-3d46-42fd-6c1-d41260e0fecd",
               "teksti": "Kuningaskunta!",
               "valittu": 0,
               "korrekti": 0
             },
             {
+              "uuid": "d531552-5325-a3d6-81-fb3d8827501c",
               "teksti": "Yksi EU:n jäsenvaltioista!",
-              "valittu": true,
+              "valittu": 0,
               "korrekti": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "tentti": "TENTTI B",
-      "kysymykset": [
-        {
-          "kysymys": "Mikä maksaa?",
-          "vaihtoehdot": [
-            {
-              "teksti": "Buginen koodi",
-              "valittu": true,
-              "korrekti": true
-            },
-            {
-              "teksti": "Elämä",
-              "valittu": true,
-              "korrekti": true
-            },
-            {
-              "teksti": "Vilkas mielikuvitus",
-              "valittu": 0,
-              "korrekti": 0
-            }
-          ]
-        },
-        {
-          "kysymys": "Paljonko on paljon",
-          "vaihtoehdot": [
-            {
-              "teksti": "Paljon",
-              "valittu": 0,
-              "korrekti": 0
-            },
-            {
-              "teksti": "Ei vielä tarpeeksi",
-              "valittu": 0,
-              "korrekti": 0
-            },
-            {
-              "teksti": "Kaikki on suhteellista",
-              "valittu": true,
-              "korrekti": true
             }
           ]
         }

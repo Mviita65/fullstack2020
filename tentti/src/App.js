@@ -1,123 +1,35 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useReducer } from 'react';
 import { useState } from 'react'
 import './oma.css';
 import cathead from './img/cathead.jpg';
 import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
 import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios';
+import uuid from 'react-uuid';
 
-
-function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi jos merkitään vastaukseksi
-
-  const merkittyVastaukseksi = (event, props, veIndex) => {
-     props.vastausVaihtui(event, props, veIndex)
-  }
-
-  const vaihdettuOikea = (event,props,veIndex) => {
-    props.oikeaVaihtui(event, props, veIndex)
-  }
-
-  const muutettuVaihtoehto = (event,props,veIndex) => {
-    props.muutaVaihtoehto(event,props,veIndex)
-  }
-
-return <section>
-    {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) => // jos hallinta valittu
-      <div key={veIndex} className="vastaus">
-        {/* <input type="checkbox" checked={item.valittu}></input>      */}
-        <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
-          vaihdettuOikea(event, props, veIndex) }}></input>
-        <input type="text" value={item.teksti} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
-          muutettuVaihtoehto(event, props, veIndex) }}> 
-        </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
-            props.poistaVaihtoehto(props.tenttiIndex, props.kysymysIndex, veIndex)
-        }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
-      </div>):                                                    // muu kuin hallintatila
-      props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) => // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
-        <div key={veIndex} className="vastaus">
-          <input type="checkbox" checked={item.valittu} readOnly></input>            
-          <input type="checkbox" checked={item.korrekti} readOnly></input>
-          {item.teksti} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
-      </div>) :
-        props.data.vaihtoehdot.map((item, veIndex) =>           // tentti menossa (vastaukset poissa)
-          <div key={veIndex} className="vastaus">
-            <input type="checkbox" checked={item.valittu} onChange={(event) => {  // vaihtoehto voidaan valita vastaukseksi tai poistaa
-              merkittyVastaukseksi(event, props, veIndex) }}></input> 
-            {item.teksti}
-        </div>)}
-        {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{  // jos hallintatila, voi lisätä uuden vaihtoehdon
-          props.lisaaVaihtoehto(props.tenttiIndex, props.kysymysIndex)
-        }}>+</span></div> : ""}
-  </section>
-}
-
-function Tentti(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot näyttäämään kysymysten vaihtoehdot
-
-  const muutettuKysymys = (event,props,veIndex) => {
-    props.muutaKysymys(event,props,veIndex)
-  }
-
- return <section>
-    {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) => // jos hallinta valittu
-      <div key={kysymysIndex} className="kysymys">
-        <input type="text" value={item.kysymys} onChange={(event) =>{   // kysymystä voidaan muotoilla
-          muutettuKysymys(event, props, kysymysIndex) }}>
-        </input> <button className="delButton" onClick={()=>{           // kysymys voidaan poistaa
-          props.poistaKysymys(props.tenttiIndex, kysymysIndex)
-        }}><DeleteTwoToneIcon /></button> 
-        <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
-          data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
-          setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
-          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto} 
-          lisaaVaihtoehto={props.lisaaVaihtoehto}/>
-      </div>):                                                          // tentti menossa
-      props.data.kysymykset.map((item, kysymysIndex) =>
-        <div key={kysymysIndex} className="kysymys">{item.kysymys}
-        <Vaihtoehdot vastausVaihtui={props.vastausVaihtui} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
-          data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset}
-          setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta} 
-          muutaVaihtoehto={props.muutaVaihtoehto} oikeaVaihtui={props.oikeaVaihtui} poistaVaihtoehto={props.poistaVaihtoehto}
-          lisaaVaihtoehto={props.lisaaVaihtoehto}/>
-    </div>)}
-    {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{  // jos hallintatila, voi lisätä uuden kysymyksen
-      props.lisaaKysymys(props.tenttiIndex)}}> + </span>
-    </div> : ""}
-    <div>
-      {props.hallinta ? "" : <span className="button" onClick={()=>     // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
-        props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span>}
-    </div>
-  </section>
-}
-
-function App() {
-
-  const [data, setData] = useState([])
-  const [dataAlustettu, setDataAlustettu] = useState(false)
-  const [tentit, setTentit] = useState(1)
-  const [tietoa, setTietoa] = useState(0)
-  const [poistu, setPoistu] = useState(0)
-  const [naytaVastaukset, setNaytaVastaukset] = useState(0)
-  const [aktiivinen, setAktiivinen] = useState(null)
-  const [hallinta, setHallinta] = useState(0)
-
-  const initialData = 
+const initialData = 
   [{
+    uuid: uuid(),
     tentti: "TENTTI A",
     kysymykset: [
       {
+        uuid: uuid(),
         kysymys: "Mitä kuuluu?",
         vaihtoehdot: [
           {
+            uuid: uuid(),
             teksti: "Kiitos hyvää, entä sinulle?",
             valittu: 0,
             korrekti: 1
           },
           {
+            uuid: uuid(),
             teksti: "Siinähän se!",
             valittu: 0,
             korrekti: 0
           },
           {
+            uuid: uuid(),
             teksti: "Mitäs siinä kyselet, hoida omat asias!",
             valittu: 0,
             korrekti: 0
@@ -125,44 +37,53 @@ function App() {
         ]
       },
       {
-        kysymys: "Miten nukuit?",
+        uuid: uuid(),
+        kysymys: "Miten työpäivä meni?",
         vaihtoehdot: [
           {
+            uuid: uuid(),
             teksti: "Kiitos, uni maistui!",
             valittu: 0,
-            korrekti: 1
+            korrekti: 0
           },
           {
-            teksti: "Kiitos, hyvin!",
+            uuid: uuid(),
+            teksti: "Pelastin maailman!",
             valittu: 0,
-            korrekti: 1
+            korrekti: 0
           },
           {
-            teksti: "Kyljelläni!",
+            uuid: uuid(),
+            teksti: "Kuis ittelläs?",
             valittu: 0,
-            korrekti: 1
+            korrekti: 0
           },
           {
-            teksti: "Mikään ylläolevista vaihtoehdoista ei toteutunut.",
+            uuid: uuid(),
+            teksti: "Tein töitä palkkani edestä.",
             valittu: 0,
             korrekti: 1
           }
         ]
       },
       {
+        uuid: uuid(),
         kysymys: "Suomi on?",
         vaihtoehdot: [
           {
+            uuid: uuid(),
             teksti: "Itsenäinen muista riippumaton tasavalta!",
             valittu: 0,
             korrekti: 0
           },
           {
+            uuid: uuid(),
             teksti: "Kuningaskunta!",
             valittu: 0,
             korrekti: 0
           },
           {
+            uuid: uuid(),
             teksti: "Yksi EU:n jäsenvaltioista!",
             valittu: 0,
             korrekti: 1
@@ -172,12 +93,151 @@ function App() {
     ]
   }]
 
+
+function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi jos merkitään vastaukseksi
+
+return <section>
+    {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) =>           // jos hallinta valittu
+      <div key={item.uuid} className="vastaus">
+        <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
+          props.dispatch({ type: "OIKEA_VAIHDETTU", 
+            data: { checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}></input>
+        <input type="text" value={item.teksti} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
+          props.dispatch({ type: "VAIHTOEHTO_NIMETTY", 
+            data: { teksti: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}> 
+        </input> <button className="delButton" onClick={()=>{               // voidaan poistaa vaihtoehto
+            props.dispatch({type: "VAIHTOEHTO_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex }})
+        }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
+      </div>):                                                                // muu kuin hallintatila
+      props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>   // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
+        <div key={item.uuid} className="vastaus">
+          <input type="checkbox" checked={item.valittu} readOnly></input>            
+          <input type="checkbox" checked={item.korrekti} readOnly></input>
+          {item.teksti} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
+      </div>) :
+        props.data.vaihtoehdot.map((item, veIndex) =>                         // tentti menossa (vastaukset poissa)
+          <div key={item.uuid} className="vastaus">
+            <input type="checkbox" checked={item.valittu} onChange={(event) => {  // vaihtoehto voidaan valita vastaukseksi tai poistaa
+              props.dispatch({type: "VASTAUS_VAIHDETTU", 
+                data:{checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex} })}}></input> 
+            {item.teksti}
+        </div>)}
+        {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{  // jos hallintatila, voi lisätä uuden vaihtoehdon
+          props.dispatch({type: "VAIHTOEHTO_LISATTY", 
+            data:{tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex} })}}>+</span></div> : ""}
+  </section>
+}
+
+function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot näyttäämään kysymysten vaihtoehdot
+
+  return <section>
+    {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>     // jos hallinta valittu
+      <div key={item.uuid} className="kysymys">
+        <input type="text" value={item.kysymys} onChange={(event) =>{       // kysymystä voidaan muotoilla
+          props.dispatch({ type: "KYSYMYS_NIMETTY", 
+            data: {kysymys: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex} })}}>
+        </input> <button className="delButton" onClick={()=>{               // kysymys voidaan poistaa
+          props.dispatch({type: "KYSYMYS_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex } })
+        }}><DeleteTwoToneIcon /></button> 
+        <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+          data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta}
+        />
+      </div>):                                                              // tentti menossa
+      props.data.kysymykset.map((item, kysymysIndex) =>
+        <div key={item.uuid} className="kysymys">{item.kysymys}
+        <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+          data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta}
+        />
+    </div>)}
+    {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{  // jos hallintatila, voi lisätä uuden kysymyksen
+      props.dispatch({type: "KYSYMYS_LISATTY", data:{tenttiIndex: props.tenttiIndex}})}}> + </span>
+    </div> : ""}
+    <div>
+      {props.hallinta ? "" : <span className="button" onClick={()=>         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
+        props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span>}
+    </div>
+  </section>
+}
+
+function reducer(state, action) {
+  let syväKopio = JSON.parse(JSON.stringify(state))
+  switch (action.type) {      
+    case "INIT_DATA":
+      return action.data
+    case "TENTTI_NIMETTY":
+      syväKopio[action.data.tenttiIndex].tentti = action.data.newTenttiNimi.toUpperCase();
+      return syväKopio
+    case "TENTTI_POISTETTU":
+      syväKopio.splice(action.data.tenttiIndex,1)
+      return syväKopio
+    case "TENTTI_LISATTY":
+      let uudetTentit = syväKopio.concat(action.data.lisays)
+      syväKopio = uudetTentit
+      return syväKopio  
+    case "KYSYMYS_NIMETTY":
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].kysymys = action.data.kysymys
+      return syväKopio
+    case "KYSYMYS_POISTETTU":
+      if (window.confirm("Poistetaanko kysymys ("+syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].kysymys+") vastausvaihtoehtoineen?")){
+        syväKopio[action.data.tenttiIndex].kysymykset.splice(action.data.kyIndex,1)
+      }
+      return syväKopio
+    case "KYSYMYS_LISATTY":
+      let uusiKysymys = [{
+        uuid: uuid(),
+        kysymys: "",
+        vaihtoehdot: []
+      }]
+      let uudetKysymykset = syväKopio[action.data.tenttiIndex].kysymykset.concat(uusiKysymys)
+      syväKopio[action.data.tenttiIndex].kysymykset = uudetKysymykset
+      return syväKopio
+    case "VAIHTOEHTO_NIMETTY":
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].teksti = action.data.teksti
+      return syväKopio
+    case "VAIHTOEHTO_POISTETTU":
+      if (window.confirm("Poistetaanko vaihtoehto ("+syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].teksti+")?")){
+        syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot.splice(action.data.veIndex,1)
+      }
+      return syväKopio
+    case "VAIHTOEHTO_LISATTY":
+      let uusiVaihtoehto = [{
+        uuid: uuid(),
+        teksti: "",
+        valittu: 0,
+        korrekti: 0
+      }]
+      let uudetVaihtoehdot = syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot.concat(uusiVaihtoehto)
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot = uudetVaihtoehdot
+      return syväKopio
+    case "VASTAUS_VAIHDETTU":
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].valittu = action.data.checked
+      return syväKopio
+    case "OIKEA_VAIHDETTU":
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].korrekti = action.data.checked
+      return syväKopio
+    default:
+      throw new Error();
+  }
+}
+
+function App() {
+
+  const [dataAlustettu, setDataAlustettu] = useState(false)
+  const [state, dispatch] = useReducer(reducer, [])
+  const [tentit, setTentit] = useState(1)
+  const [tietoa, setTietoa] = useState(0)
+  const [poistu, setPoistu] = useState(0)
+  const [naytaVastaukset, setNaytaVastaukset] = useState(0)
+  const [aktiivinen, setAktiivinen] = useState(null)
+  const [hallinta, setHallinta] = useState(0)
+  
+
   useEffect(() => {
 
   const createData = async () => {
     try {
       let result = await Axios.post("http://localhost:3001/tentit",initialData)
-      setData(initialData)
+      dispatch({type: "INIT_DATA", data: initialData})
       setDataAlustettu(true)
     } catch (exception) {
       alert("Tietokannan alustaminen epäonnistui!")
@@ -188,7 +248,7 @@ function App() {
     try {
       let result = await Axios.get("http://localhost:3001/tentit")
       if (result.data.length>0){
-        setData(result.data);
+        dispatch({type: "INIT_DATA", data: result.data})
         setDataAlustettu(true)
       } else {
         throw("Nyt pitää data kyllä alustaa!")
@@ -199,7 +259,7 @@ function App() {
       createData()
     }
   }
-    fetchData()
+    fetchData();
   }, [])
 
   useEffect(() => {
@@ -207,7 +267,7 @@ function App() {
     const updateData = async () => {
 
       try {
-        let result = await Axios.put("http://localhost:3001/tentit",data)
+        let result = await Axios.put("http://localhost:3001/tentit", state)
       } catch (exception) {
         console.log(exception)
       }
@@ -217,105 +277,32 @@ function App() {
       updateData();
     }  
 
-  }, [data])
+  }, [state])
 
   const vaihdaTentti = (index) => {
     setAktiivinen(index)
   }
 
   const lisaaTentti = () => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
     var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
     if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
      let uusiTentti = [{
+        uuid: uuid(),
         tentti: uusiTenttiNimi.toUpperCase(),
         kysymykset: []
      }]
-     var uudetTentit = syväKopio.concat(uusiTentti)
-     setData(uudetTentit)
+     dispatch({type: "TENTTI_LISATTY", data:{lisays: uusiTentti}})
     }
-  }
-
-  const lisaaKysymys = (teIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    let uusiKysymys = [{
-        kysymys: "",
-        vaihtoehdot: []
-     }]
-     var uudetKysymykset = syväKopio[teIndex].kysymykset.concat(uusiKysymys)
-     syväKopio[teIndex].kysymykset = uudetKysymykset 
-     setData(syväKopio)    
-  }
-
-  const lisaaVaihtoehto = (teIndex, kyIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    let uusiVaihtoehto = [{
-        teksti: "",
-        valittu: 0,
-        korrekti: 0
-     }]
-     var uudetVaihtoehdot = syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot.concat(uusiVaihtoehto)
-     syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot = uudetVaihtoehdot 
-     setData(syväKopio)
-
-  }
-
-  const muutaTenttiNimi = (event,index) => {
-    let syväKopio = JSON.parse(JSON.stringify(data)) 
-    syväKopio[index].tentti = event.target.value.toUpperCase()
-    setData(syväKopio) 
   }
 
   const poistaTentti = (index) => {
     let paluu = null
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    if (window.confirm("Poistetaanko tentti ("+syväKopio[index].tentti+") kysymyksineen?")){
-      syväKopio.splice(index,1)
-      setData(syväKopio)    
+    if (window.confirm("Poistetaanko tentti ("+state[index].tentti+") kysymyksineen?")){
+      dispatch({type: "TENTTI_POISTETTU", data:{ tenttiIndex: index} })
     } else {
       paluu = index   // tenttiä ei poistettu, palautetaan tentin indeksi
     }
     return paluu      // tentti poistettu, palautetaan null (=siirrytään tenttivalikkoon)
-  }
-
-  const muutaKysymys = (event, props, kyIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio[props.tenttiIndex].kysymykset[kyIndex].kysymys = event.target.value
-    setData(syväKopio) 
-  }
-
-  const poistaKysymys = (teIndex,kyIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    if (window.confirm("Poistetaanko kysymys ("+syväKopio[teIndex].kysymykset[kyIndex].kysymys+") vastausvaihtoehtoineen?")){
-      syväKopio[teIndex].kysymykset.splice(kyIndex,1)
-      setData(syväKopio)
-    }
-  }
-
-  const poistaVaihtoehto = (teIndex,kyIndex,veIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    if (window.confirm("Poistetaanko vaihtoehto ("+syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot[veIndex].teksti+")?")){
-      syväKopio[teIndex].kysymykset[kyIndex].vaihtoehdot.splice(veIndex,1)
-      setData(syväKopio)
-    }
-  }
-
-  const vastausVaihtui = (event,props,veIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio[props.tenttiIndex].kysymykset[props.kysymysIndex].vaihtoehdot[veIndex].valittu = event.target.checked
-    setData(syväKopio)
-  }
-  
-  const oikeaVaihtui = (event,props,veIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio[props.tenttiIndex].kysymykset[props.kysymysIndex].vaihtoehdot[veIndex].korrekti = event.target.checked
-    setData(syväKopio) 
-  }
-
-  const muutaVaihtoehto = (event,props,veIndex) => {
-    let syväKopio = JSON.parse(JSON.stringify(data))
-    syväKopio[props.tenttiIndex].kysymykset[props.kysymysIndex].vaihtoehdot[veIndex].teksti = event.target.value
-    setData(syväKopio) 
   }
 
   return (
@@ -330,20 +317,20 @@ function App() {
         tentit ?
           <div className="grid-item">
             <nav className="tenttivalikko">
-              {aktiivinen==null ? data.map((item,index) => <span className="t-nav-item" key={index} onClick={()=>{
+              {aktiivinen==null ? state.map((item,index) => <span className="t-nav-item" key={item.uuid} onClick={()=>{
                 vaihdaTentti(index); setNaytaVastaukset(0)}}>{item.tentti}</span>) : 
-                  hallinta && aktiivinen!=null ? <span><input type="text" value={data[aktiivinen].tentti} onChange={(event) =>{
-                    muutaTenttiNimi(event,aktiivinen) }}></input> <button className="delButton" onClick={()=>{
-                      setAktiivinen(poistaTentti(aktiivinen))}}><DeleteTwoToneIcon /></button>  
-                    </span> : 
-                    data[aktiivinen].tentti}
-              {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{lisaaTentti()}}> + </span> : ""}
+                  hallinta && aktiivinen!=null ? <span><input type="text" value={state[aktiivinen].tentti} onChange={(event) =>{
+                    dispatch({type:"TENTTI_NIMETTY", data:{newTenttiNimi: event.target.value, tenttiIndex: aktiivinen}}) }}></input> <button className="delButton" onClick={()=>{
+                    setAktiivinen(poistaTentti(aktiivinen))}}><DeleteTwoToneIcon /></button>  
+                  </span> : 
+                    state[aktiivinen].tentti}
+              {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{
+                lisaaTentti()}}> + </span> : ""}
             </nav>
           </div> : tietoa ? <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
-              {(aktiivinen!=null && !poistu && !tietoa) ? <Tentti vastausVaihtui={vastausVaihtui} data={data[aktiivinen]} tenttiIndex={aktiivinen}
-               naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} 
-               muutaKysymys={muutaKysymys} poistaKysymys={poistaKysymys} lisaaKysymys={lisaaKysymys} muutaVaihtoehto={muutaVaihtoehto} 
-               oikeaVaihtui={oikeaVaihtui} poistaVaihtoehto={poistaVaihtoehto} lisaaVaihtoehto={lisaaVaihtoehto} /> : ""}
+              {(aktiivinen!=null && !poistu && !tietoa) ? 
+              <Kysymykset dispatch={dispatch} data={state[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} 
+              /> : ""}
     </div>
   )
 }
