@@ -1,57 +1,57 @@
 {
   "tentit": [
     {
-      "uuid": "adfaa70-a8bb-8ef2-6adf-710c17fd677",
+      "uuid": "32cce42-31c4-c1a1-7e46-365abd4855da",
       "tentti": "TENTTI A",
       "kysymykset": [
         {
-          "uuid": "4b5c1c-1005-1732-0454-108d8c8d263f",
+          "uuid": "5d417-eb02-4af7-0d45-25f03df5ea0",
           "kysymys": "Mitä kuuluu?",
           "vaihtoehdot": [
             {
-              "uuid": "cb58d26-7773-e2f-a16d-05602afc8aa",
+              "uuid": "745671-f3d7-bea6-add7-273e7d64f83",
               "teksti": "Kiitos hyvää, entä sinulle?",
               "valittu": 0,
               "korrekti": 1
             },
             {
-              "uuid": "bc1837d-ef6-456-2b7d-4df124387aac",
+              "uuid": "c18181-4bf6-e63-e33-cfb61cd36b5a",
               "teksti": "Siinähän se!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "34242-e61f-4f33-8bc-bfe0003dcbd1",
+              "uuid": "560efc7-76ba-f3b6-7d10-e53fb7fac1e",
               "teksti": "Mitäs siinä kyselet, hoida omat asias!",
-              "valittu": 0,
+              "valittu": true,
               "korrekti": 0
             }
           ]
         },
         {
-          "uuid": "bd8ac6d-f8f-3fe-265e-8b3da22a3c8",
+          "uuid": "6205a8f-80eb-e05-2014-66f60f8b184",
           "kysymys": "Miten työpäivä meni?",
           "vaihtoehdot": [
             {
-              "uuid": "d46430-dcef-e4-a57-acf3b18ff3",
+              "uuid": "07c0afb-cce5-b2a4-af43-fa2c6202838",
               "teksti": "Kiitos, uni maistui!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "5ee1814-68f0-24ee-71b7-8f3723ba4a",
+              "uuid": "6711fa-043-7120-c7e-da44f0f665",
               "teksti": "Pelastin maailman!",
-              "valittu": 0,
+              "valittu": true,
               "korrekti": 0
             },
             {
-              "uuid": "8d1b22-b641-4ec2-f50-c125d25553",
+              "uuid": "fa28cc2-c43a-8df1-eccd-b14c40ccf15",
               "teksti": "Kuis ittelläs?",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "1a422e-b47b-c772-e076-a6f4be0acc",
+              "uuid": "0e5cab1-e2c8-c65e-566-17d2d0a0d11",
               "teksti": "Tein töitä palkkani edestä.",
               "valittu": 0,
               "korrekti": 1
@@ -59,28 +59,63 @@
           ]
         },
         {
-          "uuid": "8eb4b88-df65-0218-b404-bf6c4ba30f4",
+          "uuid": "54ee5c8-8b85-53e-a4a4-065041727178",
           "kysymys": "Suomi on?",
           "vaihtoehdot": [
             {
-              "uuid": "6217d6f-66cc-fc53-655-5f67aa2bee4a",
+              "uuid": "f2342f7-cacc-d4c-27ab-2e7f8c1f7ec",
               "teksti": "Itsenäinen muista riippumaton tasavalta!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "bf08c0f-3d46-42fd-6c1-d41260e0fecd",
+              "uuid": "e841bfb-25b-2b18-8104-25cf7511314",
               "teksti": "Kuningaskunta!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "d531552-5325-a3d6-81-fb3d8827501c",
+              "uuid": "25cf6df-4315-64bf-5a1b-85e4d486205",
               "teksti": "Yksi EU:n jäsenvaltioista!",
-              "valittu": 0,
+              "valittu": true,
               "korrekti": 1
             }
           ]
+        }
+      ]
+    },
+    {
+      "uuid": "3fea6dc-d705-7f77-551-72a205bb2704",
+      "tentti": "TENTTI B",
+      "kysymykset": [
+        {
+          "uuid": "eedc265-af4f-de06-b6b-f3aca7ae00b",
+          "kysymys": "Mikä maksaa?",
+          "vaihtoehdot": [
+            {
+              "uuid": "5e536c-e74b-b41-3bca-da2742d18c07",
+              "teksti": "Buginen koodi",
+              "valittu": 0,
+              "korrekti": true
+            },
+            {
+              "uuid": "e2406d8-c848-ebbb-a0a6-70127066dd88",
+              "teksti": "Elämä",
+              "valittu": 0,
+              "korrekti": true
+            },
+            {
+              "uuid": "7500088-7818-764c-e8d-8ab44e28d32f",
+              "teksti": "Vilkas mielikuvitus",
+              "valittu": 0,
+              "korrekti": 0
+            }
+          ]
+        },
+        {
+          "uuid": "6b1fa5b-3a14-812b-ce64-66fe3443f53",
+          "kysymys": "",
+          "vaihtoehdot": []
         }
       ]
     }

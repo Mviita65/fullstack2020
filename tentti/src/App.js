@@ -106,7 +106,9 @@ return <section>
           props.dispatch({ type: "VAIHTOEHTO_NIMETTY", 
             data: { teksti: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}> 
         </input> <button className="delButton" onClick={()=>{               // voidaan poistaa vaihtoehto
+          if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].teksti+")?")){
             props.dispatch({type: "VAIHTOEHTO_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex }})
+          }
         }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>):                                                                // muu kuin hallintatila
       props.naytaVastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>   // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
@@ -137,7 +139,9 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
           props.dispatch({ type: "KYSYMYS_NIMETTY", 
             data: {kysymys: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex} })}}>
         </input> <button className="delButton" onClick={()=>{               // kysymys voidaan poistaa
-          props.dispatch({type: "KYSYMYS_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex } })
+          if (window.confirm("Poistetaanko kysymys ("+props.data.kysymykset[kysymysIndex].kysymys+") vastausvaihtoehtoineen?")){          
+            props.dispatch({type: "KYSYMYS_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex } })
+          }
         }}><DeleteTwoToneIcon /></button> 
         <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
           data={props.data.kysymykset[kysymysIndex]} naytaVastaukset={props.naytaVastaukset} setNaytaVastaukset={props.setNaytaVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta}
@@ -158,7 +162,7 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
     </div>
   </section>
 }
-
+//UI-softan tilahallinta tänne
 function reducer(state, action) {
   let syväKopio = JSON.parse(JSON.stringify(state))
   switch (action.type) {      
@@ -178,9 +182,7 @@ function reducer(state, action) {
       syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].kysymys = action.data.kysymys
       return syväKopio
     case "KYSYMYS_POISTETTU":
-      if (window.confirm("Poistetaanko kysymys ("+syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].kysymys+") vastausvaihtoehtoineen?")){
-        syväKopio[action.data.tenttiIndex].kysymykset.splice(action.data.kyIndex,1)
-      }
+      syväKopio[action.data.tenttiIndex].kysymykset.splice(action.data.kyIndex,1)
       return syväKopio
     case "KYSYMYS_LISATTY":
       let uusiKysymys = [{
@@ -195,9 +197,7 @@ function reducer(state, action) {
       syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].teksti = action.data.teksti
       return syväKopio
     case "VAIHTOEHTO_POISTETTU":
-      if (window.confirm("Poistetaanko vaihtoehto ("+syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].teksti+")?")){
-        syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot.splice(action.data.veIndex,1)
-      }
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot.splice(action.data.veIndex,1)
       return syväKopio
     case "VAIHTOEHTO_LISATTY":
       let uusiVaihtoehto = [{
