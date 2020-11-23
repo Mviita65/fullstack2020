@@ -6,6 +6,7 @@ import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
 import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios';
 import uuid from 'react-uuid';
+import BarExample from './components/chart.js';
 
 const initialData = 
   [{
@@ -130,7 +131,7 @@ return <section>
   </section>
 }
 
-function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot näyttäämään kysymysten vaihtoehdot
+function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot näyttämään kysymysten vaihtoehdot
 
   return <section>
     {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>     // jos hallinta valittu
@@ -157,8 +158,9 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
       props.dispatch({type: "KYSYMYS_LISATTY", data:{tenttiIndex: props.tenttiIndex}})}}> + </span>
     </div> : ""}
     <div>
-      {props.hallinta ? "" : <span className="button" onClick={()=>         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
-        props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span>}
+      {props.hallinta ? "" : <div><span className="button" onClick={()=>         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
+        props.setNaytaVastaukset(!props.naytaVastaukset)}>Vastaukset</span> <span className="button" onClick={()=>{         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
+          props.setNaytaKaaviot(true)}}>Kaaviot</span></div> }
     </div>
   </section>
 }
@@ -230,7 +232,8 @@ function App() {
   const [naytaVastaukset, setNaytaVastaukset] = useState(0)
   const [aktiivinen, setAktiivinen] = useState(null)
   const [hallinta, setHallinta] = useState(0)
-  
+  const [naytaKaaviot, setNaytaKaaviot] = useState(false)
+
 
   useEffect(() => {
 
@@ -297,6 +300,7 @@ function App() {
 
   const poistaTentti = (index) => {
     let paluu = null
+
     if (window.confirm("Poistetaanko tentti ("+state[index].tentti+") kysymyksineen?")){
       dispatch({type: "TENTTI_POISTETTU", data:{ tenttiIndex: index} })
     } else {
@@ -321,16 +325,17 @@ function App() {
                 vaihdaTentti(index); setNaytaVastaukset(0)}}>{item.tentti}</span>) : 
                   hallinta && aktiivinen!=null ? <span><input type="text" value={state[aktiivinen].tentti} onChange={(event) =>{
                     dispatch({type:"TENTTI_NIMETTY", data:{newTenttiNimi: event.target.value, tenttiIndex: aktiivinen}}) }}></input> <button className="delButton" onClick={()=>{
-                    setAktiivinen(poistaTentti(aktiivinen))}}><DeleteTwoToneIcon /></button>  
+                     setAktiivinen(poistaTentti(aktiivinen))
+                    }}><DeleteTwoToneIcon /></button> 
                   </span> : 
                     state[aktiivinen].tentti}
               {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{
                 lisaaTentti()}}> + </span> : ""}
             </nav>
           </div> : tietoa ? <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
-              {(aktiivinen!=null && !poistu && !tietoa) ? 
-              <Kysymykset dispatch={dispatch} data={state[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} 
-              /> : ""}
+              {(aktiivinen!=null && !poistu && !tietoa && !naytaKaaviot) ? 
+              <Kysymykset dispatch={dispatch} data={state[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} naytaKaaviot={naytaKaaviot} setNaytaKaaviot={setNaytaKaaviot}
+              /> : (naytaKaaviot) ? <section><BarExample naytaKaaviot={naytaKaaviot} setNaytaKaaviot={setNaytaKaaviot} otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[10,22,10,10]} /></section>: ""}
     </div>
   )
 }
