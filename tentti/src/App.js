@@ -7,6 +7,7 @@ import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios';
 import uuid from 'react-uuid';
 import BarExample from './components/chart.js';
+import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 
 const initialData = 
   [{
@@ -335,7 +336,9 @@ function App() {
           </div> : tietoa ? <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
               {(aktiivinen!=null && !poistu && !tietoa && !naytaKaaviot) ? 
               <Kysymykset dispatch={dispatch} data={state[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} naytaKaaviot={naytaKaaviot} setNaytaKaaviot={setNaytaKaaviot}
-              /> : (naytaKaaviot) ? <section><BarExample naytaKaaviot={naytaKaaviot} setNaytaKaaviot={setNaytaKaaviot} otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[10,22,10,10]} /></section>: ""}
+              /> : (naytaKaaviot) ? <section><BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={1}/><BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={2}/>
+              <span className="button" onClick={()=>{
+                setNaytaKaaviot(false)}}>Paluu</span></section>: ""}
     </div>
   )
 }

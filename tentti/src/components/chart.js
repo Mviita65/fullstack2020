@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 
-const BarExample = ({naytaKaaviot,setNaytaKaaviot,otsikot,tiedot}) => {
+const BarExample = ({otsikot,tiedot,tyyppi,valinta}) => {
     // set data
     const [barData, setBarData] = useState({
         // labels: ['label 1', 'label 2', 'label 3', 'label 4'],
@@ -51,15 +51,20 @@ const BarExample = ({naytaKaaviot,setNaytaKaaviot,otsikot,tiedot}) => {
         }
     });
 
+    
     // return JSX
     return (
       <div className="BarExample">
-        Pistejakauma aihealueittain <br></br>
-        <Doughnut
+        {tyyppi} <br></br>
+        {(valinta===1) ? 
+            <Doughnut
             data={barData}
-            options={barOptions} />
-        <span className="button" onClick={()=>{
-            setNaytaKaaviot(false)}}>Paluu</span>
+            options={barOptions} />: 
+        (valinta===2) ?
+            <Bar
+            data={barData}
+            options={barOptions} />: 
+        ""}
       </div>
 );
 }
