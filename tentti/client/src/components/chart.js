@@ -54,7 +54,7 @@ const BarExample = ({otsikot,tiedot,tyyppi,valinta}) => {
     
     // return JSX
     return (
-      <div className="BarExample">
+       <div className="BarExample">
         {tyyppi} <br></br>
         {(valinta===1) ? 
             <Doughnut

@@ -121,3 +121,8 @@ img {
 input[type=text] {
   width: 270px;
 }
+
+.charts {
+  max-width: 600px;
+  max-height: 1200px;
+}

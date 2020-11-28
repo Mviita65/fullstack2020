@@ -240,7 +240,7 @@ function App() {
 
   const createData = async () => {
     try {
-      let result = await Axios.post("http://localhost:3001/tentit",initialData)
+      let result = await Axios.post("http://localhost:3001/tentit/",initialData)
       dispatch({type: "INIT_DATA", data: initialData})
       setDataAlustettu(true)
     } catch (exception) {
@@ -250,7 +250,7 @@ function App() {
 
   const fetchData = async () => {
     try {
-      let result = await Axios.get("http://localhost:3001/tentit")
+      let result = await Axios.get("http://localhost:3001/tentit/")
       if (result.data.length>0){
         dispatch({type: "INIT_DATA", data: result.data})
         setDataAlustettu(true)
@@ -271,7 +271,7 @@ function App() {
     const updateData = async () => {
 
       try {
-        let result = await Axios.put("http://localhost:3001/tentit", state)
+        let result = await Axios.put("http://localhost:3001/tentti", state)
       } catch (exception) {
         console.log(exception)
       }
@@ -336,7 +336,7 @@ function App() {
           </div> : tietoa ? <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
               {(aktiivinen!=null && !poistu && !tietoa && !naytaKaaviot) ? 
               <Kysymykset dispatch={dispatch} data={state[aktiivinen]} tenttiIndex={aktiivinen} naytaVastaukset={naytaVastaukset} setNaytaVastaukset={setNaytaVastaukset} hallinta={hallinta} setHallinta={setHallinta} naytaKaaviot={naytaKaaviot} setNaytaKaaviot={setNaytaKaaviot}
-              /> : (naytaKaaviot) ? <section><BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={1}/><BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={2}/>
+              /> : (naytaKaaviot) ? <section className="charts"><BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={1}/><BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={2}/>
               <span className="button" onClick={()=>{
                 setNaytaKaaviot(false)}}>Paluu</span></section>: ""}
     </div>
