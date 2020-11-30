@@ -62,12 +62,40 @@ app.get('/kayttaja/:id/kysymys/:id2', (req, res, next) => {
 // lisätään uusi kurssi
 app.post('/', (req, res, next) => {
   const body = req.body
-  if (!body){
+  console.log(body.kurssi)
+  if (body.kurssi==undefined){
     return res.status(400).json({
       error: 'Tallennettava tieto puuttuu!'
     })
-  }
-  db.query('INSERT INTO kurssi VALUES $body',(err,result) => {
+  } else {
+  db.query('INSERT INTO kurssi(kurssi,aloituspvm) VALUES($1,$2) RETURNING kurssiid',[body.kurssi,body.aloituspvm],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })}
+})
+
+// muutetaan kurssi
+app.put('/:id', (req, res, next) => {
+  const body = req.body
+  console.log(body)
+  if (body.kurssi == undefined || body.aloituspvm == undefined){  // tietoa ei välitetty
+    return res.status(400).json({
+      error: 'Muutettava tieto puuttuu!'
+    })
+  } else {
+    db.query('UPDATE kurssi SET kurssi=$1,aloituspvm=$2 WHERE kurssiid=$3',[body.kurssi,body.aloituspvm,req.params.id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// poistetaan kurssi
+app.delete('/:id', (req, res, next) => {
+  db.query('DELETE FROM kurssi WHERE kurssiid=$1',[req.params.id],(err,result) => {
     if (err) {
       return next(err)
     }
@@ -75,18 +103,16 @@ app.post('/', (req, res, next) => {
   })
 })
 
-app.post('/', (req, res) => {
-    res.send('Hello World! POST')
-  })
+// app.post('/', (req, res) => {
+//     res.send('Hello World! POST')
+//   })
 
-app.put('/', (req, res) => {
-    res.send('Hello World! PUT')
-  })
-  
-app.delete('/', (req, res) => {
-      res.send('Hello World! DELETE')
-    })
-      
+// app.put('/', (req, res) => {
+//     res.send('Hello World! PUT')
+//   })
+
+// --------------------------Älä kommentoi pois ------------------------------------------------------
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })

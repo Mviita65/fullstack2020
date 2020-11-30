@@ -1,83 +1,83 @@
 {
   "tentit": [
     {
-      "uuid": "2d0e57c-7ebd-8d7-fae7-b2cc105027cb",
+      "uuid": "bf57f-ac13-a38a-05cd-a35a7fa17f0c",
       "tentti": "TENTTI A",
       "kysymykset": [
         {
-          "uuid": "fb71d13-e1d4-1c43-bd2f-f1d24057ac4e",
+          "uuid": "7a0316b-1af0-4b61-387a-e7cf503b05",
           "kysymys": "Mitä kuuluu?",
           "vaihtoehdot": [
             {
-              "uuid": "eaa5705-2b0-a463-23e-1d7ddc0fdf",
+              "uuid": "f0843d-44a5-622d-d6af-804f23c61e14",
               "teksti": "Kiitos hyvää, entä sinulle?",
               "valittu": 0,
               "korrekti": 1
             },
             {
-              "uuid": "6e227d2-380-8583-a850-2df0a2a8a2f",
+              "uuid": "c3ff614-f8a-2cc7-e6de-c8dac78e7c",
               "teksti": "Siinähän se!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "c3e66ae-ce3d-50ac-262e-251f340ff01a",
+              "uuid": "75368b-8221-412f-f831-c80d5cc0cfca",
               "teksti": "Mitäs siinä kyselet, hoida omat asias!",
-              "valittu": 0,
+              "valittu": true,
               "korrekti": 0
             }
           ]
         },
         {
-          "uuid": "fc36ba-6ef1-aa43-3431-420a3f485b4",
+          "uuid": "60d6cd1-e70d-ed2-d750-eb0840a70d",
           "kysymys": "Miten työpäivä meni?",
           "vaihtoehdot": [
             {
-              "uuid": "1caabc-4c8d-2714-7d30-efa2adfe1e42",
+              "uuid": "3dcc6a0-b6bd-fe4-a2b3-5cede36c03a8",
               "teksti": "Kiitos, uni maistui!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "afcaab6-0352-adf6-28c1-456cd7401a8d",
+              "uuid": "3c2e757-2384-1786-c384-8dd66055ed6b",
               "teksti": "Pelastin maailman!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "32c363f-ffb6-0aa-0e77-0f316baf26",
+              "uuid": "5032180-e64-fb1f-5dc5-1b6be163",
               "teksti": "Kuis ittelläs?",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "7ad22d0-ed46-0375-cca4-10225c50055",
+              "uuid": "6d53160-ad5-38b1-ab7d-374c0bd773",
               "teksti": "Tein töitä palkkani edestä.",
-              "valittu": 0,
+              "valittu": true,
               "korrekti": 1
             }
           ]
         },
         {
-          "uuid": "7cdafe-5be8-4a11-5c7b-a7d6d1747d55",
+          "uuid": "2a4ee6-4446-687a-b3af-c703da3a848",
           "kysymys": "Suomi on?",
           "vaihtoehdot": [
             {
-              "uuid": "e44657-71f-1117-1a76-fa05cafcf7",
+              "uuid": "8d137a0-6627-b3-5ace-7651a2642551",
               "teksti": "Itsenäinen muista riippumaton tasavalta!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "ac17121-0c26-28f-b1a-1fee514a2e2e",
+              "uuid": "a14ce4a-f60-2fba-4f48-d34d500e5e",
               "teksti": "Kuningaskunta!",
               "valittu": 0,
               "korrekti": 0
             },
             {
-              "uuid": "8cfe07-1ef8-3c67-d6f-f288ba86201",
+              "uuid": "06dab63-e861-238a-c6d-f63dc5b76a",
               "teksti": "Yksi EU:n jäsenvaltioista!",
-              "valittu": 0,
+              "valittu": true,
               "korrekti": 1
             }
           ]

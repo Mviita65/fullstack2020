@@ -56,11 +56,11 @@ const BarExample = ({otsikot,tiedot,tyyppi,valinta}) => {
     return (
        <div className="BarExample">
         {tyyppi} <br></br>
-        {(valinta===1) ? 
+        {(valinta==="Doughnut") ? 
             <Doughnut
             data={barData}
             options={barOptions} />: 
-        (valinta===2) ?
+        (valinta==="Bar") ?
             <Bar
             data={barData}
             options={barOptions} />: 
