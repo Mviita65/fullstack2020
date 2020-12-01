@@ -9,8 +9,31 @@ const port = 4000
 const db = require('./db')
 const { response } = require('express')
 
-// kurssit
-app.get('/', (req, res, next) => {
+//------------------------------------------- HAUT ------------------------------------------------------------------------
+
+// haetaan käyttäjät
+app.get('/kayttaja', (req, res, next) => {
+  db.query('SELECT * FROM kayttaja', (err, result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// haetaan kurssin ylläpitäjä
+app.get('/kurssikasittelija/:id', (req, res, next) => {
+  db.query('SELECT kkasittelija_kayttaja_id FROM kurssikasittelija WHERE kkasittelija_kurssi_id = $1',[req.params.id], (err, result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+
+// haetaan kurssit
+app.get('/kurssi', (req, res, next) => {
   db.query('SELECT * FROM kurssi', (err, result) => {
     if (err) {
       return next(err)
@@ -19,7 +42,7 @@ app.get('/', (req, res, next) => {
   })
 })
 
-// kurssin tentit = tenttivalikko
+// haetaan kurssin tentit = tenttivalikko
 app.get('/kurssi/:id', (req, res, next) => {
   db.query('SELECT * FROM tentti WHERE tenttiid IN (SELECT kurssi_tentti_id FROM kurssitentti WHERE kurssi_kurssi_id = $1)', [req.params.id], (err, result) => {
     if (err) {
@@ -29,9 +52,9 @@ app.get('/kurssi/:id', (req, res, next) => {
   })
 })
 
-// tentin kaikki kysymykset
-app.get('/tentti/:id', (req, res, next) => {
-  db.query('SELECT kysymys,kysymysid FROM kysymys WHERE kysymysid IN (SELECT tkysymys_kysymys_id FROM tenttikysymys WHERE tkysymys_tentti_id = $1)', [req.params.id], (err, result) => {
+// haetaan tentin käsittelijät (sekä oppilaat että opettajat, oppilailla on tallennettu tenttialoituspvm)
+app.get('/tenttikasittelija/:id', (req, res, next) => {
+  db.query('SELECT * FROM tenttikasittelija WHERE tkasittelija_tentti_id = $1', [req.params.id], (err, result) => {
     if (err) {
       return next(err)
     }
@@ -39,9 +62,10 @@ app.get('/tentti/:id', (req, res, next) => {
   })
 })
 
-// yhden kysymyksen vaihtoehdot
-app.get('/kysymys/:id', (req, res, next) => {
-  db.query('SELECT vaihtoehto, valinta, vaihtoehto_kysymys_id FROM vaihtoehto WHERE vaihtoehto_kysymys_id IN (SELECT tkysymys_kysymys_id FROM tenttikysymys WHERE tkysymys_kysymys_id = $1)', [req.params.id], (err, result) => {
+
+// haetaan aihealueet
+app.get('/aihe', (req, res, next) => {
+  db.query('SELECT * FROM aihe', (err, result) => {
     if (err) {
       return next(err)
     }
@@ -49,20 +73,77 @@ app.get('/kysymys/:id', (req, res, next) => {
   })
 })
 
-// oppilaan true vastaus/vastaukset kysymykseen
+// haetaan kaikki kysymykset
+app.get('/kysymys', (req, res, next) => {
+  db.query('SELECT * FROM kysymys', (err, result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// haetaan aihealueen kysymykset
+app.get('/kysymys/aihe/:id', (req, res, next) => {
+  db.query('SELECT * FROM kysymys WHERE kysymys_aihe_id=$1', [req.params.id],(err, result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// haetaan tentin kaikki kysymykset (kysymys tenttikysymyksissä)
+app.get('/kysymys/tentti/:id', (req, res, next) => {
+  db.query('SELECT * FROM kysymys WHERE kysymysid IN (SELECT tkysymys_kysymys_id FROM tenttikysymys WHERE tkysymys_tentti_id = $1)', [req.params.id], (err, result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// haetaan yhden kysymyksen vaihtoehdot (ei vaadita valintaa tenttikysymyksissä)
+app.get('/vaihtoehto/kysymys/:id', (req, res, next) => {
+  db.query('SELECT * FROM vaihtoehto WHERE vaihtoehto_kysymys_id = $1', [req.params.id], (err, result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// haetaan oppilaan true vastaus/vastaukset kysymykseen
 app.get('/kayttaja/:id/kysymys/:id2', (req, res, next) => {
-  db.query('SELECT vastaus,vastaus_vaihtoehto_id,vastaus_kayttaja_id FROM vastaus WHERE vastaus_kayttaja_id = $1 AND vastaus_vaihtoehto_id IN (SELECT vaihtoehtoid FROM vaihtoehto WHERE vaihtoehto_kysymys_id = $2)', [req.params.id,req.params.id2],(err, result) => {
+  db.query('SELECT * FROM vastaus WHERE vastaus_kayttaja_id = $1 AND vastaus_vaihtoehto_id IN (SELECT vaihtoehtoid FROM vaihtoehto WHERE vaihtoehto_kysymys_id = $2)', [req.params.id,req.params.id2],(err, result) => {
     if (err) {
       return next(err)
     }
     res.send(result.rows)
   })
+})
+
+//------------------------------------------- LISÄYKSET ------------------------------------------------------------------------
+
+// lisätään käyttäjä
+app.post('/kayttaja', (req, res, next) => {
+  const body = req.body
+  if (body.sukunimi==undefined){
+    return res.status(400).json({
+      error: 'Tallennettava tieto puuttuu!'
+    })
+  } else {
+  db.query('INSERT INTO kayttaja(etunimi,sukunimi,sahkoposti,salasana,rooli) VALUES($1,$2,$3,$4,$5) RETURNING kayttajaid',[body.etunimi,body.sukunimi,body.sahkoposti,body.salasana,body.rooli],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })}
 })
 
 // lisätään uusi kurssi
-app.post('/', (req, res, next) => {
+app.post('/kurssi', (req, res, next) => {
   const body = req.body
-  console.log(body.kurssi)
   if (body.kurssi==undefined){
     return res.status(400).json({
       error: 'Tallennettava tieto puuttuu!'
@@ -76,10 +157,157 @@ app.post('/', (req, res, next) => {
   })}
 })
 
-// muutetaan kurssi
-app.put('/:id', (req, res, next) => {
+// lisätään kurssikäsittelijä
+app.post('/kurssikasittelija',(req,res,next) => {
   const body = req.body
-  console.log(body)
+  if (body.kkasittelija_kurssi_id==undefined){
+    return res.status(400).json({
+      error: 'Tarvittava kurssitieto puuttuu!'
+    })
+  } else {
+    db.query('INSERT INTO kurssikasittelija (kkasittelija_kayttaja_id,kkasittelija_kurssi_id) VALUES($1,$2)',[body.kkasittelija_kayttaja_id,body.kkasittelija_kurssi_id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// lisätään uusi tentti
+app.post('/tentti', (req, res, next) => {
+  const body = req.body
+  if (body.tentti==undefined){
+    return res.status(400).json({
+      error: 'Tallennettava tieto puuttuu!'
+    })
+  } else {
+  db.query('INSERT INTO tentti(tentti) VALUES($1) RETURNING tenttiid',[body.tentti],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })}
+})
+
+// lisätään tenttikäsittelijä
+app.post('/tenttikasittelija',(req,res,next) => {
+  const body = req.body
+  if (body.tkasittelija_tentti_id==undefined){
+    return res.status(400).json({
+      error: 'Tarvittava tenttitieto puuttuu!'
+    })
+  } else {
+    db.query('INSERT INTO tenttikasittelija (tkasittelija_kayttaja_id,tkasittelija_tentti_id,pistemaara,tenttialoituspvm) VALUES($1,$2,$3,$4)',[body.tkasittelija_kayttaja_id,body.tkasittelija_tentti_id,body.pistemaara,body.tenttialoituspvm],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// lisätään tentti kurssille
+app.post('/kurssitentti', (req,res,next)=>{
+  const body = req.body
+  if (body.kurssi_kurssi_id==undefined){
+    return res.status(400).json({
+      error: 'Tarvittava kurssitieto puuttuu!'
+    })
+  } else {
+    db.query('INSERT INTO kurssitentti(kurssi_kurssi_id,kurssi_tentti_id) VALUES($1,$2)',[body.kurssi_kurssi_id,body.kurssi_tentti_id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// lisätään uusi kysymys
+app.post('/kysymys', (req, res, next) => {
+  const body = req.body
+  if (body.kysymys==undefined){
+    return res.status(400).json({
+      error: 'Tallennettava tieto puuttuu!'
+    })
+  } else {
+  db.query('INSERT INTO kysymys(kysymys,kysymys_aihe_id) VALUES($1,$2) RETURNING kysymysid',[body.kysymys,body.kysymys_aihe_id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })}
+})
+
+// lisätään kysymys tentille
+app.post('/tenttikysymys', (req,res,next)=>{
+  const body = req.body
+  if (body.tkysymys_tentti_id==undefined){
+    return res.status(400).json({
+      error: 'Tarvittava tenttitieto puuttuu!'
+    })
+  } else {
+    db.query('INSERT INTO tenttikysymys(tkysymys_kysymys_id,tkysymys_tentti_id) VALUES($1,$2)',[body.tkysymys_kysymys_id,body.tkysymys_tentti_id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+
+// lisätään uusi vaihtoehto kysymykselle
+app.post('/vaihtoehto/kysymys/:id', (req, res, next) => {
+  const body = req.body
+  body.vaihtoehto_kysymys_id = BigInt(req.params.id)
+  if (body.vaihtoehto==undefined){
+    return res.status(400).json({
+      error: 'Tallennettava tieto puuttuu!'
+    })
+  } else {
+  db.query('INSERT INTO vaihtoehto(vaihtoehto,valinta,vaihtoehto_kysymys_id) VALUES($1,$2,$3) RETURNING vaihtoehtoid',[body.vaihtoehto,body.valinta,body.vaihtoehto_kysymys_id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })}
+})
+
+// lisätään vastaus
+app.post('/vastaus', (req, res, next) => {
+  const body = req.body
+  if (body.vastaus==undefined){
+    return res.status(400).json({
+      error: 'Tallennettava tieto puuttuu!'
+    })
+  } else {
+  db.query('INSERT INTO vastaus(vastaus,vastauspvm,vastaus_vaihtoehto_id,vastaus_kayttaja_id) VALUES($1,$2,$3,$4) RETURNING vastausid',[body.vastaus,body.vastauspvm,body.vastaus_vaihtoehto_id,body.vastaus_kayttaja_id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })}
+})
+
+//------------------------------------------- MUUTOKSET ------------------------------------------------------------------------
+
+// muutetaan käyttäjä
+app.put('/kayttaja/:id', (req, res, next) => {
+  const body = req.body
+  if (body.sukunimi == undefined){  // tietoa ei välitetty
+    return res.status(400).json({
+      error: 'Muutettava tieto puuttuu!'
+    })
+  } else {
+    db.query('UPDATE kayttaja SET etunimi=$1,sukunimi=$2,sahkoposti=$3,salasana=$4,rooli=$5 WHERE kayttajaid=$6',[body.etunimi,body.sukunimi,body.sahkoposti,body.salasana,body.rooli,req.params.id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// muutetaan kurssi
+app.put('/kurssi/:id', (req, res, next) => {
+  const body = req.body
   if (body.kurssi == undefined || body.aloituspvm == undefined){  // tietoa ei välitetty
     return res.status(400).json({
       error: 'Muutettava tieto puuttuu!'
@@ -93,8 +321,75 @@ app.put('/:id', (req, res, next) => {
   })}
 })
 
+// muutetaan tentti
+app.put('/tentti/:id', (req, res, next) => {
+  const body = req.body
+  if (body.tentti == undefined){  // tietoa ei välitetty
+    return res.status(400).json({
+      error: 'Muutettava tieto puuttuu!'
+    })
+  } else {
+    db.query('UPDATE tentti SET tentti=$1 WHERE tenttiid=$2',[body.tentti,req.params.id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// muutetaan kysymys
+app.put('/kysymys/:id', (req, res, next) => {
+  const body = req.body
+  if (body.kysymys == undefined){  // tietoa ei välitetty
+    return res.status(400).json({
+      error: 'Muutettava tieto puuttuu!'
+    })
+  } else {
+    db.query('UPDATE kysymys SET kysymys=$1,kysymys_aihe_id=$2 WHERE kysymysid=$3',[body.kysymys,body.kysymys_aihe_id,req.params.id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// muutetaan vaihtoehto
+app.put('/vaihtoehto/:id', (req, res, next) => {
+  const body = req.body
+  if (body.vaihtoehto == undefined){  // tietoa ei välitetty
+    return res.status(400).json({
+      error: 'Muutettava tieto puuttuu!'
+    })
+  } else {
+    db.query('UPDATE vaihtoehto SET vaihtoehto=$1,valinta=$2,vaihtoehto_kysymys_id=$3 WHERE vaihtoehtoid=$4',[body.vaihtoehto,body.valinta,body.vaihtoehto_kysymys_id,req.params.id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+// muutetaan vastausta (eli jos vaihdetaan true falseksi, POISTETAAN vastaus)
+app.put('/vastaus/:id', (req, res, next) => {
+  const body = req.body
+  if (body.vastaus == undefined){  // tietoa ei välitetty
+    return res.status(400).json({
+      error: 'Muutettava tieto puuttuu!'
+    })
+  } else {
+    db.query('DELETE FROM vastaus WHERE vastausid=$1', [req.params.id],(err,result) => {
+      if (err) {
+        return next(err)
+      }
+      res.send(result.rows)
+  })}
+})
+
+//------------------------------------------- POISTOT ------------------------------------------------------------------------
+
+
 // poistetaan kurssi
-app.delete('/:id', (req, res, next) => {
+app.delete('/kurssi/:id', (req, res, next) => {
   db.query('DELETE FROM kurssi WHERE kurssiid=$1',[req.params.id],(err,result) => {
     if (err) {
       return next(err)
@@ -103,13 +398,77 @@ app.delete('/:id', (req, res, next) => {
   })
 })
 
-// app.post('/', (req, res) => {
-//     res.send('Hello World! POST')
-//   })
+// poistetaan kurssikäsittelijä kurssilta
+app.delete('/kurssikasittelija/:id/kurssi/:id2', (req, res, next) => {
+  db.query('DELETE FROM kurssikasittelija WHERE kkasittelija_kayttaja_id=$1 AND kkasittelija_kurssi_id=$2',[req.params.id,req.params.id2],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
 
-// app.put('/', (req, res) => {
-//     res.send('Hello World! PUT')
-//   })
+// poistetaan tentti
+app.delete('/tentti/:id', (req, res, next) => {
+  db.query('DELETE FROM tentti WHERE tenttiid=$1',[req.params.id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// poistetaan tenttikäsittelijä tentiltä
+app.delete('/tenttikasittelija/:id/tentti/:id2', (req, res, next) => {
+  db.query('DELETE FROM tenttikasittelija WHERE tkasittelija_kayttaja_id=$1 AND tkasittelija_tentti_id=$2',[req.params.id,req.params.id2],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// poistetaan kysymys
+app.delete('/kysymys/:id', (req, res, next) => {
+  db.query('DELETE FROM kysymys WHERE kysymysid=$1',[req.params.id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// poistetaan tenttikysymys tentiltä
+app.delete('/tenttikysymys/:id/tentti/:id2', (req, res, next) => {
+  db.query('DELETE FROM tenttikysymys WHERE tkysymys_kysymys_id=$1 AND tkysymys_tentti_id=$2',[req.params.id,req.params.id2],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+// poistetaan vaihtoehto
+app.delete('/vaihtoehto/:id', (req, res, next) => {
+  db.query('DELETE FROM vaihtoehto WHERE vaihtoehtoid=$1',[req.params.id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
+//------------------------------------------- TARKISTUS ------------------------------------------------------------------------
+
+// kysymys mukana tenteissä, joiden alkamispäivät
+app.get('/kysymys/:id/tentit', (req,res,next) => {
+  db.query('SELECT tkysymys_tentti_id,kurssi,aloituspvm FROM ((kurssi INNER JOIN kurssitentti ON kurssi_kurssi_id = kurssiid) INNER JOIN tenttikysymys ON tkysymys_tentti_id = kurssi_tentti_id) WHERE tkysymys_kysymys_id = $1',[req.params.id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })    
+})
 
 // --------------------------Älä kommentoi pois ------------------------------------------------------
 
