@@ -461,7 +461,7 @@ app.delete('/vaihtoehto/:id', (req, res, next) => {
 //------------------------------------------- TARKISTUS ------------------------------------------------------------------------
 
 // kysymys mukana tenteissä, joiden alkamispäivät
-app.get('/kysymys/:id/tentit', (req,res,next) => {
+app.get('/kysymys/:id/tentti', (req,res,next) => {
   db.query('SELECT tkysymys_tentti_id,kurssi,aloituspvm FROM ((kurssi INNER JOIN kurssitentti ON kurssi_kurssi_id = kurssiid) INNER JOIN tenttikysymys ON tkysymys_tentti_id = kurssi_tentti_id) WHERE tkysymys_kysymys_id = $1',[req.params.id],(err,result) => {
     if (err) {
       return next(err)

@@ -20,19 +20,19 @@ const initialData =
         vaihtoehdot: [
           {
             uuid: uuid(),
-            teksti: "Kiitos hyvää, entä sinulle?",
+            vaihtoehto: "Kiitos hyvää, entä sinulle?",
             valittu: 0,
             korrekti: 1
           },
           {
             uuid: uuid(),
-            teksti: "Siinähän se!",
+            vaihtoehto: "Siinähän se!",
             valittu: 0,
             korrekti: 0
           },
           {
             uuid: uuid(),
-            teksti: "Mitäs siinä kyselet, hoida omat asias!",
+            vaihtoehto: "Mitäs siinä kyselet, hoida omat asias!",
             valittu: 0,
             korrekti: 0
           }
@@ -44,25 +44,25 @@ const initialData =
         vaihtoehdot: [
           {
             uuid: uuid(),
-            teksti: "Kiitos, uni maistui!",
+            vaihtoehto: "Kiitos, uni maistui!",
             valittu: 0,
             korrekti: 0
           },
           {
             uuid: uuid(),
-            teksti: "Pelastin maailman!",
+            vaihtoehto: "Pelastin maailman!",
             valittu: 0,
             korrekti: 0
           },
           {
             uuid: uuid(),
-            teksti: "Kuis ittelläs?",
+            vaihtoehto: "Kuis ittelläs?",
             valittu: 0,
             korrekti: 0
           },
           {
             uuid: uuid(),
-            teksti: "Tein töitä palkkani edestä.",
+            vaihtoehto: "Tein töitä palkkani edestä.",
             valittu: 0,
             korrekti: 1
           }
@@ -74,19 +74,19 @@ const initialData =
         vaihtoehdot: [
           {
             uuid: uuid(),
-            teksti: "Itsenäinen muista riippumaton tasavalta!",
+            vaihtoehto: "Itsenäinen muista riippumaton tasavalta!",
             valittu: 0,
             korrekti: 0
           },
           {
             uuid: uuid(),
-            teksti: "Kuningaskunta!",
+            vaihtoehto: "Kuningaskunta!",
             valittu: 0,
             korrekti: 0
           },
           {
             uuid: uuid(),
-            teksti: "Yksi EU:n jäsenvaltioista!",
+            vaihtoehto: "Yksi EU:n jäsenvaltioista!",
             valittu: 0,
             korrekti: 1
           }
@@ -104,11 +104,11 @@ return <section>
         <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
           props.dispatch({ type: "OIKEA_VAIHDETTU", 
             data: { checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}></input>
-        <input type="text" value={item.teksti} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
+        <input type="text" value={item.vaihtoehto} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon vaihtoehtoä
           props.dispatch({ type: "VAIHTOEHTO_NIMETTY", 
-            data: { teksti: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}> 
+            data: { vaihtoehto: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}> 
         </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
-          if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].teksti+")?")){
+          if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].vaihtoehto+")?")){
             props.dispatch({type: "VAIHTOEHTO_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex }})
           }
         }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
@@ -117,14 +117,14 @@ return <section>
         <div key={item.uuid} className="vastaus">
           <input type="checkbox" checked={item.valittu} readOnly></input>            
           <input type="checkbox" checked={item.korrekti} readOnly></input>
-          {item.teksti} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
+          {item.vaihtoehto} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>) :
         props.data.vaihtoehdot.map((item, veIndex) =>                         // tentti menossa (vastaukset poissa)
           <div key={item.uuid} className="vastaus">
             <input type="checkbox" checked={item.valittu} onChange={(event) => {  // vaihtoehto voidaan valita vastaukseksi tai poistaa
               props.dispatch({type: "VASTAUS_VAIHDETTU", 
                 data:{checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex} })}}></input> 
-            {item.teksti}
+            {item.vaihtoehto}
         </div>)}
         {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{  // jos hallintatila, voi lisätä uuden vaihtoehdon
           props.dispatch({type: "VAIHTOEHTO_LISATTY", 
@@ -197,7 +197,7 @@ function reducer(state, action) {
       syväKopio = uudetTentit
       return syväKopio    
     case "VAIHTOEHTO_NIMETTY":
-      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].teksti = action.data.teksti
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].vaihtoehto = action.data.vaihtoehto
       return syväKopio
     case "VAIHTOEHTO_POISTETTU":
       syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot.splice(action.data.veIndex,1)
@@ -205,7 +205,7 @@ function reducer(state, action) {
     case "VAIHTOEHTO_LISATTY":
       let uusiVaihtoehto = [{
         uuid: uuid(),
-        teksti: "",
+        vaihtoehto: "",
         valittu: 0,
         korrekti: 0
       }]
@@ -251,8 +251,24 @@ function App() {
 
   const fetchData = async () => {
     try {
-      let result = await Axios.get("http://localhost:3001/tentit/")
+      // let result = await Axios.get("http://localhost:3001/tentit/")
+      let kurssiid = 1
+      let kayttaja = 8
+      let result = await Axios.get("http://localhost:4000/kurssi/"+kurssiid)
       if (result.data.length>0){
+        for (var i = 0; i < result.data.length; i++){
+          result.data[i].kysymykset = []
+          let kysymykset = await Axios.get("http://localhost:4000/kysymys/tentti/"+result.data[i].tenttiid)
+          result.data[i].kysymykset = kysymykset.data
+          if (result.data[i].kysymykset.length>0){
+            for (var j = 0; j < result.data[i].kysymykset.length; j++){
+              result.data[i].kysymykset[j].vaihtoehdot = []
+              let vaihtoehdot = await Axios.get("http://localhost:4000/vaihtoehto/kysymys/"+result.data[i].kysymykset[j].kysymysid)
+              result.data[i].kysymykset[j].vaihtoehdot = vaihtoehdot.data          
+            }
+          }
+        }
+        console.log(result.data)
         dispatch({type: "INIT_DATA", data: result.data})
         setDataAlustettu(true)
       } else {
