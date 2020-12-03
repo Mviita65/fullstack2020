@@ -242,6 +242,9 @@ function App() {
   const createData = async () => {
     try {
       let result = await Axios.post("http://localhost:3001/tentit/",initialData)
+      // let kurssiid = 1
+      // let kayttajaid = 8  // oppilas
+      // let result = await Axios.post()
       dispatch({type: "INIT_DATA", data: initialData})
       setDataAlustettu(true)
     } catch (exception) {
@@ -253,18 +256,31 @@ function App() {
     try {
       // let result = await Axios.get("http://localhost:3001/tentit/")
       let kurssiid = 1
-      let kayttaja = 8
+      let kayttajaid = 8 // oppilas
       let result = await Axios.get("http://localhost:4000/kurssi/"+kurssiid)
       if (result.data.length>0){
-        for (var i = 0; i < result.data.length; i++){
+        for (var i = 0; i < result.data.length; i++){       // käydään läpi noudetun kurssin tentit
           result.data[i].kysymykset = []
           let kysymykset = await Axios.get("http://localhost:4000/kysymys/tentti/"+result.data[i].tenttiid)
           result.data[i].kysymykset = kysymykset.data
           if (result.data[i].kysymykset.length>0){
-            for (var j = 0; j < result.data[i].kysymykset.length; j++){
+            for (var j = 0; j < result.data[i].kysymykset.length; j++){ // käydään läpi noudetut tentin kysymykset
               result.data[i].kysymykset[j].vaihtoehdot = []
               let vaihtoehdot = await Axios.get("http://localhost:4000/vaihtoehto/kysymys/"+result.data[i].kysymykset[j].kysymysid)
-              result.data[i].kysymykset[j].vaihtoehdot = vaihtoehdot.data          
+              result.data[i].kysymykset[j].vaihtoehdot = vaihtoehdot.data  
+              let vastaukset = await Axios.get("http://localhost:4000/kayttaja/"+kayttajaid+"/kysymys/"+result.data[i].kysymykset[j].kysymysid)
+              if (result.data[i].kysymykset[j].vaihtoehdot.length>0){
+                for (var k = 0; k < result.data[i].kysymykset[j].vaihtoehdot.length; k++){  // käydään läpi noudetut kysymyksen vaihtoehdot
+                  result.data[i].kysymykset[j].vaihtoehdot[k].vastaus = false               // käyttäjän vastaukset alustetaan falsella
+                  if (vastaukset.data.length>0){                                            
+                    for (var l = 0; l < vastaukset.data.length; l++){                       // käydään läpi onko käyttäjä valinnut vaihtoehdon oikeaksi
+                      if (result.data[i].kysymykset[j].vaihtoehdot[k].vaihtoehtoid === vastaukset.data[l].vastaus_vaihtoehto_id) {
+                        result.data[i].kysymykset[j].vaihtoehdot[k].valittu = vastaukset.data[l].vastaus
+                      }
+                    }
+                  }  
+                }
+              }        
             }
           }
         }
