@@ -340,6 +340,7 @@ app.put('/tentti/:id', (req, res, next) => {
 // muutetaan kysymys
 app.put('/kysymys/:id', (req, res, next) => {
   const body = req.body
+  console.log(body)
   if (body.kysymys == undefined){  // tietoa ei välitetty
     return res.status(400).json({
       error: 'Muutettava tieto puuttuu!'

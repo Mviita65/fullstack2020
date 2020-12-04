@@ -104,7 +104,7 @@ return <section>
         <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
           props.dispatch({ type: "OIKEA_VAIHDETTU", 
             data: { checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}></input>
-        <input type="text" value={item.vaihtoehto} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon vaihtoehtoä
+        <input type="text" value={item.vaihtoehto} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
           props.dispatch({ type: "VAIHTOEHTO_NIMETTY", 
             data: { vaihtoehto: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}> 
         </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
@@ -132,14 +132,29 @@ return <section>
   </section>
 }
 
+const TallennaKysymys = async(event,props,kysymysIndex) => {
+  let id = props.data.kysymykset[kysymysIndex].kysymysid
+  let body = {
+    kysymys: event.target.value,
+    kysymys_aihe_id: props.data.kysymykset[kysymysIndex].kysymys_aihe_id
+  } 
+  try {
+    let result = await Axios.put("http://localhost:4000/kysymys/"+id,body)
+    props.dispatch({ type: "KYSYMYS_NIMETTY", 
+    data: {kysymys: body.kysymys, tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex} })
+  } catch (exception) {
+    console.log(exception)
+ }
+}
+
+
 function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehdot näyttämään kysymysten vaihtoehdot
 
   return <section>
     {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>     // jos hallinta valittu
       <div key={item.uuid} className="kysymys">
         <input type="text" value={item.kysymys} onChange={(event) =>{       // kysymystä voidaan muotoilla
-          props.dispatch({ type: "KYSYMYS_NIMETTY", 
-            data: {kysymys: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex} })}}>
+          TallennaKysymys(event,props,kysymysIndex)}}>
         </input> <button className="delButton" onClick={()=>{               // kysymys voidaan poistaa
           if (window.confirm("Poistetaanko kysymys ("+props.data.kysymykset[kysymysIndex].kysymys+") vastausvaihtoehtoineen?")){          
             props.dispatch({type: "KYSYMYS_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex } })
@@ -252,11 +267,11 @@ function App() {
     }
   }
 
-  const fetchData = async () => {
+  const fetchData = async () => { // hakee yhden kurssin tenttien tiedot ja yhden käyttäjän antamat vastaukset kurssin tenttien kysymyksiin
     try {
       // let result = await Axios.get("http://localhost:3001/tentit/")
       let kurssiid = 1
-      let kayttajaid = 8 // oppilas
+      let kayttajaid = 8 // oppilas eli vastaukset yhdeltä oppilaalta
       let result = await Axios.get("http://localhost:4000/kurssi/"+kurssiid)
       if (result.data.length>0){
         for (var i = 0; i < result.data.length; i++){       // käydään läpi noudetun kurssin tentit
@@ -271,11 +286,11 @@ function App() {
               let vastaukset = await Axios.get("http://localhost:4000/kayttaja/"+kayttajaid+"/kysymys/"+result.data[i].kysymykset[j].kysymysid)
               if (result.data[i].kysymykset[j].vaihtoehdot.length>0){
                 for (var k = 0; k < result.data[i].kysymykset[j].vaihtoehdot.length; k++){  // käydään läpi noudetut kysymyksen vaihtoehdot
-                  result.data[i].kysymykset[j].vaihtoehdot[k].vastaus = false               // käyttäjän vastaukset alustetaan falsella
+                  result.data[i].kysymykset[j].vaihtoehdot[k].valittu = false               // käyttäjän vastaukset alustetaan falsella
                   if (vastaukset.data.length>0){                                            
                     for (var l = 0; l < vastaukset.data.length; l++){                       // käydään läpi onko käyttäjä valinnut vaihtoehdon oikeaksi
                       if (result.data[i].kysymykset[j].vaihtoehdot[k].vaihtoehtoid === vastaukset.data[l].vastaus_vaihtoehto_id) {
-                        result.data[i].kysymykset[j].vaihtoehdot[k].valittu = vastaukset.data[l].vastaus
+                        result.data[i].kysymykset[j].vaihtoehdot[k].valittu = true
                       }
                     }
                   }  
@@ -300,11 +315,10 @@ function App() {
   }, [])
 
   useEffect(() => {
-
+    
     const updateData = async () => {
-
       try {
-        let result = await Axios.put("http://localhost:3001/tentit", state)
+         let result = await Axios.put("http://localhost:3001/tentit", state)
       } catch (exception) {
         console.log(exception)
       }
@@ -316,6 +330,7 @@ function App() {
 
   }, [state])
 
+  
   const vaihdaTentti = (index) => {
     setAktiivinen(index)
   }
