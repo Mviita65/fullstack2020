@@ -6,32 +6,41 @@ import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
 import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios';
 import uuid from 'react-uuid';
+import {
+  MuutaKysymys,
+  MuutaVaihtoehtoTeksti,
+  MuutaVaihtoehtoArvo,
+  LisaaKysymys,
+  PoistaKysymysTentilta,
+  PoistaVaihtoehto,
+  LisaaVaihtoehto
+} from './components/dataManipulation.js'
 import BarExample from './components/chart.js';
 import ConfirmDialog from './components/confirmDialog.js';
 
 const initialData = 
   [{
-    uuid: uuid(),
+    tenttiid: uuid(),
     tentti: "TENTTI A",
     kysymykset: [
       {
-        uuid: uuid(),
+        kysymysid: uuid(),
         kysymys: "Mitä kuuluu?",
         vaihtoehdot: [
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Kiitos hyvää, entä sinulle?",
             valittu: 0,
             korrekti: 1
           },
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Siinähän se!",
             valittu: 0,
             korrekti: 0
           },
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Mitäs siinä kyselet, hoida omat asias!",
             valittu: 0,
             korrekti: 0
@@ -39,29 +48,29 @@ const initialData =
         ]
       },
       {
-        uuid: uuid(),
+        kysymysid: uuid(),
         kysymys: "Miten työpäivä meni?",
         vaihtoehdot: [
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Kiitos, uni maistui!",
             valittu: 0,
             korrekti: 0
           },
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Pelastin maailman!",
             valittu: 0,
             korrekti: 0
           },
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Kuis ittelläs?",
             valittu: 0,
             korrekti: 0
           },
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Tein töitä palkkani edestä.",
             valittu: 0,
             korrekti: 1
@@ -69,23 +78,23 @@ const initialData =
         ]
       },
       {
-        uuid: uuid(),
+        kysymysid: uuid(),
         kysymys: "Suomi on?",
         vaihtoehdot: [
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Itsenäinen muista riippumaton tasavalta!",
             valittu: 0,
             korrekti: 0
           },
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Kuningaskunta!",
             valittu: 0,
             korrekti: 0
           },
           {
-            uuid: uuid(),
+            vaihtoehtoid: uuid(),
             vaihtoehto: "Yksi EU:n jäsenvaltioista!",
             valittu: 0,
             korrekti: 1
@@ -100,51 +109,33 @@ function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi 
 
 return <section>
     {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) =>           // jos hallinta valittu
-      <div key={item.uuid} className="vastaus">
+      <div key={item.vaihtoehtoid} className="vastaus">
         <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
-          props.dispatch({ type: "OIKEA_VAIHDETTU", 
-            data: { checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}></input>
+            MuutaVaihtoehtoArvo(event,props,veIndex)}}></input>
         <input type="text" value={item.vaihtoehto} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
-          props.dispatch({ type: "VAIHTOEHTO_NIMETTY", 
-            data: { vaihtoehto: event.target.value, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })}}> 
+            MuutaVaihtoehtoTeksti(event,props,veIndex)}}> 
         </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
           if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].vaihtoehto+")?")){
-            props.dispatch({type: "VAIHTOEHTO_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex }})
+            PoistaVaihtoehto(props,veIndex)
           }
         }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>):                                                                // muu kuin hallintatila
       props.vastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>        // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
-        <div key={item.uuid} className="vastaus">
+        <div key={item.vaihtoehtoid} className="vastaus">
           <input type="checkbox" checked={item.valittu} readOnly></input>            
           <input type="checkbox" checked={item.korrekti} readOnly></input>
           {item.vaihtoehto} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>) :
         props.data.vaihtoehdot.map((item, veIndex) =>                         // tentti menossa (vastaukset poissa)
-          <div key={item.uuid} className="vastaus">
+          <div key={item.vaihtoehtoid} className="vastaus">
             <input type="checkbox" checked={item.valittu} onChange={(event) => {  // vaihtoehto voidaan valita vastaukseksi tai poistaa
               props.dispatch({type: "VASTAUS_VAIHDETTU", 
                 data:{checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex} })}}></input> 
             {item.vaihtoehto}
         </div>)}
         {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{  // jos hallintatila, voi lisätä uuden vaihtoehdon
-          props.dispatch({type: "VAIHTOEHTO_LISATTY", 
-            data:{tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex} })}}>+</span></div> : ""}
+          LisaaVaihtoehto(props)}}> + </span></div> : ""}
   </section>
-}
-
-const TallennaKysymys = async(event,props,kysymysIndex) => {
-  let id = props.data.kysymykset[kysymysIndex].kysymysid
-  let body = {
-    kysymys: event.target.value,
-    kysymys_aihe_id: props.data.kysymykset[kysymysIndex].kysymys_aihe_id
-  } 
-  try {
-    let result = await Axios.put("http://localhost:4000/kysymys/"+id,body)
-    props.dispatch({ type: "KYSYMYS_NIMETTY", 
-    data: {kysymys: body.kysymys, tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex} })
-  } catch (exception) {
-    console.log(exception)
- }
 }
 
 
@@ -154,10 +145,10 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
     {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>     // jos hallinta valittu
       <div key={item.uuid} className="kysymys">
         <input type="text" value={item.kysymys} onChange={(event) =>{       // kysymystä voidaan muotoilla
-          TallennaKysymys(event,props,kysymysIndex)}}>
+          MuutaKysymys(event,props,kysymysIndex)}}>
         </input> <button className="delButton" onClick={()=>{               // kysymys voidaan poistaa
-          if (window.confirm("Poistetaanko kysymys ("+props.data.kysymykset[kysymysIndex].kysymys+") vastausvaihtoehtoineen?")){          
-            props.dispatch({type: "KYSYMYS_POISTETTU", data:{ tenttiIndex: props.tenttiIndex, kyIndex: kysymysIndex } })
+          if (window.confirm("Poistetaanko kysymys ("+props.data.kysymykset[kysymysIndex].kysymys+") tentiltä?")){
+            PoistaKysymysTentilta(props,kysymysIndex)
           }
         }}><DeleteTwoToneIcon /></button> 
         <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
@@ -170,8 +161,9 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
           data={props.data.kysymykset[kysymysIndex]} vastaukset={props.vastaukset} setVastaukset={props.setVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta}
         />
     </div>)}
-    {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{  // jos hallintatila, voi lisätä uuden kysymyksen
-      props.dispatch({type: "KYSYMYS_LISATTY", data:{tenttiIndex: props.tenttiIndex}})}}> + </span>
+    {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{
+        // jos hallintatila, voi lisätä uuden kysymyksen
+      LisaaKysymys(props)}}> + </span>
     </div> : ""}
     <div>
       {props.hallinta ? "" : <div><span className="button" onClick={()=>         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
@@ -194,8 +186,9 @@ function reducer(state, action) {
       return syväKopio
     case "KYSYMYS_LISATTY":
       let uusiKysymys = [{
-        uuid: uuid(),
+        kysymysid: action.data.kysymysid,
         kysymys: "",
+        kysymys_aihe_id: 0,
         vaihtoehdot: []
       }]
       let uudetKysymykset = syväKopio[action.data.tenttiIndex].kysymykset.concat(uusiKysymys)
@@ -219,7 +212,7 @@ function reducer(state, action) {
       return syväKopio
     case "VAIHTOEHTO_LISATTY":
       let uusiVaihtoehto = [{
-        uuid: uuid(),
+        vaihtoehtoid: action.data.vaihtoehtoid,
         vaihtoehto: "",
         valittu: 0,
         korrekti: 0
@@ -257,9 +250,6 @@ function App() {
   const createData = async () => {
     try {
       let result = await Axios.post("http://localhost:3001/tentit/",initialData)
-      // let kurssiid = 1
-      // let kayttajaid = 8  // oppilas
-      // let result = await Axios.post()
       dispatch({type: "INIT_DATA", data: initialData})
       setDataAlustettu(true)
     } catch (exception) {
@@ -316,17 +306,17 @@ function App() {
 
   useEffect(() => {
     
-    const updateData = async () => {
-      try {
-         let result = await Axios.put("http://localhost:3001/tentit", state)
-      } catch (exception) {
-        console.log(exception)
-      }
-    }
+    // const updateData = async () => {
+    //   try {
+    //      let result = await Axios.put("http://localhost:3001/tentit", state)
+    //   } catch (exception) {
+    //     console.log(exception)
+    //   }
+    // }
 
-    if (dataAlustettu) {
-      updateData();
-    }  
+    // if (dataAlustettu) {
+    //   updateData();
+    // }  
 
   }, [state])
 

@@ -3,7 +3,14 @@ const express = require('express')
 var bodyParser = require('body-parser')
 const app = express()
 app.use(bodyParser.json())
-app.use(cors())
+
+var corsOptions = {  // tietoturva: määritellään mistä originista sallitaan http-pyynnöt
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200, // For legacy browser support
+  methods: "GET,PUT,POST,DELETE"
+}
+
+app.use(cors(corsOptions))
 const port = 4000
 
 const db = require('./db')
@@ -263,7 +270,7 @@ app.post('/vaihtoehto/kysymys/:id', (req, res, next) => {
       error: 'Tallennettava tieto puuttuu!'
     })
   } else {
-  db.query('INSERT INTO vaihtoehto(vaihtoehto,valinta,vaihtoehto_kysymys_id) VALUES($1,$2,$3) RETURNING vaihtoehtoid',[body.vaihtoehto,body.valinta,body.vaihtoehto_kysymys_id],(err,result) => {
+  db.query('INSERT INTO vaihtoehto(vaihtoehto,korrekti,vaihtoehto_kysymys_id) VALUES($1,$2,$3) RETURNING vaihtoehtoid',[body.vaihtoehto,body.valinta,body.vaihtoehto_kysymys_id],(err,result) => {
     if (err) {
       return next(err)
     }
@@ -362,7 +369,7 @@ app.put('/vaihtoehto/:id', (req, res, next) => {
       error: 'Muutettava tieto puuttuu!'
     })
   } else {
-    db.query('UPDATE vaihtoehto SET vaihtoehto=$1,valinta=$2,vaihtoehto_kysymys_id=$3 WHERE vaihtoehtoid=$4',[body.vaihtoehto,body.valinta,body.vaihtoehto_kysymys_id,req.params.id],(err,result) => {
+    db.query('UPDATE vaihtoehto SET vaihtoehto=$1,korrekti=$2,vaihtoehto_kysymys_id=$3 WHERE vaihtoehtoid=$4',[body.vaihtoehto,body.valinta,body.vaihtoehto_kysymys_id,req.params.id],(err,result) => {
       if (err) {
         return next(err)
       }
