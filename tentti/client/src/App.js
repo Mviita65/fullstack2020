@@ -7,15 +7,16 @@ import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios';
 import uuid from 'react-uuid';
 import {
-  MuutaKysymys,
-  MuutaVaihtoehtoTeksti,
-  MuutaVaihtoehtoArvo,
-  LisaaKysymys,
-  PoistaKysymysTentilta,
-  PoistaVaihtoehto,
-  LisaaVaihtoehto
+  muutaKysymys,
+  muutaVaihtoehtoTeksti,
+  muutaVaihtoehtoArvo,
+  vastausAnnettu,
+  lisaaKysymys,
+  poistaKysymysTentilta,
+  poistaVaihtoehto,
+  lisaaVaihtoehto
 } from './components/dataManipulation.js'
-import BarExample from './components/chart.js';
+import ChartExample from './components/chart.js';
 import ConfirmDialog from './components/confirmDialog.js';
 
 const initialData = 
@@ -111,12 +112,12 @@ return <section>
     {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) =>           // jos hallinta valittu
       <div key={item.vaihtoehtoid} className="vastaus">
         <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
-            MuutaVaihtoehtoArvo(event,props,veIndex)}}></input>
+            muutaVaihtoehtoArvo(event,props,veIndex)}}></input>
         <input type="text" value={item.vaihtoehto} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
-            MuutaVaihtoehtoTeksti(event,props,veIndex)}}> 
+            muutaVaihtoehtoTeksti(event,props,veIndex)}}> 
         </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
           if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].vaihtoehto+")?")){
-            PoistaVaihtoehto(props,veIndex)
+            poistaVaihtoehto(props,veIndex)
           }
         }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
       </div>):                                                                // muu kuin hallintatila
@@ -129,12 +130,11 @@ return <section>
         props.data.vaihtoehdot.map((item, veIndex) =>                         // tentti menossa (vastaukset poissa)
           <div key={item.vaihtoehtoid} className="vastaus">
             <input type="checkbox" checked={item.valittu} onChange={(event) => {  // vaihtoehto voidaan valita vastaukseksi tai poistaa
-              props.dispatch({type: "VASTAUS_VAIHDETTU", 
-                data:{checked: event.target.checked, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex} })}}></input> 
-            {item.vaihtoehto}
+              vastausAnnettu(event,props,veIndex)}}>
+            </input> {item.vaihtoehto}
         </div>)}
         {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{  // jos hallintatila, voi lisätä uuden vaihtoehdon
-          LisaaVaihtoehto(props)}}> + </span></div> : ""}
+          lisaaVaihtoehto(props)}}> + </span></div> : ""}
   </section>
 }
 
@@ -143,27 +143,27 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
 
   return <section>
     {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>     // jos hallinta valittu
-      <div key={item.uuid} className="kysymys">
+      <div key={item.kysymysid} className="kysymys">
         <input type="text" value={item.kysymys} onChange={(event) =>{       // kysymystä voidaan muotoilla
-          MuutaKysymys(event,props,kysymysIndex)}}>
+          muutaKysymys(event,props,kysymysIndex)}}>
         </input> <button className="delButton" onClick={()=>{               // kysymys voidaan poistaa
           if (window.confirm("Poistetaanko kysymys ("+props.data.kysymykset[kysymysIndex].kysymys+") tentiltä?")){
-            PoistaKysymysTentilta(props,kysymysIndex)
+            poistaKysymysTentilta(props,kysymysIndex)
           }
         }}><DeleteTwoToneIcon /></button> 
-        <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+        <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} tenttiid={props.data.tenttiid} kysymysIndex={kysymysIndex} 
           data={props.data.kysymykset[kysymysIndex]} vastaukset={props.vastaukset} setVastaukset={props.setVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta}
         />
       </div>):                                                              // tentti menossa
       props.data.kysymykset.map((item, kysymysIndex) =>
-        <div key={item.uuid} className="kysymys">{item.kysymys}
-        <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} kysymysIndex={kysymysIndex} 
+        <div key={item.kysymysid} className="kysymys">{item.kysymys}
+        <Vaihtoehdot dispatch={props.dispatch} tenttiIndex={props.tenttiIndex} tenttiid={props.data.tenttiid} kysymysIndex={kysymysIndex} 
           data={props.data.kysymykset[kysymysIndex]} vastaukset={props.vastaukset} setVastaukset={props.setVastaukset} hallinta={props.hallinta} setHallinta={props.setHallinta}
         />
     </div>)}
     {props.hallinta ? <div className="add"><span className="add-item" onClick={()=>{
         // jos hallintatila, voi lisätä uuden kysymyksen
-      LisaaKysymys(props)}}> + </span>
+      lisaaKysymys(props)}}> + </span>
     </div> : ""}
     <div>
       {props.hallinta ? "" : <div><span className="button" onClick={()=>         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
@@ -185,12 +185,12 @@ function reducer(state, action) {
       syväKopio[action.data.tenttiIndex].kysymykset.splice(action.data.kyIndex,1)
       return syväKopio
     case "KYSYMYS_LISATTY":
-      let uusiKysymys = [{
+      let uusiKysymys = {
         kysymysid: action.data.kysymysid,
         kysymys: "",
         kysymys_aihe_id: 0,
         vaihtoehdot: []
-      }]
+      }
       let uudetKysymykset = syväKopio[action.data.tenttiIndex].kysymykset.concat(uusiKysymys)
       syväKopio[action.data.tenttiIndex].kysymykset = uudetKysymykset
       return syväKopio
@@ -211,20 +211,20 @@ function reducer(state, action) {
       syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot.splice(action.data.veIndex,1)
       return syväKopio
     case "VAIHTOEHTO_LISATTY":
-      let uusiVaihtoehto = [{
+      let uusiVaihtoehto = {
         vaihtoehtoid: action.data.vaihtoehtoid,
         vaihtoehto: "",
-        valittu: 0,
-        korrekti: 0
-      }]
+        valittu: false,
+        korrekti: false
+      }
       let uudetVaihtoehdot = syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot.concat(uusiVaihtoehto)
       syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot = uudetVaihtoehdot
       return syväKopio
     case "VASTAUS_VAIHDETTU":
-      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].valittu = action.data.checked
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].valittu = action.data.valittu
       return syväKopio
     case "OIKEA_VAIHDETTU":
-      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].korrekti = action.data.checked
+      syväKopio[action.data.tenttiIndex].kysymykset[action.data.kyIndex].vaihtoehdot[action.data.veIndex].korrekti = action.data.korrekti
       return syväKopio
     default:
       throw new Error();
@@ -386,8 +386,8 @@ function App() {
               kaaviot={kaaviot} setKaaviot={setKaaviot}
             /> : (kaaviot) ? 
               <section className="charts">
-                <BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={"Doughnut"}/>
-                <BarExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
+                <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={"Doughnut"}/>
+                <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
                 <span className="button" onClick={()=>{setKaaviot(0)}}>Paluu</span>
               </section>: ""}
     </div>

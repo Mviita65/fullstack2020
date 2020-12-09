@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 
-const MuutaKysymys = async(event,props,kysymysIndex) => {
+const muutaKysymys = async(event,props,kysymysIndex) => {
     let id = props.data.kysymykset[kysymysIndex].kysymysid
     let body = {
       kysymys: event.target.value,
@@ -16,7 +16,7 @@ const MuutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
   
-  const MuutaVaihtoehtoTeksti = async(event,props,veIndex) => {
+  const muutaVaihtoehtoTeksti = async(event,props,veIndex) => {
     let id = props.data.vaihtoehdot[veIndex].vaihtoehtoid
     let body = {
       vaihtoehto: event.target.value,
@@ -32,7 +32,7 @@ const MuutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
 
-  const MuutaVaihtoehtoArvo = async(event,props,veIndex) => {
+  const muutaVaihtoehtoArvo = async(event,props,veIndex) => {
     let id = props.data.vaihtoehdot[veIndex].vaihtoehtoid
     let body = {
       vaihtoehto: props.data.vaihtoehdot[veIndex].vaihtoehto,
@@ -42,13 +42,43 @@ const MuutaKysymys = async(event,props,kysymysIndex) => {
     try {
       let result = await Axios.put("http://localhost:4000/vaihtoehto/"+id,body)
       props.dispatch({ type: "OIKEA_VAIHDETTU", 
-        data: { checked: body.korrekti, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })
+        data: { korrekti: body.korrekti, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex } })
     } catch (exception) {
       console.log(exception)
     }
   }
 
-  const LisaaKysymys = async(props) => {
+  const vastausAnnettu = async(event,props,veIndex) => {
+    let kayttajaid = 8
+    let body = {
+      vastaus: event.target.checked,
+      vastauspvm: new Date(Date.now()).toISOString(),
+      vastaus_vaihtoehto_id: props.data.vaihtoehdot[veIndex].vaihtoehtoid,
+      vastaus_kayttaja_id: kayttajaid,
+      vastaus_tentti_id: props.tenttiid
+    }
+    try {
+      if (body.vastaus) {
+        let result = await Axios.post("http://localhost:4000/vastaus",body)
+      } else {
+        let vastaukset = await Axios.get("http://localhost:4000/kayttaja/"+kayttajaid+"/kysymys/"+props.data.kysymysid)
+        if (vastaukset.data.length>0){                                            
+          for (var i = 0; i < vastaukset.data.length; i++){ 
+            if ( body.vastaus_vaihtoehto_id === vastaukset.data[i].vastaus_vaihtoehto_id) {
+              let id = vastaukset.data[i].vastausid
+              let poistoresult = await Axios.put("http://localhost:4000/vastaus/",id)
+            }
+          }
+        }  
+      }
+    } catch (exception) {
+        console.log(exception)
+    }
+    props.dispatch({type: "VASTAUS_VAIHDETTU", 
+      data:{valittu: body.vastaus, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex} })
+  }
+
+  const lisaaKysymys = async(props) => {
     let body = {
       kysymys: "",
       kysymys_aihe_id: 0
@@ -68,14 +98,14 @@ const MuutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
 
-  const LisaaVaihtoehto = async(props) => {
+  const lisaaVaihtoehto = async(props) => {
      let body = {
       vaihtoehto: "",
       korrekti: false,
       vaihtoehto_kysymys_id: props.data.kysymysid
     } 
     try {
-      let result = await Axios.post("http://localhost:4000/vaihtoehto/kysymys"+props.data.kysymysid,body)
+      let result = await Axios.post("http://localhost:4000/vaihtoehto/kysymys/"+props.data.kysymysid,body)
       let vaihtoehtoid = result.data[0].vaihtoehtoid
       props.dispatch({type: "VAIHTOEHTO_LISATTY", 
         data:{tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, vaihtoehtoid: vaihtoehtoid} })
@@ -84,7 +114,7 @@ const MuutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
 
-  const PoistaKysymysTentilta = async(props,kysymysIndex) => {
+  const poistaKysymysTentilta = async(props,kysymysIndex) => {
     let kysymysid = props.data.kysymykset[kysymysIndex].kysymysid
     let tenttiid = props.data.tenttiid
     try {
@@ -96,7 +126,7 @@ const MuutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
 
-  const PoistaVaihtoehto = async(props,veIndex) => {
+  const poistaVaihtoehto = async(props,veIndex) => {
     let id = props.data.vaihtoehdot[veIndex].vaihtoehtoid
     try {
       let result = await Axios.delete("http://localhost:4000/vaihtoehto/"+id)
@@ -107,5 +137,5 @@ const MuutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
 
-  export {MuutaKysymys,MuutaVaihtoehtoTeksti,MuutaVaihtoehtoArvo,LisaaKysymys,LisaaVaihtoehto,PoistaKysymysTentilta,PoistaVaihtoehto}
+  export {muutaKysymys,muutaVaihtoehtoTeksti,muutaVaihtoehtoArvo,vastausAnnettu,lisaaKysymys,lisaaVaihtoehto,poistaKysymysTentilta,poistaVaihtoehto}
   

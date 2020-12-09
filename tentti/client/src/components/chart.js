@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 
-const BarExample = ({otsikot,tiedot,tyyppi,valinta}) => {
+const ChartExample = ({otsikot,tiedot,tyyppi,valinta}) => {
     // set data
-    const [barData, setBarData] = useState({
+    const [chartData, setChartData] = useState({
         // labels: ['label 1', 'label 2', 'label 3', 'label 4'],
         labels: otsikot,
         datasets: [
@@ -28,7 +28,7 @@ const BarExample = ({otsikot,tiedot,tyyppi,valinta}) => {
     });
 
     // set options
-    const [barOptions, setBarOptions] = useState({
+    const [chartOptions, setChartOptions] = useState({
         options: {
             scales: {
                 yAxes: [
@@ -58,15 +58,15 @@ const BarExample = ({otsikot,tiedot,tyyppi,valinta}) => {
         {tyyppi} <br></br>
         {(valinta==="Doughnut") ? 
             <Doughnut
-            data={barData}
-            options={barOptions} />: 
+            data={chartData}
+            options={chartOptions} />: 
         (valinta==="Bar") ?
             <Bar
-            data={barData}
-            options={barOptions} />: 
+            data={chartData}
+            options={chartOptions} />: 
         ""}
       </div>
 );
 }
 
-export default BarExample;
+export default ChartExample;

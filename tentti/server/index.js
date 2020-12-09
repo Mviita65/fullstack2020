@@ -11,10 +11,22 @@ var corsOptions = {  // tietoturva: määritellään mistä originista sallitaan
 }
 
 app.use(cors(corsOptions))
+
+// var requestTime = function (req, res, next) {
+//   // req.requestTime = Date.now()
+//   console.log('Kello on:',Date.now())
+//   next()
+// }
+
+// app.use(requestTime)
+
 const port = 4000
 
 const db = require('./db')
 const { response } = require('express')
+//-------------------------------------------------------------------------------------------------------------------
+
+
 
 //------------------------------------------- HAUT ------------------------------------------------------------------------
 
@@ -278,7 +290,7 @@ app.post('/vaihtoehto/kysymys/:id', (req, res, next) => {
   })}
 })
 
-// lisätään vastaus
+// lisätään vastaus kysymykseen tentissä
 app.post('/vastaus', (req, res, next) => {
   const body = req.body
   if (body.vastaus==undefined){
@@ -286,7 +298,7 @@ app.post('/vastaus', (req, res, next) => {
       error: 'Tallennettava tieto puuttuu!'
     })
   } else {
-  db.query('INSERT INTO vastaus(vastaus,vastauspvm,vastaus_vaihtoehto_id,vastaus_kayttaja_id) VALUES($1,$2,$3,$4) RETURNING vastausid',[body.vastaus,body.vastauspvm,body.vastaus_vaihtoehto_id,body.vastaus_kayttaja_id],(err,result) => {
+  db.query('INSERT INTO vastaus(vastaus,vastauspvm,vastaus_vaihtoehto_id,vastaus_kayttaja_id,vastaus_tentti_id) VALUES($1,$2,$3,$4,$5) RETURNING vastausid',[body.vastaus,body.vastauspvm,body.vastaus_vaihtoehto_id,body.vastaus_kayttaja_id,body.vastaus_tentti_id],(err,result) => {
     if (err) {
       return next(err)
     }
@@ -369,7 +381,7 @@ app.put('/vaihtoehto/:id', (req, res, next) => {
       error: 'Muutettava tieto puuttuu!'
     })
   } else {
-    db.query('UPDATE vaihtoehto SET vaihtoehto=$1,korrekti=$2,vaihtoehto_kysymys_id=$3 WHERE vaihtoehtoid=$4',[body.vaihtoehto,body.valinta,body.vaihtoehto_kysymys_id,req.params.id],(err,result) => {
+    db.query('UPDATE vaihtoehto SET vaihtoehto=$1,korrekti=$2,vaihtoehto_kysymys_id=$3 WHERE vaihtoehtoid=$4',[body.vaihtoehto,body.korrekti,body.vaihtoehto_kysymys_id,req.params.id],(err,result) => {
       if (err) {
         return next(err)
       }
@@ -379,18 +391,12 @@ app.put('/vaihtoehto/:id', (req, res, next) => {
 
 // muutetaan vastausta (eli jos vaihdetaan true falseksi, POISTETAAN vastaus)
 app.put('/vastaus/:id', (req, res, next) => {
-  const body = req.body
-  if (body.vastaus == undefined){  // tietoa ei välitetty
-    return res.status(400).json({
-      error: 'Muutettava tieto puuttuu!'
-    })
-  } else {
-    db.query('DELETE FROM vastaus WHERE vastausid=$1', [req.params.id],(err,result) => {
-      if (err) {
-        return next(err)
-      }
-      res.send(result.rows)
-  })}
+  db.query('DELETE FROM vastaus WHERE vastausid=$1', [req.params.id],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
 })
 
 //------------------------------------------- POISTOT ------------------------------------------------------------------------
