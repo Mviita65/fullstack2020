@@ -25,7 +25,8 @@ const port = 4000
 const db = require('./db')
 const { response } = require('express')
 //-------------------------------------------------------------------------------------------------------------------
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 
 //------------------------------------------- HAUT ------------------------------------------------------------------------
@@ -142,6 +143,16 @@ app.get('/kayttaja/:id/kysymys/:id2', (req, res, next) => {
   })
 })
 
+// haetaan oppilaan true vastauksen id tentin kysymyksen vaihtoehtoon
+app.get('/kayttaja/:id/tentti/:id2/vaihtoehto/:id3',(req, res, next) => {
+  db.query('SELECT vastausid FROM (vaihtoehto INNER JOIN vastaus ON vastaus_vaihtoehto_id = vaihtoehtoid) WHERE vastaus_kayttaja_id = $1 AND vastaus_tentti_id = $2	AND vaihtoehtoid = $3', [req.params.id,req.params.id2,req.params.id3],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})    
+
 //------------------------------------------- LISÄYKSET ------------------------------------------------------------------------
 
 // lisätään käyttäjä
@@ -152,7 +163,7 @@ app.post('/kayttaja', (req, res, next) => {
       error: 'Tallennettava tieto puuttuu!'
     })
   } else {
-  db.query('INSERT INTO kayttaja(etunimi,sukunimi,sahkoposti,salasana,rooli) VALUES($1,$2,$3,$4,$5) RETURNING kayttajaid',[body.etunimi,body.sukunimi,body.sahkoposti,body.salasana,body.rooli],(err,result) => {
+  db.query('INSERT INTO kayttaja(etunimi,sukunimi,sahkoposti,salasana,rooli) VALUES($1,$2,$3,$4,$5) RETURNING kayttajaid)',[body.etunimi,body.sukunimi,body.sahkoposti,body.salasana,body.rooli],(err,result) => {
     if (err) {
       return next(err)
     }
@@ -390,7 +401,7 @@ app.put('/vaihtoehto/:id', (req, res, next) => {
 })
 
 // muutetaan vastausta (eli jos vaihdetaan true falseksi, POISTETAAN vastaus)
-app.put('/vastaus/:id', (req, res, next) => {
+app.delete('/vastaus/:id', (req, res, next) => {
   db.query('DELETE FROM vastaus WHERE vastausid=$1', [req.params.id],(err,result) => {
     if (err) {
       return next(err)

@@ -11,10 +11,11 @@ import {
   muutaVaihtoehtoTeksti,
   muutaVaihtoehtoArvo,
   vastausAnnettu,
+  lisaaTentti,
   lisaaKysymys,
+  lisaaVaihtoehto,
   poistaKysymysTentilta,
-  poistaVaihtoehto,
-  lisaaVaihtoehto
+  poistaVaihtoehto
 } from './components/dataManipulation.js'
 import ChartExample from './components/chart.js';
 import ConfirmDialog from './components/confirmDialog.js';
@@ -240,6 +241,8 @@ function App() {
   const [poistu, setPoistu] = useState(0)
   const [vastaukset, setVastaukset] = useState(0)
   const [aktiivinen, setAktiivinen] = useState(null)
+  const [aktiivinenKurssi, setAktiivinenKurssi] = useState(1)
+  const [aktiivinenKayttaja, setAktiivinenKayttaja] = useState(8)
   const [hallinta, setHallinta] = useState(0)
   const [kaaviot, setKaaviot] = useState(0)
   const [vahvista, setVahvista] = useState(0)
@@ -260,8 +263,8 @@ function App() {
   const fetchData = async () => { // hakee yhden kurssin tenttien tiedot ja yhden käyttäjän antamat vastaukset kurssin tenttien kysymyksiin
     try {
       // let result = await Axios.get("http://localhost:3001/tentit/")
-      let kurssiid = 1
-      let kayttajaid = 8 // oppilas eli vastaukset yhdeltä oppilaalta
+      let kurssiid = aktiivinenKurssi
+      let kayttajaid = aktiivinenKayttaja // oppilas eli vastaukset yhdeltä oppilaalta
       let result = await Axios.get("http://localhost:4000/kurssi/"+kurssiid)
       if (result.data.length>0){
         for (var i = 0; i < result.data.length; i++){       // käydään läpi noudetun kurssin tentit
@@ -302,7 +305,7 @@ function App() {
     }
   }
     fetchData();
-  }, [])
+  }, [aktiivinenKurssi,aktiivinenKayttaja])
 
   useEffect(() => {
     
@@ -321,22 +324,6 @@ function App() {
   }, [state])
 
   
-  const vaihdaTentti = (index) => {
-    setAktiivinen(index)
-  }
-
-  const lisaaTentti = () => {
-    var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
-    if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
-     let uusiTentti = [{
-        uuid: uuid(),
-        tentti: uusiTenttiNimi.toUpperCase(),
-        kysymykset: []
-     }]
-     dispatch({type: "TENTTI_LISATTY", data:{lisays: uusiTentti}})
-    }
-  }
-
   const poistaTentti = (index) => {
     let paluu = null
     if (window.confirm("Poistetaanko tentti ("+state[index].tentti+") kysymyksineen?")){
@@ -368,7 +355,7 @@ function App() {
           <div className="grid-item">
             <nav className="tenttivalikko">
               {aktiivinen==null ? state.map((item,index) => <span className="t-nav-item" key={item.uuid} onClick={()=>{
-                vaihdaTentti(index); setVastaukset(0)}}>{item.tentti}</span>) : 
+                setAktiivinen(index); setVastaukset(0)}}>{item.tentti}</span>) : 
                   hallinta && aktiivinen!=null ? <span><input type="text" value={state[aktiivinen].tentti} onChange={(event) =>{
                     dispatch({type:"TENTTI_NIMETTY", data:{newTenttiNimi: event.target.value, tenttiIndex: aktiivinen}}) }}></input> <button className="delButton" onClick={()=>{
                      setAktiivinen(poistaTentti(aktiivinen))
@@ -376,7 +363,7 @@ function App() {
                   </span> : 
                     state[aktiivinen].tentti}
               {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{
-                lisaaTentti()}}> + </span> : ""}
+                lisaaTentti(dispatch,aktiivinenKurssi)}}> + </span> : ""}
             </nav>
           </div> : tietoa ? 
           <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
