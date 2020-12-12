@@ -7,6 +7,7 @@ import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios';
 import uuid from 'react-uuid';
 import {
+  muutaTentti,
   muutaKysymys,
   muutaVaihtoehtoTeksti,
   muutaVaihtoehtoArvo,
@@ -14,6 +15,7 @@ import {
   lisaaTentti,
   lisaaKysymys,
   lisaaVaihtoehto,
+  poistaTenttiKurssilta,
   poistaKysymysTentilta,
   poistaVaihtoehto
 } from './components/dataManipulation.js'
@@ -239,8 +241,9 @@ function App() {
   const [tentit, setTentit] = useState(1)
   const [tietoa, setTietoa] = useState(0)
   const [poistu, setPoistu] = useState(0)
+  const [teksti, setTeksti] = useState("")
   const [vastaukset, setVastaukset] = useState(0)
-  const [aktiivinen, setAktiivinen] = useState(null)
+  const [aktiivinenTentti, setAktiivinenTentti] = useState(null)
   const [aktiivinenKurssi, setAktiivinenKurssi] = useState(1)
   const [aktiivinenKayttaja, setAktiivinenKayttaja] = useState(8)
   const [hallinta, setHallinta] = useState(0)
@@ -323,22 +326,11 @@ function App() {
 
   }, [state])
 
-  
-  const poistaTentti = (index) => {
-    let paluu = null
-    if (window.confirm("Poistetaanko tentti ("+state[index].tentti+") kysymyksineen?")){
-      dispatch({type: "TENTTI_POISTETTU", data:{ tenttiIndex: index} })
-    } else {
-      paluu = index   // tenttiä ei poistettu, palautetaan tentin indeksi
-    }
-    return paluu      // tentti poistettu, palautetaan null (=siirrytään tenttivalikkoon)
-  }
-
   return (
     <div className="grid-container">
-      <nav className="sovellusvalikko">
+      <nav className="sovellusvalikko"> 
         <span className="s-nav-item" onClick={e => {
-           setAktiivinen(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
+           setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
         }}>TENTIT </span>
         <span className="s-nav-item" onClick={e => { 
           setTentit(0); setTietoa(1) 
@@ -354,21 +346,28 @@ function App() {
         tentit ?
           <div className="grid-item">
             <nav className="tenttivalikko">
-              {aktiivinen==null ? state.map((item,index) => <span className="t-nav-item" key={item.uuid} onClick={()=>{
-                setAktiivinen(index); setVastaukset(0)}}>{item.tentti}</span>) : 
-                  hallinta && aktiivinen!=null ? <span><input type="text" value={state[aktiivinen].tentti} onChange={(event) =>{
-                    dispatch({type:"TENTTI_NIMETTY", data:{newTenttiNimi: event.target.value, tenttiIndex: aktiivinen}}) }}></input> <button className="delButton" onClick={()=>{
-                     setAktiivinen(poistaTentti(aktiivinen))
+              {aktiivinenTentti==null ? state.map((item,index) => <span className="t-nav-item" key={item.tenttiid} onClick={()=>{
+                setAktiivinenTentti(index); setVastaukset(0)}}>{item.tentti}</span>) : 
+                  hallinta && aktiivinenTentti!=null ? <span><input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{
+                    muutaTentti(dispatch, event, state[aktiivinenTentti], aktiivinenTentti) }}>
+                    </input> <button className="delButton" onClick={()=>{
+                        if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
+                          poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
+                          setAktiivinenTentti(null)      
+                        }
                     }}><DeleteTwoToneIcon /></button> 
                   </span> : 
-                    state[aktiivinen].tentti}
-              {hallinta && aktiivinen==null ? <span className="add-item" onClick={() =>{
-                lisaaTentti(dispatch,aktiivinenKurssi)}}> + </span> : ""}
+                    state[aktiivinenTentti].tentti}
+              {hallinta && aktiivinenTentti==null ? <span className="add-item" onClick={() =>{
+                var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
+                if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
+                  lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi)}}
+                }> + </span> : ""}
             </nav>
           </div> : tietoa ? 
           <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
-          {(aktiivinen!=null && !poistu && !tietoa && !kaaviot) ? 
-            <Kysymykset dispatch={dispatch} data={state[aktiivinen]} tenttiIndex={aktiivinen} 
+          {(aktiivinenTentti!=null && !poistu && !tietoa && !kaaviot) ? 
+            <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti} 
               vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta}
               kaaviot={kaaviot} setKaaviot={setKaaviot}
             /> : (kaaviot) ? 

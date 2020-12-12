@@ -443,6 +443,16 @@ app.delete('/tentti/:id', (req, res, next) => {
   })
 })
 
+// poistetaan kurssitentti kurssilta
+app.delete('/kurssitentti/:id/kurssi/:id2', (req, res, next) => {
+  db.query('DELETE FROM kurssitentti WHERE kurssi_tentti_id=$1 AND kurssi_kurssi_id=$2',[req.params.id,req.params.id2],(err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
 // poistetaan tenttikäsittelijä tentiltä
 app.delete('/tenttikasittelija/:id/tentti/:id2', (req, res, next) => {
   db.query('DELETE FROM tenttikasittelija WHERE tkasittelija_kayttaja_id=$1 AND tkasittelija_tentti_id=$2',[req.params.id,req.params.id2],(err,result) => {

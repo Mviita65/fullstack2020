@@ -1,7 +1,19 @@
 import Axios from 'axios';
 
+  const muutaTentti = async(dispatch,event,data,aktiivinenTentti) => {
+    let id = data.tenttiid
+    let body = {
+      tentti: event.target.value.toUpperCase(),
+    }
+    try {
+      let result = await Axios.put("http://localhost:4000/tentti/"+id,body)
+      dispatch({type:"TENTTI_NIMETTY", data:{newTenttiNimi: body.tentti, tenttiIndex: aktiivinenTentti}})
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
 
-const muutaKysymys = async(event,props,kysymysIndex) => {
+  const muutaKysymys = async(event,props,kysymysIndex) => {
     let id = props.data.kysymykset[kysymysIndex].kysymysid
     let body = {
       kysymys: event.target.value,
@@ -73,30 +85,28 @@ const muutaKysymys = async(event,props,kysymysIndex) => {
       data:{valittu: body.vastaus, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex} })
   }
   
-  const lisaaTentti = async(dispatch,aktiivinenKurssi) => {
-    var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
-    if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
-      let body = {
-        tentti: uusiTenttiNimi.toUpperCase(),
-      }
-      try {
-        let result = await Axios.post("http://localhost:4000/tentti",body)
-        let tenttiId = result.data[0].tenttiid
-        let body2 = {
-          kurssi_kurssi_id: aktiivinenKurssi,
-          kurssi_tentti_id: tenttiId
-        }
-        let result2 = await Axios.post("http://localhost:4000/kurssitentti",body2)
-        let uusiTentti = {
-          tenttiid: tenttiId,
-          tentti: body.tentti,
-          kysymykset: []
-        }
-        dispatch({type: "TENTTI_LISATTY", data:{lisays: uusiTentti}})
-      } catch (exception) {
-          console.log(exception)
-      }
+  const lisaaTentti = async(dispatch,uusiTenttiNimi,aktiivinenKurssi) => {
+
+    let body = {
+      tentti: uusiTenttiNimi.toUpperCase(),
     }
+    try {
+      let result = await Axios.post("http://localhost:4000/tentti",body)
+      let tenttiId = result.data[0].tenttiid
+      let body2 = {
+        kurssi_kurssi_id: aktiivinenKurssi,
+        kurssi_tentti_id: tenttiId
+      }
+      let result2 = await Axios.post("http://localhost:4000/kurssitentti",body2)
+      let uusiTentti = {
+        tenttiid: tenttiId,
+        tentti: body.tentti,
+        kysymykset: []
+      }
+      dispatch({type: "TENTTI_LISATTY", data:{lisays: uusiTentti}})
+    } catch (exception) {
+      console.log(exception)
+    }    
   }
   
   const lisaaKysymys = async(props) => {
@@ -135,6 +145,16 @@ const muutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
 
+  const poistaTenttiKurssilta = async(dispatch,data,index,kurssiid) => {
+    let tenttiid = data.tenttiid
+    try {
+      let result = await Axios.delete("http://localhost:4000/kurssitentti/"+tenttiid+"/kurssi/"+kurssiid)
+      dispatch({type: "TENTTI_POISTETTU", data:{ tenttiIndex: index} })
+    } catch (exception) {
+      console.log(exception)
+    }
+  }  
+
   const poistaKysymysTentilta = async(props,kysymysIndex) => {
     let kysymysid = props.data.kysymykset[kysymysIndex].kysymysid
     let tenttiid = props.data.tenttiid
@@ -158,5 +178,17 @@ const muutaKysymys = async(event,props,kysymysIndex) => {
     }
   }
 
-  export {muutaKysymys,muutaVaihtoehtoTeksti,muutaVaihtoehtoArvo,vastausAnnettu,lisaaTentti,lisaaKysymys,lisaaVaihtoehto,poistaKysymysTentilta,poistaVaihtoehto}
+  export {
+    muutaTentti,
+    muutaKysymys,
+    muutaVaihtoehtoTeksti,
+    muutaVaihtoehtoArvo,
+    vastausAnnettu,
+    lisaaTentti,
+    lisaaKysymys,
+    lisaaVaihtoehto,
+    poistaTenttiKurssilta,
+    poistaKysymysTentilta,
+    poistaVaihtoehto
+  }
   
