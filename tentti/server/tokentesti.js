@@ -6,7 +6,7 @@ let hashSalasana
 
 (async () => {
     try {
-        hashSalasana = await bcrypt.hash("kissa", SALT_ROUNDS)
+        hashSalasana = await bcrypt.hash("oppRappaaja", SALT_ROUNDS)
         console.log("Salasana: ",hashSalasana)
         let result= await bcrypt.compare("kisa",hashSalasana)
         console.log(result)

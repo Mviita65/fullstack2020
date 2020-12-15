@@ -4,10 +4,12 @@ import './oma.css';
 import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
 import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios';
+import Login from './components/login';
 import {
   muutaTentti,
   lisaaTentti,
   poistaTenttiKurssilta,
+  tarkistaLogin
 } from './components/dataManipulation.js';
 import initialData from './components/initialData.js'
 import reducer from './components/reducer.js';
@@ -27,12 +29,14 @@ function App() {
   const [vastaukset, setVastaukset] = useState(0)
   const [aktiivinenTentti, setAktiivinenTentti] = useState(null)
   const [aktiivinenKurssi, setAktiivinenKurssi] = useState(1)
-  const [aktiivinenKayttaja, setAktiivinenKayttaja] = useState(8)
+  const [aktiivinenKayttaja, setAktiivinenKayttaja] = useState(null)
   const [hallinta, setHallinta] = useState(0)
   const [kaaviot, setKaaviot] = useState(0)
   const [vahvista, setVahvista] = useState(0)
+  const [authToken, setAuthToken] = useState("")
+  const [login, setLogin] = useState(false);
 
-
+  
   useEffect(() => {
 
   const createData = async () => {
@@ -108,9 +112,36 @@ function App() {
 
   }, [state])
 
+  const userHook = () => {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setAuthToken(user.token)
+    }
+  }
+
+  useEffect(userHook, [])
+  
+  const tarkistaLogin = async(e, userdata) => {
+    
+    e.preventDefault();
+    try {
+      let kayttaja = await Axios.post("http://localhost:4000/login", userdata)
+      if (kayttaja.lenght === 0){
+        console.log("Invalid username of password")
+        return
+      }
+      console.log(kayttaja)
+      setLogin(true)
+      setAktiivinenKayttaja(kayttaja.data.id)  
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
+
   return (
-    <div className="grid-container">
-      <nav className="sovellusvalikko"> 
+    <div>{login? <section className="grid-container">
+      <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => {
            setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
         }}>TENTIT </span>
@@ -121,9 +152,11 @@ function App() {
           setHallinta(!hallinta) 
         }}><BuildIcon fontSize="small"/> </span>
         <span className="s-nav-item-right" onClick={e => {
-          setPoistu(1); setTentit(0); setKaaviot(0);
-        }}>POISTU </span>
-      </nav>
+          setPoistu(1); setTentit(0); setKaaviot(0); setLogin(false);
+          window.localStorage.removeItem('loggedAppUser');
+          window.location.reload();
+        }}>POISTU </span>  
+      </nav> 
       {poistu ? <section className="vastaus">Sovelluksen toiminta on päättynyt!</section> :
         tentit ?
           <div className="grid-item">
@@ -158,6 +191,7 @@ function App() {
                 <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
                 <span className="button" onClick={()=>{setKaaviot(0)}}>Paluu</span>
               </section>: ""}
+            </section> : <section className="add"><Login handleSubmit={tarkistaLogin}/></section>}
     </div>
   )
 }

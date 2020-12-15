@@ -24,10 +24,52 @@ const port = 4000
 
 const db = require('./db')
 const { response } = require('express')
-//-------------------------------------------------------------------------------------------------------------------
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+//------------------------------------------LOGIN-----------------------------------------------------------------------------
+var jwt = require('jsonwebtoken')
 
+var bcrypt = require('bcrypt')
+const SALT_ROUNDS = 12
+
+
+// login
+app.post('/login', (req, res, next) => {
+  const body = req.body
+
+  if(!(body.username && body.password)){      // käyttäjätunnusta tai salasanaa ei annettu
+    return res.status(401).json({error: 'invalid username or password' })
+  } 
+  db.query('SELECT * FROM kayttaja WHERE sahkoposti = $1',[body.username])
+    .then((user) => {
+      if(user.lenght === 0){                  // käyttäjätunnusta ei ole
+        return res.status(401).json({ error: 'invalid username or password' })
+      }
+      const tempUser = user.rows[0];
+      bcrypt.compare(body.password, tempUser.salasana)
+        .then((passwordCorrect) => {
+          if (!passwordCorrect){              // salasana ei ole oikea
+            return res.status(401).json({ error: 'invalid username or password'})
+          }
+          console.log("kirjautuminen onnistui")
+          const userForToken = {
+            username: tempUser.sahkoposti,
+            id: tempUser.kayttajaid,
+            rights: tempUser.rooli
+          }
+          const token = jwt.sign(userForToken, 'tenttiJ')
+            res.status(200).send({
+              token, 
+              username: tempUser.sahkoposti, 
+              id: tempUser.kayttajaid,
+              rights: tempUser.rooli})
+          })
+  })
+  .catch((err) => {
+      console.log(err);
+      res.status(401).json(
+          { error: 'invalid username or password' }
+      )
+  })
+})   
 
 //------------------------------------------- HAUT ------------------------------------------------------------------------
 
