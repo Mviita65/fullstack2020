@@ -21,15 +21,50 @@ app.use(cors(corsOptions))
 // app.use(requestTime)
 
 const port = 4000
-
 const db = require('./db')
 const { response } = require('express')
-//------------------------------------------LOGIN-----------------------------------------------------------------------------
 var jwt = require('jsonwebtoken')
-
 var bcrypt = require('bcrypt')
 const SALT_ROUNDS = 12
 
+//------------------------------------------REGISTER--------------------------------------------------------------------------
+app.post('/register',(req, res, next) => {
+  const body = req.body
+  if(!(body.username && body.password && body.role)){      // käyttäjätunnusta tai salasanaa ei annettu
+    return res.status(400).json({error: 'Tallennettava tieto puuttuu!' })
+  } 
+
+  db.query('SELECT * FROM kayttaja WHERE sahkoposti = $1',[body.username], (err, result) => {
+    if (err) {
+      return next(err)
+    }
+      if(result.rows.length > 0){
+        return res.status(401).json({ error: 'Tunnus varattu' })
+      }
+      bcrypt.hash(body.password, SALT_ROUNDS) 
+      .then((passwordHash) => {
+        const uK = {
+          etunimi : body.firstname,
+          sukunimi : body.surename,
+          sahkoposti : body.username,
+          salasana : passwordHash,
+          rooli : body.role
+        }
+        db.query('INSERT INTO kayttaja(etunimi,sukunimi,sahkoposti,salasana,rooli) VALUES($1,$2,$3,$4,$5) RETURNING kayttajaid',[uK.etunimi,uK.sukunimi,uK.sahkoposti,uK.salasana,uK.rooli],(err,result) => {
+          if (err) {
+            return next(err)
+          }
+          return res.status(200).send(result.rows)
+          })
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(401).json({error: 'Hash-ongelma?'})
+      })
+    })
+})
+
+//------------------------------------------LOGIN-----------------------------------------------------------------------------
 
 // login
 app.post('/login', (req, res, next) => {
@@ -55,13 +90,9 @@ app.post('/login', (req, res, next) => {
             id: tempUser.kayttajaid,
             rights: tempUser.rooli
           }
-          const token = jwt.sign(userForToken, 'tenttiJ')
-            res.status(200).send({
-              token, 
-              username: tempUser.sahkoposti, 
-              id: tempUser.kayttajaid,
-              rights: tempUser.rooli})
-          })
+          const token = jwt.sign(userForToken, 'tenttiJ') // Token lähtee tässä
+            res.status(200).send({token, id: tempUser.kayttajaid})
+        })
   })
   .catch((err) => {
       console.log(err);

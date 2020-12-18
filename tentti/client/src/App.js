@@ -3,13 +3,13 @@ import { useState } from 'react'
 import './oma.css';
 import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
 import BuildIcon from '@material-ui/icons/Build';
-import Axios from 'axios';
-import Login from './components/login';
+import Axios from 'axios'
+import Login from './components/login'
+import Register from './components/register'
 import {
   muutaTentti,
   lisaaTentti,
   poistaTenttiKurssilta,
-  tarkistaLogin
 } from './components/dataManipulation.js';
 import initialData from './components/initialData.js'
 import reducer from './components/reducer.js';
@@ -34,9 +34,9 @@ function App() {
   const [kaaviot, setKaaviot] = useState(0)
   const [vahvista, setVahvista] = useState(0)
   const [authToken, setAuthToken] = useState("")
-  const [login, setLogin] = useState(false);
+  const [login, setLogin] = useState(false)
+  const [register, setRegister] = useState(false)
 
-  
   useEffect(() => {
 
   const createData = async () => {
@@ -123,7 +123,6 @@ function App() {
   useEffect(userHook, [])
   
   const tarkistaLogin = async(e, userdata) => {
-    
     e.preventDefault();
     try {
       let kayttaja = await Axios.post("http://localhost:4000/login", userdata)
@@ -133,6 +132,23 @@ function App() {
       }
       console.log(kayttaja)
       setLogin(true)
+      setAktiivinenKayttaja(kayttaja.data.id)  
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
+
+  const luoTunnus = async(e, uusiKayttaja) => {
+    e.preventDefault();
+    
+    try {
+      let kayttaja = await Axios.post("http://localhost:4000/register", uusiKayttaja)
+      if (kayttaja.lenght === 0){
+        console.log("missä mättää?")
+        return
+      }
+      console.log(kayttaja)
+      setRegister(false)
       setAktiivinenKayttaja(kayttaja.data.id)  
     } catch (exception) {
       console.log(exception)
@@ -151,7 +167,7 @@ function App() {
         <span className="s-nav-item" onClick={e => { 
           setHallinta(!hallinta) 
         }}><BuildIcon fontSize="small"/> </span>
-        <span className="s-nav-item-right" onClick={e => {
+        <span className="s-nav-item-right" onClick={e => {      // poistu toiminto tässä
           setPoistu(1); setTentit(0); setKaaviot(0); setLogin(false);
           window.localStorage.removeItem('loggedAppUser');
           window.location.reload();
@@ -191,7 +207,7 @@ function App() {
                 <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
                 <span className="button" onClick={()=>{setKaaviot(0)}}>Paluu</span>
               </section>: ""}
-            </section> : <section className="add"><Login handleSubmit={tarkistaLogin}/></section>}
+            </section> : register? <section className="grid-container"><Register luoTunnus={luoTunnus} register={register} setRegister={setRegister}/></section>:<section className="grid-container"><Login handleSubmit={tarkistaLogin} register={register} setRegister={setRegister}/></section>}
     </div>
   )
 }

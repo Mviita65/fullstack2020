@@ -1,43 +1,54 @@
 import React, {useState} from 'react';
+import cathead from './img/cathead.jpg'
 
-const Register = ({handleSubmit}) => {
+const Register = ({luoTunnus,register,setRegister}) => {
     
     const [firstname, setFirstname] = useState("");
     const [surename, setSurename] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [verify, setVerify] = useState("");
+    const [valinta,setValinta] = useState(false);
     const [role, setRole] = useState("");
     
-    const doSubmit =async(e) => {
-        const evaluate = () =>{
-            
-        }
-
+    const evaluate =async(e) => {
         e.preventDefault()
-        const userdata = 
+
+        setRole("oppilas")
+        if (valinta) {
+            setRole("opettaja")
+        }
+     
+        if(password === verify) {
+
+          const uusiKayttaja = 
             {
                 firstname : firstname,
                 surename : surename,
                 username : username,
                 password : password,
                 role : role
-            };
+            }
 
-        handleSubmit(e, userdata);
+          luoTunnus(e, uusiKayttaja);
+        }
     }
     
     return (
-        <div className="">
+        <div className="grid-item">
+        <section className="kysymys">
+            Rekisteröidy
         <br></br>
-        <form className="" onSubmit={e => doSubmit(e)}>
+        <form className="vastaus" onSubmit={e => evaluate(e)}>
             Etunimi: <input onChange={e=> setFirstname(e.target.value)} value={firstname}/> 
             <br/>Sukunimi: <input onChange={e=> setSurename(e.target.value)} value={surename}/>
-            <br/>Sähköposti(=käyttäjätunnus): <input onChange={e=> setUsername(e.target.value)} value={username}/> 
-            <br/>Salasana: <input onChange={e=> setPassword(e.target.value)} type="password" value={password} />
-            <br/>Salasana(check): <input onChange={e=> setCheck(e.target.value)} value={check}/>
-            <br/>Käyttäjärooli: <input onChange={e=> setRole(e.target.value)} value={role}/>
-            <br/><input type="submit" />
+            <br/>Sähköposti: <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
+            <br/>Salasana: <input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
+            <br/>Salasana(check): <input onChange={e=> setVerify(e.target.value)} type="password" value={verify} required/> {password!=="" && password===verify ? <img alt="cathead" src={cathead}/> : ""}
+            <br/>Olen opettaja: <input type="checkbox" onChange={e=> setValinta(e.target.checked)} value={valinta}/>
+            <br/><br/><input className="button" type="submit" /> <button className="button" onClick={e=>setRegister(false)}>Paluu</button><br/>
         </form>
+        </section>
         </div>
     )}
 

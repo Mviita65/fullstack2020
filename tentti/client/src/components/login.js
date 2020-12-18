@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-const Login = ({handleSubmit}) => {
+const Login = ({handleSubmit,register,setRegister}) => {
     
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -17,13 +17,25 @@ const Login = ({handleSubmit}) => {
     }
     
     return (
-        <div className="">
-        <br></br>
-        <form className="" onSubmit={e => doSubmit(e)}>
-            Käyttäjätunnus: <input onChange={e=> setUsername(e.target.value)} value={username}/> 
-            <br></br>Salasana: <input onChange={e=> setPassword(e.target.value)} type="password" value={password} />
-            <br></br><input type="submit" />
+        <div className="grid-item">
+        <section className="kysymys">
+            Kirjaudu
+        <br/>
+        <form className="vastaus" onSubmit={e => doSubmit(e)}>
+            Käyttäjätunnus: <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
+            <br/>Salasana: <input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
+            <br/><br/><input className="button" type="submit" /><br/>
         </form>
+        </section>
+        <section className="kysymys">
+            Rekisteröidy 
+        <br/>
+        <div className="vastaus">
+            Sinulla ei ole vielä käyttäjätiliä <br/><br/>
+            <button className="button" onClick={e => {setRegister(true)}}>
+            Luo tili</button><br/>
+        </div>
+        </section>
         </div>
     )}
 
