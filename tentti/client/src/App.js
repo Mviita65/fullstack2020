@@ -12,6 +12,7 @@ import {
   poistaTenttiKurssilta,
 } from './components/dataManipulation.js';
 import initialData from './components/initialData.js'
+import Kurssivalikko from './components/kurssivalinta.js'
 import reducer from './components/reducer.js';
 import Kysymykset from './components/kysymykset.js';
 import ChartExample from './components/chart.js';
@@ -20,15 +21,15 @@ import ConfirmDialog from './components/confirmDialog.js';
 
 function App() {
 
+  const versio = "versio 0.52"
   const [dataAlustettu, setDataAlustettu] = useState(false)
   const [state, dispatch] = useReducer(reducer, [])
   const [tentit, setTentit] = useState(1)
   const [tietoa, setTietoa] = useState(0)
-  const [poistu, setPoistu] = useState(0)
   const [teksti, setTeksti] = useState("")
   const [vastaukset, setVastaukset] = useState(0)
   const [aktiivinenTentti, setAktiivinenTentti] = useState(null)
-  const [aktiivinenKurssi, setAktiivinenKurssi] = useState(1)
+  const [aktiivinenKurssi, setAktiivinenKurssi] = useState(null)
   const [aktiivinenKayttaja, setAktiivinenKayttaja] = useState(null)
   const [hallinta, setHallinta] = useState(0)
   const [kaaviot, setKaaviot] = useState(0)
@@ -36,20 +37,21 @@ function App() {
   const [authToken, setAuthToken] = useState("")
   const [login, setLogin] = useState(false)
   const [register, setRegister] = useState(false)
+  const [kurssiData, setKurssiData] = useState([])
 
   useEffect(() => {
 
-  const createData = async () => {
-    try {
-      let result = await Axios.post("http://localhost:3001/tentit/",initialData)
-      dispatch({type: "INIT_DATA", data: initialData})
-      setDataAlustettu(true)
-    } catch (exception) {
-      alert("Tietokannan alustaminen epäonnistui!")
-    }
-  }
+  // const createData = async () => {
+  //   try {
+  //     let result = await Axios.post("http://localhost:3001/tentit/",initialData)
+  //     dispatch({type: "INIT_DATA", data: initialData})
+  //     setDataAlustettu(true)
+  //   } catch (exception) {
+  //     alert("Tietokannan alustaminen epäonnistui!")
+  //   }
+  // }
 
-  const fetchData = async () => { // hakee yhden kurssin tenttien tiedot ja yhden käyttäjän antamat vastaukset kurssin tenttien kysymyksiin
+  const fetchKurssiData = async () => { // hakee yhden kurssin tenttien tiedot ja yhden käyttäjän antamat vastaukset kurssin tenttien kysymyksiin
     try {
       // let result = await Axios.get("http://localhost:3001/tentit/")
       let kurssiid = aktiivinenKurssi
@@ -90,13 +92,13 @@ function App() {
     }
     catch(execption){
       console.log(execption)
-      createData()
+      // createData()
     }
   }
-    fetchData();
-  }, [aktiivinenKurssi,aktiivinenKayttaja])
+    fetchKurssiData();   
+  }, [aktiivinenKayttaja,aktiivinenKurssi])
 
-  useEffect(() => {
+  // useEffect(() => {
     
     // const updateData = async () => {
     //   try {
@@ -110,7 +112,11 @@ function App() {
     //   updateData();
     // }  
 
-  }, [state])
+  // }, [state])
+
+  let headers = {
+    headers: { Authorization: `FrontKey ${authToken}`},
+  }
 
   const userHook = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -121,7 +127,8 @@ function App() {
   }
 
   useEffect(userHook, [])
-  
+
+ 
   const tarkistaLogin = async(e, userdata) => {
     e.preventDefault();
     try {
@@ -132,7 +139,7 @@ function App() {
       }
       console.log(kayttaja)
       setLogin(true)
-      setAktiivinenKayttaja(kayttaja.data.id)  
+      setAktiivinenKayttaja(kayttaja.data.id) 
     } catch (exception) {
       console.log(exception)
     }
@@ -156,7 +163,7 @@ function App() {
   }
 
   return (
-    <div>{login? <section className="grid-container">
+    <div>{login && aktiivinenKurssi !== null ? <section className="grid-container">
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => {
            setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
@@ -167,19 +174,19 @@ function App() {
         <span className="s-nav-item" onClick={e => { 
           setHallinta(!hallinta) 
         }}><BuildIcon fontSize="small"/> </span>
-        <span className="s-nav-item-right" onClick={e => {      // poistu toiminto tässä
-          setPoistu(1); setTentit(0); setKaaviot(0); setLogin(false);
+        <span className="s-nav-item-right" onClick={e => {      // POISTU toiminto tässä !!!!!!!!
+          setTentit(0); setKaaviot(0); setLogin(false); setAktiivinenKayttaja(null)
           window.localStorage.removeItem('loggedAppUser');
           window.location.reload();
         }}>POISTU </span>  
       </nav> 
-      {poistu ? <section className="vastaus">Sovelluksen toiminta on päättynyt!</section> :
-        tentit ?
+        {tentit ?
           <div className="grid-item">
             <nav className="tenttivalikko">
               {aktiivinenTentti==null ? state.map((item,index) => <span className="t-nav-item" key={item.tenttiid} onClick={()=>{
                 setAktiivinenTentti(index); setVastaukset(0)}}>{item.tentti}</span>) : 
-                  hallinta && aktiivinenTentti!=null ? <span><input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{
+                  hallinta && aktiivinenTentti!=null ? 
+                  <span><input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{
                     muutaTentti(dispatch, event, state[aktiivinenTentti], aktiivinenTentti) }}>
                     </input> <button className="delButton" onClick={()=>{
                         if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
@@ -187,8 +194,7 @@ function App() {
                           setAktiivinenTentti(null)      
                         }
                     }}><DeleteTwoToneIcon /></button> 
-                  </span> : 
-                    state[aktiivinenTentti].tentti}
+                  </span> : state[aktiivinenTentti].tentti}
               {hallinta && aktiivinenTentti==null ? <span className="add-item" onClick={() =>{
                 var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
                 if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
@@ -196,18 +202,30 @@ function App() {
                 }> + </span> : ""}
             </nav>
           </div> : tietoa ? 
-          <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
-          {(aktiivinenTentti!=null && !poistu && !tietoa && !kaaviot) ? 
+              <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
+          {(aktiivinenTentti!=null && !tietoa && !kaaviot) ? 
             <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti} 
               vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta}
-              kaaviot={kaaviot} setKaaviot={setKaaviot}
-            /> : (kaaviot) ? 
+              kaaviot={kaaviot} setKaaviot={setKaaviot}/> : 
+            (kaaviot) ? 
               <section className="charts">
                 <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={"Doughnut"}/>
                 <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
                 <span className="button" onClick={()=>{setKaaviot(0)}}>Paluu</span>
               </section>: ""}
-            </section> : register? <section className="grid-container"><Register luoTunnus={luoTunnus} register={register} setRegister={setRegister}/></section>:<section className="grid-container"><Login handleSubmit={tarkistaLogin} register={register} setRegister={setRegister}/></section>}
+      </section> : login && aktiivinenKurssi === null? 
+      <section className="grid-container">
+        <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA<span className="s-nav-item-right">{versio}</span></nav>Valitse kurssi:
+        <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} />
+      </section>  :register ? 
+      <section className="grid-container">
+        <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA<span className="s-nav-item-right">{versio}</span></nav>
+        <Register luoTunnus={luoTunnus} register={register} setRegister={setRegister}/>
+      </section>: 
+      <section className="grid-container">
+        <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA <span className="s-nav-item-right">{versio}</span></nav>
+        <Login handleSubmit={tarkistaLogin} register={register} setRegister={setRegister}/>
+      </section>}
     </div>
   )
 }

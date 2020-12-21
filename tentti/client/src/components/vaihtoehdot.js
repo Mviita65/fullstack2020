@@ -28,13 +28,13 @@ function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi 
               <input type="checkbox" checked={item.valittu} readOnly></input>            
               <input type="checkbox" checked={item.korrekti} readOnly></input>
               {item.vaihtoehto} {item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
-          </div>) :
+            </div>) :
             props.data.vaihtoehdot.map((item, veIndex) =>                         // tentti menossa (vastaukset poissa)
               <div key={item.vaihtoehtoid} className="vastaus">
                 <input type="checkbox" checked={item.valittu} onChange={(event) => {  // vaihtoehto voidaan valita vastaukseksi tai poistaa
                   vastausAnnettu(event,props,veIndex)}}>
                 </input> {item.vaihtoehto}
-            </div>)}
+              </div>)}
             {props.hallinta ? <div className="add"><span className="add-ve" onClick={()=>{  // jos hallintatila, voi lisätä uuden vaihtoehdon
               lisaaVaihtoehto(props)}}> + </span></div> : ""}
       </section>

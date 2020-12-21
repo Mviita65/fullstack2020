@@ -35,7 +35,7 @@ const Register = ({luoTunnus,register,setRegister}) => {
     }
     
     return (
-        <div className="grid-item">
+        <div className="grid-item"><br/>
         <section className="kysymys">
             Rekisteröidy
         <br></br>

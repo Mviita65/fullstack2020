@@ -17,9 +17,9 @@ const Login = ({handleSubmit,register,setRegister}) => {
     }
     
     return (
-        <div className="grid-item">
+        <div className="grid-item"><br/>
         <section className="kysymys">
-            Kirjaudu
+            Kirjaudu sähköpostiosoitteella
         <br/>
         <form className="vastaus" onSubmit={e => doSubmit(e)}>
             Käyttäjätunnus: <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
@@ -31,7 +31,7 @@ const Login = ({handleSubmit,register,setRegister}) => {
             Rekisteröidy 
         <br/>
         <div className="vastaus">
-            Sinulla ei ole vielä käyttäjätiliä <br/><br/>
+            Et ole vielä rekisteröinyt sähköpostia käyttäjätiliksi? <br/><br/>
             <button className="button" onClick={e => {setRegister(true)}}>
             Luo tili</button><br/>
         </div>
