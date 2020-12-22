@@ -24,7 +24,7 @@ function App() {
   const versio = "versio 0.52"
   const [dataAlustettu, setDataAlustettu] = useState(false)
   const [state, dispatch] = useReducer(reducer, [])
-  const [tentit, setTentit] = useState(1)
+  const [tentit, setTentit] = useState(0)
   const [tietoa, setTietoa] = useState(0)
   const [teksti, setTeksti] = useState("")
   const [vastaukset, setVastaukset] = useState(0)
@@ -38,6 +38,7 @@ function App() {
   const [login, setLogin] = useState(false)
   const [register, setRegister] = useState(false)
   const [kurssiData, setKurssiData] = useState([])
+  const [kurssiDataIndex, setKurssiDataIndex] = useState(null)
 
   useEffect(() => {
 
@@ -52,6 +53,7 @@ function App() {
   // }
 
   const fetchKurssiData = async () => { // hakee yhden kurssin tenttien tiedot ja yhden käyttäjän antamat vastaukset kurssin tenttien kysymyksiin
+    if (aktiivinenKurssi) {
     try {
       // let result = await Axios.get("http://localhost:3001/tentit/")
       let kurssiid = aktiivinenKurssi
@@ -87,6 +89,8 @@ function App() {
         dispatch({type: "INIT_DATA", data: result.data})
         setDataAlustettu(true)
       } else {
+        result.data = []
+        dispatch({type: "INIT_DATA", data: result.data})
         throw("Nyt pitää data kyllä alustaa!")
       }
     }
@@ -95,6 +99,7 @@ function App() {
       // createData()
     }
   }
+}
     fetchKurssiData();   
   }, [aktiivinenKayttaja,aktiivinenKurssi])
 
@@ -163,11 +168,15 @@ function App() {
   }
 
   return (
-    <div>{login && aktiivinenKurssi !== null ? <section className="grid-container">
+    <div>{login? <section className="grid-container">
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => {
-           setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
-        }}>TENTIT </span>
+          setTentit(0);setAktiivinenTentti(null);setAktiivinenKurssi(null);
+          <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} />
+        }}>KURSSIT </span>
+        {kurssiDataIndex !== null ? <span className="s-nav-item" onClick={e => {
+           setAktiivinenKurssi(null);setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
+        }}>TENTIT </span>:<span>TENTIT </span>}
         <span className="s-nav-item" onClick={e => { 
           setTentit(0); setTietoa(1) 
         }}>TIETOA SOVELLUKSESTA </span>
@@ -175,54 +184,57 @@ function App() {
           setHallinta(!hallinta) 
         }}><BuildIcon fontSize="small"/> </span>
         <span className="s-nav-item-right" onClick={e => {      // POISTU toiminto tässä !!!!!!!!
-          setTentit(0); setKaaviot(0); setLogin(false); setAktiivinenKayttaja(null)
+          setTentit(0); setKaaviot(0); setLogin(false); setAktiivinenKayttaja(null); setAktiivinenKurssi(null);
           window.localStorage.removeItem('loggedAppUser');
           window.location.reload();
         }}>POISTU </span>  
       </nav> 
-        {tentit ?
-          <div className="grid-item">
-            <nav className="tenttivalikko">
-              {aktiivinenTentti==null ? state.map((item,index) => <span className="t-nav-item" key={item.tenttiid} onClick={()=>{
-                setAktiivinenTentti(index); setVastaukset(0)}}>{item.tentti}</span>) : 
-                  hallinta && aktiivinenTentti!=null ? 
-                  <span><input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{
-                    muutaTentti(dispatch, event, state[aktiivinenTentti], aktiivinenTentti) }}>
-                    </input> <button className="delButton" onClick={()=>{
-                        if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
-                          poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
-                          setAktiivinenTentti(null)      
-                        }
-                    }}><DeleteTwoToneIcon /></button> 
-                  </span> : state[aktiivinenTentti].tentti}
-              {hallinta && aktiivinenTentti==null ? <span className="add-item" onClick={() =>{
-                var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
-                if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
-                  lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi)}}
-                }> + </span> : ""}
-            </nav>
-          </div> : tietoa ? 
-              <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
-          {(aktiivinenTentti!=null && !tietoa && !kaaviot) ? 
-            <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti} 
-              vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta}
-              kaaviot={kaaviot} setKaaviot={setKaaviot}/> : 
-            (kaaviot) ? 
-              <section className="charts">
-                <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={"Doughnut"}/>
-                <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
+        {aktiivinenKurssi === null && !tentit? 
+        <section className="grid-container">
+           <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex}/>
+        </section> 
+        : tentit?
+        <div className="grid-item"> {kurssiData[kurssiDataIndex].kurssi}
+          <nav className="tenttivalikko">
+            {aktiivinenTentti==null ? 
+            state.map((item,index) => 
+            <span className="t-nav-item" key={item.tenttiid} onClick={()=>{
+                setAktiivinenTentti(index); setVastaukset(0)}}>{item.tentti}
+            </span>) 
+            : hallinta && aktiivinenTentti!=null ? 
+            <span><input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{
+              muutaTentti(dispatch, event, state[aktiivinenTentti], aktiivinenTentti) }}>
+              </input> <button className="delButton" onClick={()=>{
+                if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
+                  poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
+                  setAktiivinenTentti(null)      
+                }}}><DeleteTwoToneIcon /></button> 
+            </span> : state[aktiivinenTentti].tentti}
+            {hallinta && aktiivinenTentti==null ? <span className="add-item" onClick={() =>{
+              var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
+              if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
+                lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi)}}
+              }> + </span> : ""}
+          </nav>
+        </div>
+        : tietoa ? 
+        <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
+        {(aktiivinenTentti!=null && !tietoa && !kaaviot) ? 
+          <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti}
+              vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot}/> 
+          : (kaaviot) ? 
+          <section className="charts">
+            <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={"Doughnut"}/>
+            <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
                 <span className="button" onClick={()=>{setKaaviot(0)}}>Paluu</span>
-              </section>: ""}
-      </section> : login && aktiivinenKurssi === null? 
-      <section className="grid-container">
-        <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA<span className="s-nav-item-right">{versio}</span></nav>Valitse kurssi:
-        <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} />
-      </section>  :register ? 
+          </section>: "" }
+      </section>
+      :register ? 
       <section className="grid-container">
         <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA<span className="s-nav-item-right">{versio}</span></nav>
         <Register luoTunnus={luoTunnus} register={register} setRegister={setRegister}/>
-      </section>: 
-      <section className="grid-container">
+      </section>
+      :<section className="grid-container">
         <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA <span className="s-nav-item-right">{versio}</span></nav>
         <Login handleSubmit={tarkistaLogin} register={register} setRegister={setRegister}/>
       </section>}

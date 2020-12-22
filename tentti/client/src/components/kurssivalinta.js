@@ -1,7 +1,8 @@
 import Axios from 'axios';
+import '../oma.css';
 import React, { useEffect } from 'react';
 
-const Kurssivalikko = ({aktiivinenKurssi,setAktiivinenKurssi,kurssiData,setKurssiData}) => {
+const Kurssivalikko = ({aktiivinenKurssi,setAktiivinenKurssi,kurssiData,setKurssiData,kurssiDataIndex,setKurssiDataIndex,tentit,setTentit}) => {
 
   const fetchKurssiData = async () => {
     try {
@@ -15,8 +16,9 @@ const Kurssivalikko = ({aktiivinenKurssi,setAktiivinenKurssi,kurssiData,setKurss
             aloituspvm : result.data[i].aloituspvm
           }
           kurssitiedot = kurssitiedot.concat(kurssitieto)
-          setKurssiData(kurssitiedot)
         }
+        setKurssiData(kurssitiedot)
+        return
       }
     }
     catch (exception) {
@@ -24,14 +26,16 @@ const Kurssivalikko = ({aktiivinenKurssi,setAktiivinenKurssi,kurssiData,setKurss
     }
   };
 
-  useEffect(fetchKurssiData, [])
+  useEffect(fetchKurssiData)
 
   return (
-    <div className="grid-item"><br/>
+    <div className="grid-item"><br/>KURSSIVALINTA:
         {kurssiData.map((item, index) =>
             <div key={item.kurssiid} className="kysymys">
-                <span onClick={() =>{
-                    setAktiivinenKurssi(item.kurssiid)
+                <span className="t-nav-item" onClick={() =>{
+                    setAktiivinenKurssi(item.kurssiid);
+                    setKurssiDataIndex(index)
+                    setTentit(1);
                 }}>{item.kurssi}
                 </span>
             </div>

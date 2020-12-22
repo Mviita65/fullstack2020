@@ -198,7 +198,7 @@ app.get('/kysymys/tentti/:id', (req, res, next) => {
 
 // haetaan yhden kysymyksen vaihtoehdot (ei vaadita valintaa tenttikysymyksissä)
 app.get('/vaihtoehto/kysymys/:id', (req, res, next) => {
-  db.query('SELECT * FROM vaihtoehto WHERE vaihtoehto_kysymys_id = $1', [req.params.id], (err, result) => {
+  db.query('SELECT * FROM vaihtoehto WHERE vaihtoehto_kysymys_id = $1 ORDER BY vaihtoehtoid', [req.params.id], (err, result) => {
     if (err) {
       return next(err)
     }
