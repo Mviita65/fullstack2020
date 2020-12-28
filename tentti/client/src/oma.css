@@ -72,6 +72,10 @@ section {
   border-color: #f7f5f5;;
 }
 
+.kurssivalinta {
+  font-weight: bold;
+}
+
 .vastaus {
   font-weight: normal;
   padding: 0.75rem;

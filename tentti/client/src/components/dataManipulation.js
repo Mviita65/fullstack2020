@@ -5,7 +5,7 @@ import Axios from 'axios';
   const muutaTentti = async(dispatch,event,data,aktiivinenTentti) => {
     let id = data.tenttiid
     let body = {
-      tentti: event.target.value.toUpperCase(),
+      tentti: event.value.toUpperCase(),
     }
     try {
       let result = await Axios.put("http://localhost:4000/tentti/"+id,body)
@@ -18,7 +18,7 @@ import Axios from 'axios';
   const muutaKysymys = async(event,props,kysymysIndex) => {
     let id = props.data.kysymykset[kysymysIndex].kysymysid
     let body = {
-      kysymys: event.target.value,
+      kysymys: event.value,
       kysymys_aihe_id: props.data.kysymykset[kysymysIndex].kysymys_aihe_id
     } 
     try {
@@ -33,7 +33,7 @@ import Axios from 'axios';
   const muutaVaihtoehtoTeksti = async(event,props,veIndex) => {
     let id = props.data.vaihtoehdot[veIndex].vaihtoehtoid
     let body = {
-      vaihtoehto: event.target.value,
+      vaihtoehto: event.value,
       korrekti: props.data.vaihtoehdot[veIndex].korrekti,
       vaihtoehto_kysymys_id: props.data.kysymysid
     } 

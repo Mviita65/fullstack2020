@@ -15,8 +15,11 @@ function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi 
           <div key={item.vaihtoehtoid} className="vastaus">
             <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
                 muutaVaihtoehtoArvo(event,props,veIndex)}}></input>
-            <input type="text" value={item.vaihtoehto} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä
-                muutaVaihtoehtoTeksti(event,props,veIndex)}}> 
+            {/* <input type="text" value={item.vaihtoehto} onChange={(event) =>{          // voidaan muotoilla vaihtoehdon tekstiä */}
+             <input type="text" defaultValue={item.vaihtoehto} id={item.vaihtoehtoid} onBlur={(event) => {
+              var newText = document.getElementById(item.vaihtoehtoid);
+              muutaVaihtoehtoTeksti(newText, props, veIndex);
+            }}> 
             </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
               if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].vaihtoehto+")?")){
                 poistaVaihtoehto(props,veIndex)

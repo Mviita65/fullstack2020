@@ -2,7 +2,11 @@ import Axios from 'axios';
 import '../oma.css';
 import React, { useEffect } from 'react';
 
-const Kurssivalikko = ({aktiivinenKurssi,setAktiivinenKurssi,kurssiData,setKurssiData,kurssiDataIndex,setKurssiDataIndex,tentit,setTentit}) => {
+const Kurssivalikko = ({
+  aktiivinenKurssi,setAktiivinenKurssi,
+  kurssiData,setKurssiData,
+  kurssiDataIndex,setKurssiDataIndex,
+  tentit,setTentit}) => {
 
   const fetchKurssiData = async () => {
     try {
@@ -33,9 +37,9 @@ const Kurssivalikko = ({aktiivinenKurssi,setAktiivinenKurssi,kurssiData,setKurss
         {kurssiData.map((item, index) =>
             <div key={item.kurssiid} className="kysymys">
                 <span className="t-nav-item" onClick={() =>{
-                    setAktiivinenKurssi(item.kurssiid);
-                    setKurssiDataIndex(index)
-                    setTentit(1);
+                    setAktiivinenKurssi(item.kurssiid); // valitun kurssin tenttien tietojen hakua varten
+                    setKurssiDataIndex(index) // valitun kurssin tietoja varten 
+                    setTentit(1);     // tenttinäyttö päälle kurssin valinnan jälkeen
                 }}>{item.kurssi}
                 </span>
             </div>

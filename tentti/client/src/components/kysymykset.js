@@ -11,8 +11,10 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
     return <section>
       {props.hallinta ? props.data.kysymykset.map((item, kysymysIndex) =>     // jos hallinta valittu
         <div key={item.kysymysid} className="kysymys">
-          <input type="text" value={item.kysymys} onChange={(event) =>{       // kysymystä voidaan muotoilla
-            muutaKysymys(event,props,kysymysIndex)}}>
+          {/* <input type="text" value={item.kysymys} onChange={(event) =>{       // kysymystä voidaan muotoilla */}
+          <input type="text" defaultValue={item.kysymys} id={item.kysymysid} onBlur={(event) => {
+              var newText = document.getElementById(item.kysymysid);
+              muutaKysymys(newText,props,kysymysIndex)}}>
           </input> <button className="delButton" onClick={()=>{               // kysymys voidaan poistaa
             if (window.confirm("Poistetaanko kysymys ("+props.data.kysymykset[kysymysIndex].kysymys+") tentiltä?")){
               poistaKysymysTentilta(props,kysymysIndex)

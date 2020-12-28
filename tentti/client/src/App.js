@@ -171,14 +171,14 @@ function App() {
     <div>{login? <section className="grid-container">
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => {
-          setTentit(0);setAktiivinenTentti(null);setAktiivinenKurssi(null);
+          setTentit(0);setTietoa(0);setAktiivinenTentti(null);setAktiivinenKurssi(null);
           <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} />
         }}>KURSSIT </span>
         {kurssiDataIndex !== null ? <span className="s-nav-item" onClick={e => {
-           setAktiivinenKurssi(null);setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
+          setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
         }}>TENTIT </span>:<span>TENTIT </span>}
         <span className="s-nav-item" onClick={e => { 
-          setTentit(0); setTietoa(1) 
+          setTentit(0); setKaaviot(0); setTietoa(1);  
         }}>TIETOA SOVELLUKSESTA </span>
         <span className="s-nav-item" onClick={e => { 
           setHallinta(!hallinta) 
@@ -194,23 +194,27 @@ function App() {
            <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex}/>
         </section> 
         : tentit?
-        <div className="grid-item"> {kurssiData[kurssiDataIndex].kurssi}
+        <div className="grid-item"> KURSSI: <span className="kurssivalinta">{kurssiData[kurssiDataIndex].kurssi}</span>
           <nav className="tenttivalikko">
-            {aktiivinenTentti==null ? 
+            {aktiivinenTentti===null ? 
             state.map((item,index) => 
             <span className="t-nav-item" key={item.tenttiid} onClick={()=>{
                 setAktiivinenTentti(index); setVastaukset(0)}}>{item.tentti}
             </span>) 
-            : hallinta && aktiivinenTentti!=null ? 
-            <span><input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{
-              muutaTentti(dispatch, event, state[aktiivinenTentti], aktiivinenTentti) }}>
+            : hallinta && aktiivinenTentti!==null ? 
+            <span>
+              {/* <input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{ */}
+              <input type="text" defaultValue={state[aktiivinenTentti].tentti} id={state[aktiivinenTentti].tenttiid} onBlur={(event) => {
+                var newText = document.getElementById(state[aktiivinenTentti].tenttiid);
+                newText.value = newText.value.toUpperCase();
+                muutaTentti(dispatch, newText, state[aktiivinenTentti], aktiivinenTentti) }}>
               </input> <button className="delButton" onClick={()=>{
                 if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
                   poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
                   setAktiivinenTentti(null)      
                 }}}><DeleteTwoToneIcon /></button> 
             </span> : state[aktiivinenTentti].tentti}
-            {hallinta && aktiivinenTentti==null ? <span className="add-item" onClick={() =>{
+            {hallinta && aktiivinenTentti===null ? <span className="add-item" onClick={() =>{
               var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
               if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
                 lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi)}}
@@ -219,7 +223,7 @@ function App() {
         </div>
         : tietoa ? 
         <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
-        {(aktiivinenTentti!=null && !tietoa && !kaaviot) ? 
+        {(aktiivinenTentti!==null && !tietoa && !kaaviot) ? 
           <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti}
               vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot}/> 
           : (kaaviot) ? 
