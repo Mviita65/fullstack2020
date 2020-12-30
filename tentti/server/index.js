@@ -135,6 +135,16 @@ app.get('/kurssi', (req, res, next) => {
   })
 })
 
+// haetaan tentit ja kurssit joilla tentti on
+app.get('/tentti', (req,res,next) => {
+  db.query('SELECT tentti,tenttiid,kurssi,kurssiid FROM (( tentti LEFT JOIN kurssitentti ON kurssi_tentti_id = tenttiid) LEFT JOIN kurssi on kurssi_kurssi_id = kurssiid) ORDER BY tentti', (err, result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
 // haetaan kurssin tentit = tenttivalikko
 app.get('/kurssi/:id', (req, res, next) => {
   db.query('SELECT * FROM tentti WHERE tenttiid IN (SELECT kurssi_tentti_id FROM kurssitentti WHERE kurssi_kurssi_id = $1)', [req.params.id], (err, result) => {

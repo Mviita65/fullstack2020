@@ -13,6 +13,7 @@ import {
 } from './components/dataManipulation.js';
 import initialData from './components/initialData.js'
 import Kurssivalikko from './components/kurssivalinta.js'
+import Tenttivalikko from './components/tenttivalinta.js'
 import reducer from './components/reducer.js';
 import Kysymykset from './components/kysymykset.js';
 import ChartExample from './components/chart.js';
@@ -39,6 +40,8 @@ function App() {
   const [register, setRegister] = useState(false)
   const [kurssiData, setKurssiData] = useState([])
   const [kurssiDataIndex, setKurssiDataIndex] = useState(null)
+  const [tenttiData, setTenttiData] = useState([])
+ 
 
   useEffect(() => {
 
@@ -171,12 +174,13 @@ function App() {
     <div>{login? <section className="grid-container">
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => {
-          setTentit(0);setTietoa(0);setAktiivinenTentti(null);setAktiivinenKurssi(null);
-          <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} />
+          setTentit(0);setTietoa(0);setAktiivinenTentti(null);setAktiivinenKurssi(null); setKurssiDataIndex(null);
         }}>KURSSIT </span>
         {kurssiDataIndex !== null ? <span className="s-nav-item" onClick={e => {
           setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
-        }}>TENTIT </span>:<span>TENTIT </span>}
+        }}>TENTIT </span>:<span className="s-nav-item" onClick={e => {
+          setTentit(1);setTietoa(0);setAktiivinenTentti(null);setAktiivinenKurssi(null); setKurssiDataIndex(null);
+        }}>TENTIT </span>}
         <span className="s-nav-item" onClick={e => { 
           setTentit(0); setKaaviot(0); setTietoa(1);  
         }}>TIETOA SOVELLUKSESTA </span>
@@ -193,7 +197,10 @@ function App() {
         <section className="grid-container">
            <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex}/>
         </section> 
-        : tentit?
+        : aktiivinenKurssi === null && tentit?
+        <section className="grid-container">
+           <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} hallinta={hallinta} setHallinta={setHallinta} />
+        </section> : aktiivinenKurssi !== null && tentit?   
         <div className="grid-item"> KURSSI: <span className="kurssivalinta">{kurssiData[kurssiDataIndex].kurssi}</span>
           <nav className="tenttivalikko">
             {aktiivinenTentti===null ? 
@@ -215,10 +222,9 @@ function App() {
                 }}}><DeleteTwoToneIcon /></button> 
             </span> : state[aktiivinenTentti].tentti}
             {hallinta && aktiivinenTentti===null ? <span className="add-item" onClick={() =>{
-              var uusiTenttiNimi = prompt("Anna uuden tentin nimi?", "");
-              if (uusiTenttiNimi !== null && uusiTenttiNimi !== ""){
-                lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi)}}
-              }> + </span> : ""}
+              var uusiTenttiNimi = "uusi";
+              lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi)
+            }}> + </span> : ""}
           </nav>
         </div>
         : tietoa ? 

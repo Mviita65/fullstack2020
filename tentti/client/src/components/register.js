@@ -40,11 +40,11 @@ const Register = ({luoTunnus,register,setRegister}) => {
             Rekisteröidy
         <br></br>
         <form className="vastaus" onSubmit={e => evaluate(e)}>
-            Etunimi: <input onChange={e=> setFirstname(e.target.value)} value={firstname}/> 
-            <br/>Sukunimi: <input onChange={e=> setSurename(e.target.value)} value={surename}/>
-            <br/>Sähköposti: <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
-            <br/>Salasana: <input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
-            <br/>Salasana(check): <input onChange={e=> setVerify(e.target.value)} type="password" value={verify} required/> {password!=="" && password===verify ? <img alt="cathead" src={cathead}/> : ""}
+            Etunimi:<br/> <input onChange={e=> setFirstname(e.target.value)} value={firstname}/> 
+            <br/>Sukunimi:<br/> <input onChange={e=> setSurename(e.target.value)} value={surename}/>
+            <br/>Sähköposti:<br/> <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
+            <br/>Salasana:<br/> <input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
+            <br/>Salasana uudelleen:<br/> <input onChange={e=> setVerify(e.target.value)} type="password" value={verify} required/> {password!=="" && password===verify ? <img alt="cathead" src={cathead}/> : ""}
             <br/>Olen opettaja: <input type="checkbox" onChange={e=> setValinta(e.target.checked)} value={valinta}/>
             <br/><br/><input className="button" type="submit" /> <button className="button" onClick={e=>setRegister(false)}>Paluu</button><br/>
         </form>

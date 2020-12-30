@@ -90,7 +90,7 @@ import Axios from 'axios';
   const lisaaTentti = async(dispatch,uusiTenttiNimi,aktiivinenKurssi) => {
 
     let body = {
-      tentti: uusiTenttiNimi.toUpperCase(),
+      tentti: uusiTenttiNimi
     }
     try {
       let result = await Axios.post("http://localhost:4000/tentti",body)

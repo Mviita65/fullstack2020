@@ -22,8 +22,8 @@ const Login = ({handleSubmit,register,setRegister}) => {
             Kirjaudu sähköpostiosoitteella
         <br/>
         <form className="vastaus" onSubmit={e => doSubmit(e)}>
-            Käyttäjätunnus: <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
-            <br/>Salasana: <input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
+            Sähköposti: <br/><input onChange={e=> setUsername(e.target.value)} value={username} required/> 
+            <br/>Salasana kurssitentteihin: <br/><input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
             <br/><br/><input className="button" type="submit" /><br/>
         </form>
         </section>
@@ -31,7 +31,7 @@ const Login = ({handleSubmit,register,setRegister}) => {
             Rekisteröidy 
         <br/>
         <div className="vastaus">
-            Et ole vielä rekisteröinyt sähköpostia käyttäjätiliksi? <br/><br/>
+            Sähköpostia ei ole vielä rekisteröity käyttäjätiliksi? <br/><br/>
             <button className="button" onClick={e => {setRegister(true)}}>
             Luo tili</button><br/>
         </div>
