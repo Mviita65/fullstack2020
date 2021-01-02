@@ -17,7 +17,7 @@ const Kurssivalikko = ({
           let kurssitieto = {
             kurssiid : result.data[i].kurssiid,
             kurssi : result.data[i].kurssi,
-            aloituspvm : result.data[i].aloituspvm
+            aloituspvm : new Date(result.data[i].aloituspvm).toLocaleDateString()
           }
           kurssitiedot = kurssitiedot.concat(kurssitieto)
         }
@@ -40,7 +40,7 @@ const Kurssivalikko = ({
                     setAktiivinenKurssi(item.kurssiid); // valitun kurssin tenttien tietojen hakua varten
                     setKurssiDataIndex(index) // valitun kurssin tietoja varten 
                     setTentit(1);     // tenttinäyttö päälle kurssin valinnan jälkeen
-                }}>{item.kurssi}
+                }}>{item.kurssi} ● {item.aloituspvm}
                 </span>
             </div>
         )}

@@ -91,7 +91,7 @@ app.post('/login', (req, res, next) => {
             rights: tempUser.rooli
           }
           const token = jwt.sign(userForToken, 'tenttiJ') // Token lähtee tässä
-            res.status(200).send({token, id: tempUser.kayttajaid})
+            res.status(200).send({token, id: tempUser.kayttajaid, etunimi: tempUser.etunimi, sukunimi: tempUser.sukunimi})
         })
   })
   .catch((err) => {
@@ -114,6 +114,16 @@ app.get('/kayttaja', (req, res, next) => {
   })
 })
 
+// haetaan käyttäjä
+app.get('/kayttaja/:id', (req, res, next) => {
+  db.query('SELECT etunimi, sukunimi FROM kayttaja WHERE kayttajaid = $1',[req.params.id], (err,result) => {
+    if (err) {
+      return next(err)
+    }
+    res.send(result.rows)
+  })
+})
+
 // haetaan kurssin ylläpitäjä
 app.get('/kurssikasittelija/:id', (req, res, next) => {
   db.query('SELECT kkasittelija_kayttaja_id FROM kurssikasittelija WHERE kkasittelija_kurssi_id = $1',[req.params.id], (err, result) => {
@@ -127,7 +137,7 @@ app.get('/kurssikasittelija/:id', (req, res, next) => {
 
 // haetaan kurssit
 app.get('/kurssi', (req, res, next) => {
-  db.query('SELECT * FROM kurssi', (err, result) => {
+  db.query('SELECT * FROM kurssi ORDER BY kurssi', (err, result) => {
     if (err) {
       return next(err)
     }
@@ -135,9 +145,10 @@ app.get('/kurssi', (req, res, next) => {
   })
 })
 
-// haetaan tentit ja kurssit joilla tentti on
+// haetaan tentit ja kurssit joilla tentti on sekä tentin ylläpitäjä
 app.get('/tentti', (req,res,next) => {
-  db.query('SELECT tentti,tenttiid,kurssi,kurssiid FROM (( tentti LEFT JOIN kurssitentti ON kurssi_tentti_id = tenttiid) LEFT JOIN kurssi on kurssi_kurssi_id = kurssiid) ORDER BY tentti', (err, result) => {
+  req.params.ehto = "oppilas"
+  db.query('SELECT tentti,tenttiid,minimipisteet,julkaisupvm,kurssi,kurssiid,sahkoposti,kayttajaid FROM (((( tentti LEFT JOIN kurssitentti ON kurssi_tentti_id = tenttiid) LEFT JOIN kurssi ON kurssi_kurssi_id = kurssiid) LEFT JOIN tenttikasittelija ON tkasittelija_tentti_id = tenttiid) LEFT JOIN kayttaja ON tkasittelija_kayttaja_id = kayttajaid) WHERE rooli <> $1 ORDER BY tentti',[req.params.ehto], (err, result) => {
     if (err) {
       return next(err)
     }
@@ -198,7 +209,7 @@ app.get('/kysymys/aihe/:id', (req, res, next) => {
 
 // haetaan tentin kaikki kysymykset (kysymys tenttikysymyksissä)
 app.get('/kysymys/tentti/:id', (req, res, next) => {
-  db.query('SELECT * FROM kysymys WHERE kysymysid IN (SELECT tkysymys_kysymys_id FROM tenttikysymys WHERE tkysymys_tentti_id = $1)', [req.params.id], (err, result) => {
+  db.query('SELECT * FROM kysymys WHERE kysymysid IN (SELECT tkysymys_kysymys_id FROM tenttikysymys WHERE tkysymys_tentti_id = $1) ORDER BY kysymysid', [req.params.id], (err, result) => {
     if (err) {
       return next(err)
     }

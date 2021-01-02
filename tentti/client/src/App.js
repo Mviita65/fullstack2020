@@ -40,6 +40,7 @@ function App() {
   const [register, setRegister] = useState(false)
   const [kurssiData, setKurssiData] = useState([])
   const [kurssiDataIndex, setKurssiDataIndex] = useState(null)
+  const [kayttajaNimi, setKayttajaNimi] = useState("")
   const [tenttiData, setTenttiData] = useState([])
  
 
@@ -56,53 +57,55 @@ function App() {
   // }
 
   const fetchKurssiData = async () => { // hakee yhden kurssin tenttien tiedot ja yhden käyttäjän antamat vastaukset kurssin tenttien kysymyksiin
-    if (aktiivinenKurssi) {
-    try {
-      // let result = await Axios.get("http://localhost:3001/tentit/")
-      let kurssiid = aktiivinenKurssi
-      let kayttajaid = aktiivinenKayttaja // oppilas eli vastaukset yhdeltä oppilaalta
-      let result = await Axios.get("http://localhost:4000/kurssi/"+kurssiid)
-      if (result.data.length>0){
-        for (var i = 0; i < result.data.length; i++){       // käydään läpi noudetun kurssin tentit
-          result.data[i].kysymykset = []
-          let kysymykset = await Axios.get("http://localhost:4000/kysymys/tentti/"+result.data[i].tenttiid)
-          result.data[i].kysymykset = kysymykset.data
-          if (result.data[i].kysymykset.length>0){
-            for (var j = 0; j < result.data[i].kysymykset.length; j++){ // käydään läpi noudetut tentin kysymykset
-              result.data[i].kysymykset[j].vaihtoehdot = []
-              let vaihtoehdot = await Axios.get("http://localhost:4000/vaihtoehto/kysymys/"+result.data[i].kysymykset[j].kysymysid)
-              result.data[i].kysymykset[j].vaihtoehdot = vaihtoehdot.data  
-              let vastaukset = await Axios.get("http://localhost:4000/kayttaja/"+kayttajaid+"/kysymys/"+result.data[i].kysymykset[j].kysymysid)
-              if (result.data[i].kysymykset[j].vaihtoehdot.length>0){
-                for (var k = 0; k < result.data[i].kysymykset[j].vaihtoehdot.length; k++){  // käydään läpi noudetut kysymyksen vaihtoehdot
-                  result.data[i].kysymykset[j].vaihtoehdot[k].valittu = false               // käyttäjän vastaukset alustetaan falsella
-                  if (vastaukset.data.length>0){                                            
-                    for (var l = 0; l < vastaukset.data.length; l++){                       // käydään läpi onko käyttäjä valinnut vaihtoehdon oikeaksi
-                      if (result.data[i].kysymykset[j].vaihtoehdot[k].vaihtoehtoid === vastaukset.data[l].vastaus_vaihtoehto_id) {
-                        result.data[i].kysymykset[j].vaihtoehdot[k].valittu = true
+    if (aktiivinenKurssi!==null) {
+      try {
+        // let result = await Axios.get("http://localhost:3001/tentit/")
+        let kurssiid = aktiivinenKurssi
+        let kayttajaid = aktiivinenKayttaja // oppilas eli vastaukset yhdeltä oppilaalta
+        let result = await Axios.get("http://localhost:4000/kurssi/"+kurssiid)
+        if (result.data.length>0){
+          for (var i = 0; i < result.data.length; i++){       // käydään läpi noudetun kurssin tentit
+            result.data[i].kysymykset = []
+            let kysymykset = await Axios.get("http://localhost:4000/kysymys/tentti/"+result.data[i].tenttiid)
+            result.data[i].kysymykset = kysymykset.data
+            if (result.data[i].kysymykset.length>0){
+              for (var j = 0; j < result.data[i].kysymykset.length; j++){ // käydään läpi noudetut tentin kysymykset
+                result.data[i].kysymykset[j].vaihtoehdot = []
+                let vaihtoehdot = await Axios.get("http://localhost:4000/vaihtoehto/kysymys/"+result.data[i].kysymykset[j].kysymysid)
+                result.data[i].kysymykset[j].vaihtoehdot = vaihtoehdot.data  
+                let vastaukset = await Axios.get("http://localhost:4000/kayttaja/"+kayttajaid+"/kysymys/"+result.data[i].kysymykset[j].kysymysid)
+                if (result.data[i].kysymykset[j].vaihtoehdot.length>0){
+                  for (var k = 0; k < result.data[i].kysymykset[j].vaihtoehdot.length; k++){  // käydään läpi noudetut kysymyksen vaihtoehdot
+                    result.data[i].kysymykset[j].vaihtoehdot[k].valittu = false               // käyttäjän vastaukset alustetaan falsella
+                    if (vastaukset.data.length>0){                                            
+                      for (var l = 0; l < vastaukset.data.length; l++){                       // käydään läpi onko käyttäjä valinnut vaihtoehdon oikeaksi
+                        if (result.data[i].kysymykset[j].vaihtoehdot[k].vaihtoehtoid === vastaukset.data[l].vastaus_vaihtoehto_id) {
+                          result.data[i].kysymykset[j].vaihtoehdot[k].valittu = true
+                        }
                       }
-                    }
-                  }  
-                }
-              }        
+                    }  
+                  }
+                }        
+              }
             }
           }
+          console.log(result.data)
+          dispatch({type: "INIT_DATA", data: result.data})
+          setDataAlustettu(true)
+        } else {
+          result.data = []
+          dispatch({type: "INIT_DATA", data: result.data})
+          throw("Nyt pitää data kyllä alustaa!")
         }
-        console.log(result.data)
-        dispatch({type: "INIT_DATA", data: result.data})
-        setDataAlustettu(true)
-      } else {
-        result.data = []
-        dispatch({type: "INIT_DATA", data: result.data})
-        throw("Nyt pitää data kyllä alustaa!")
       }
-    }
-    catch(execption){
-      console.log(execption)
-      // createData()
+      catch(execption){
+        console.log(execption)
+        // createData()
+      }
+
     }
   }
-}
+
     fetchKurssiData();   
   }, [aktiivinenKayttaja,aktiivinenKurssi])
 
@@ -148,6 +151,7 @@ function App() {
       console.log(kayttaja)
       setLogin(true)
       setAktiivinenKayttaja(kayttaja.data.id) 
+      setKayttajaNimi(`${kayttaja.data.etunimi} ${kayttaja.data.sukunimi}`)  
     } catch (exception) {
       console.log(exception)
     }
@@ -164,7 +168,7 @@ function App() {
       }
       console.log(kayttaja)
       setRegister(false)
-      setAktiivinenKayttaja(kayttaja.data.id)  
+      setAktiivinenKayttaja(kayttaja.data.id)
     } catch (exception) {
       console.log(exception)
     }
@@ -191,39 +195,40 @@ function App() {
           setTentit(0); setKaaviot(0); setLogin(false); setAktiivinenKayttaja(null); setAktiivinenKurssi(null);
           window.localStorage.removeItem('loggedAppUser');
           window.location.reload();
-        }}>POISTU </span>  
+        }}>POISTU </span> 
+        <span className="s-nav-item-right">{kayttajaNimi} - </span> 
       </nav> 
-        {aktiivinenKurssi === null && !tentit? 
+        {aktiivinenKurssi === null && !tentit?      // kurssivalikko näkyviin, ei vielä valittua kurssia
         <section className="grid-container">
            <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex}/>
         </section> 
-        : aktiivinenKurssi === null && tentit?
+        : aktiivinenKurssi === null && tentit?      // tenttivalikko näkyviin, ei ole valittua kurssia
         <section className="grid-container">
-           <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} hallinta={hallinta} setHallinta={setHallinta} />
-        </section> : aktiivinenKurssi !== null && tentit?   
+           <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} aktiivinenKayttaja={aktiivinenKayttaja} dispatch={dispatch} vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot} setAktiivinenTentti={setAktiivinenTentti} setTentit={setTentit} setTietoa={setTietoa} setDataAlustettu={setDataAlustettu}/>
+        </section> : aktiivinenKurssi !== null && tentit?   // kurssi valittu, näytetään kurssin tentit
         <div className="grid-item"> KURSSI: <span className="kurssivalinta">{kurssiData[kurssiDataIndex].kurssi}</span>
           <nav className="tenttivalikko">
-            {aktiivinenTentti===null ? 
+            {aktiivinenTentti===null ?              // ei ole vielä valittu kurssilta tenttiä
             state.map((item,index) => 
             <span className="t-nav-item" key={item.tenttiid} onClick={()=>{
                 setAktiivinenTentti(index); setVastaukset(0)}}>{item.tentti}
             </span>) 
-            : hallinta && aktiivinenTentti!==null ? 
+            : hallinta && aktiivinenTentti!==null ?  // hallintatila ja tentti kurssilta valittuna
             <span>
               {/* <input type="text" value={state[aktiivinenTentti].tentti} onChange={(event) =>{ */}
               <input type="text" defaultValue={state[aktiivinenTentti].tentti} id={state[aktiivinenTentti].tenttiid} onBlur={(event) => {
                 var newText = document.getElementById(state[aktiivinenTentti].tenttiid);
                 newText.value = newText.value.toUpperCase();
                 muutaTentti(dispatch, newText, state[aktiivinenTentti], aktiivinenTentti) }}>
-              </input> <button className="delButton" onClick={()=>{
+              </input> <button className="delButton" onClick={()=>{   // poistakurssinappulan toiminto
                 if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
                   poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
                   setAktiivinenTentti(null)      
                 }}}><DeleteTwoToneIcon /></button> 
             </span> : state[aktiivinenTentti].tentti}
-            {hallinta && aktiivinenTentti===null ? <span className="add-item" onClick={() =>{
+            {hallinta && aktiivinenTentti===null ? <span className="add-item" onClick={() =>{ // lisätään uutta tenttiä kurssille
               var uusiTenttiNimi = "uusi";
-              lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi)
+              lisaaTentti(dispatch,uusiTenttiNimi,aktiivinenKurssi,aktiivinenKayttaja)
             }}> + </span> : ""}
           </nav>
         </div>

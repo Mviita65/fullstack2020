@@ -87,7 +87,7 @@ import Axios from 'axios';
       data:{valittu: body.vastaus, tenttiIndex: props.tenttiIndex, kyIndex: props.kysymysIndex, veIndex: veIndex} })
   }
   
-  const lisaaTentti = async(dispatch,uusiTenttiNimi,aktiivinenKurssi) => {
+  const lisaaTentti = async(dispatch,uusiTenttiNimi,aktiivinenKurssi,aktiivinenKayttaja) => {
 
     let body = {
       tentti: uusiTenttiNimi
@@ -99,12 +99,19 @@ import Axios from 'axios';
         kurssi_kurssi_id: aktiivinenKurssi,
         kurssi_tentti_id: tenttiId
       }
+      let body3 = {
+        tkasittelija_kayttaja_id : aktiivinenKayttaja,
+        tkasittelija_tentti_id: tenttiId,
+        pistemaara: null,
+        tenttialoituspvm: null
+      }
       let result2 = await Axios.post("http://localhost:4000/kurssitentti",body2)
       let uusiTentti = {
         tenttiid: tenttiId,
         tentti: body.tentti,
         kysymykset: []
       }
+      let result3 = await Axios.post("http://localhost:4000/tenttikasittelija",body3)
       dispatch({type: "TENTTI_LISATTY", data:{lisays: uusiTentti}})
     } catch (exception) {
       console.log(exception)
