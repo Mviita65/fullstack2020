@@ -27,7 +27,6 @@ function App() {
   const [state, dispatch] = useReducer(reducer, [])
   const [tentit, setTentit] = useState(0)
   const [tietoa, setTietoa] = useState(0)
-  const [teksti, setTeksti] = useState("")
   const [vastaukset, setVastaukset] = useState(0)
   const [aktiivinenTentti, setAktiivinenTentti] = useState(null)
   const [aktiivinenKurssi, setAktiivinenKurssi] = useState(null)
@@ -42,6 +41,10 @@ function App() {
   const [kurssiDataIndex, setKurssiDataIndex] = useState(null)
   const [kayttajaNimi, setKayttajaNimi] = useState("")
   const [tenttiData, setTenttiData] = useState([])
+  const [vahvistusOtsikko, setVahvistusOtsikko] = useState("")
+  const [vahvistusTeksti, setVahvistusTeksti] = useState("")
+  const [vahvistusTehtava, setVahvistusTehtava] = useState("")
+  const [vahvistusPoisto, setVahvistusPoisto] = useState("")
  
 
   useEffect(() => {
@@ -221,10 +224,11 @@ function App() {
                 newText.value = newText.value.toUpperCase();
                 muutaTentti(dispatch, newText, state[aktiivinenTentti], aktiivinenTentti) }}>
               </input> <button className="delButton" onClick={()=>{   // poistakurssinappulan toiminto
-                if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
-                  poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
-                  setAktiivinenTentti(null)      
-                }}}><DeleteTwoToneIcon /></button> 
+                // if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
+                //   poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
+                //   setAktiivinenTentti(null)}
+                setVahvista(true);setVahvistusOtsikko("Tentin poisto"); setVahvistusTeksti(`Poistetaanko tentti (${state[aktiivinenTentti].tentti}) kurssilta?`); setVahvistusTehtava("poistaTenttiKurssilta"); setVahvistusPoisto(aktiivinenTentti); setAktiivinenTentti(null)   
+                }}><DeleteTwoToneIcon /></button> 
             </span> : state[aktiivinenTentti].tentti}
             {hallinta && aktiivinenTentti===null ? <span className="add-item" onClick={() =>{ // lisätään uutta tenttiä kurssille
               var uusiTenttiNimi = "uusi";
@@ -237,12 +241,12 @@ function App() {
         {(aktiivinenTentti!==null && !tietoa && !kaaviot) ? 
           <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti}
               vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot}/> 
-          : (kaaviot) ? 
+          : kaaviot ? 
           <section className="charts">
             <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={"Doughnut"}/>
             <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
                 <span className="button" onClick={()=>{setKaaviot(0)}}>Paluu</span>
-          </section>: "" }
+          </section>: vahvista? <ConfirmDialog otsikko={vahvistusOtsikko} teksti={vahvistusTeksti} vahvista={vahvista} setVahvista={setVahvista} onConfirmAction={vahvistusTehtava} dispatch={dispatch} data={state[vahvistusPoisto]} tenttiIndex={vahvistusPoisto} kurssi={aktiivinenKurssi}/>:"" }  
       </section>
       :register ? 
       <section className="grid-container">

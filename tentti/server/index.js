@@ -148,7 +148,7 @@ app.get('/kurssi', (req, res, next) => {
 // haetaan tentit ja kurssit joilla tentti on sekä tentin ylläpitäjä
 app.get('/tentti', (req,res,next) => {
   req.params.ehto = "oppilas"
-  db.query('SELECT tentti,tenttiid,minimipisteet,julkaisupvm,kurssi,kurssiid,sahkoposti,kayttajaid FROM (((( tentti LEFT JOIN kurssitentti ON kurssi_tentti_id = tenttiid) LEFT JOIN kurssi ON kurssi_kurssi_id = kurssiid) LEFT JOIN tenttikasittelija ON tkasittelija_tentti_id = tenttiid) LEFT JOIN kayttaja ON tkasittelija_kayttaja_id = kayttajaid) WHERE rooli <> $1 ORDER BY tentti',[req.params.ehto], (err, result) => {
+  db.query('SELECT tentti,tenttiid,minimipisteet,julkaisupvm,kurssi,kurssiid,sahkoposti,kayttajaid FROM (((( tentti LEFT JOIN kurssitentti ON kurssi_tentti_id = tenttiid) LEFT JOIN kurssi ON kurssi_kurssi_id = kurssiid) LEFT JOIN tenttikasittelija ON tkasittelija_tentti_id = tenttiid) LEFT JOIN kayttaja ON tkasittelija_kayttaja_id = kayttajaid) ORDER BY tentti', (err, result) => {
     if (err) {
       return next(err)
     }
