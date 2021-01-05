@@ -1,3 +1,5 @@
+describe.skip('esimerkit', () => {
+
 const funktiot = require('./moduuli')
 let onnistuneet=0
 let ajetut=0
@@ -64,3 +66,5 @@ testTulo();
 testMerkkaaLöydetytKirjaimet();
 testMerkkaaLöydetytKirjaimet2();
 console.log("onnistuneet: "+onnistuneet+", ajetut: "+ajetut)
+
+})
