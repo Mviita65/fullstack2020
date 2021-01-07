@@ -1,4 +1,5 @@
-import uuid from 'react-uuid';
+// import uuid from 'react-uuid';
+var uuid = require('react-uuid')
 
 const initialData = 
   [{
@@ -86,4 +87,6 @@ const initialData =
     ]
   }]
 
-  export default initialData
+  module.exports = {
+    initialData
+}

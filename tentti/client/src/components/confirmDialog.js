@@ -23,7 +23,7 @@ const ConfirmDialog = (props) => {
           onClick={() => setVahvista(false)}
           color="secondary"
         >
-          Ei
+          Eicd
         </Button>
         <Button 
           variant="contained"

@@ -9,7 +9,7 @@ describe('Sähköpostitestaus', ()=>{
             tarkistaSähköposti()}).toThrow('Sähköpostia ei välitetty, tarkista lomake!');
         });
 
-    test('SUURAAKKOSET, tulkitsee oikein true', () => {
+    test('SUURAAKKOSET, tulkinta?', () => {
         expect(tarkistaSähköposti("ANTTI.PENTTI@GPOSTI.COM")).toBe(false);
     })
 
