@@ -6,7 +6,7 @@ const Kurssivalikko = ({
   aktiivinenKurssi,setAktiivinenKurssi,
   kurssiData,setKurssiData,
   kurssiDataIndex,setKurssiDataIndex,
-  tentit,setTentit}) => {
+  tentit,setTentit,lang}) => {
 
   const fetchKurssiData = async () => {
     try {
@@ -17,7 +17,8 @@ const Kurssivalikko = ({
           let kurssitieto = {
             kurssiid : result.data[i].kurssiid,
             kurssi : result.data[i].kurssi,
-            aloituspvm : new Date(result.data[i].aloituspvm).toLocaleDateString()
+            // aloituspvm : new Date(result.data[i].aloituspvm).toLocaleDateString()
+            aloituspvm : new Intl.DateTimeFormat(lang).format(new Date(result.data[i].aloituspvm))
           }
           kurssitiedot = kurssitiedot.concat(kurssitieto)
         }

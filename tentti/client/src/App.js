@@ -45,6 +45,7 @@ function App() {
   const [vahvistusTeksti, setVahvistusTeksti] = useState("")
   const [vahvistusTehtava, setVahvistusTehtava] = useState("")
   const [vahvistusPoisto, setVahvistusPoisto] = useState("")
+  const lang = navigator.language
  
 
   useEffect(() => {
@@ -154,7 +155,7 @@ function App() {
       console.log(kayttaja)
       setLogin(true)
       setAktiivinenKayttaja(kayttaja.data.id) 
-      setKayttajaNimi(`${kayttaja.data.etunimi} ${kayttaja.data.sukunimi}`)  
+      setKayttajaNimi(`${kayttaja.data.etunimi} ${kayttaja.data.sukunimi} (${lang})`)  
     } catch (exception) {
       console.log(exception)
     }
@@ -203,11 +204,11 @@ function App() {
       </nav> 
         {aktiivinenKurssi === null && !tentit?      // kurssivalikko näkyviin, ei vielä valittua kurssia
         <section className="grid-container">
-           <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex}/>
+           <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex} lang={lang}/>
         </section> 
         : aktiivinenKurssi === null && tentit?      // tenttivalikko näkyviin, ei ole valittua kurssia
         <section className="grid-container">
-           <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} aktiivinenKayttaja={aktiivinenKayttaja} dispatch={dispatch} vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot} setAktiivinenTentti={setAktiivinenTentti} setTentit={setTentit} setTietoa={setTietoa} setDataAlustettu={setDataAlustettu}/>
+           <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} aktiivinenKayttaja={aktiivinenKayttaja} dispatch={dispatch} vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot} setAktiivinenTentti={setAktiivinenTentti} setTentit={setTentit} setTietoa={setTietoa} setDataAlustettu={setDataAlustettu} lang={lang}/>
         </section> : aktiivinenKurssi !== null && tentit?   // kurssi valittu, näytetään kurssin tentit
         <div className="grid-item"> KURSSI: <span className="kurssivalinta">{kurssiData[kurssiDataIndex].kurssi}</span>
           <nav className="tenttivalikko">
@@ -227,7 +228,7 @@ function App() {
                 // if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
                 //   poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
                 //   setAktiivinenTentti(null)}
-                setVahvista(true);setVahvistusOtsikko("Tentin poisto"); setVahvistusTeksti(`Poistetaanko tentti (${state[aktiivinenTentti].tentti}) kurssilta?`); setVahvistusTehtava("poistaTenttiKurssilta"); setVahvistusPoisto(aktiivinenTentti); setAktiivinenTentti(null)   
+                setVahvista(true);setVahvistusOtsikko("Tentin poisto"); setVahvistusTeksti(`Poistetaanko tentti (${state[aktiivinenTentti].tentti}) kurssilta?`); setVahvistusTehtava("poistaTenttiKurssilta"); setVahvistusPoisto(aktiivinenTentti);setAktiivinenTentti(null)   
                 }}><DeleteTwoToneIcon /></button> 
             </span> : state[aktiivinenTentti].tentti}
             {hallinta && aktiivinenTentti===null ? <span className="add-item" onClick={() =>{ // lisätään uutta tenttiä kurssille

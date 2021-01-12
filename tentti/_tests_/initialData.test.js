@@ -29,7 +29,7 @@ describe('Alkudatatestit', ()=>{
         expect(verranto).toEqual(1)
     })     
     
-    test('Onko alkudatassa TENTTI B', () => {
-        expect(initialData[0].tentti).toMatch(/TENTTI B/)
+    test('Onko alkudatassa TENTTI', () => {
+        expect(initialData[0].tentti).toMatch(/TENTTI/)
     })
 })

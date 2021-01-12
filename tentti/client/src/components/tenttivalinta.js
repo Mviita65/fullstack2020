@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 
 
 const Tenttivalikko = ({tenttiData,setTenttiData,aktiivinenKayttaja, setDataAlustettu,
-  dispatch, vastaukset, setVastaukset, hallinta, setHallinta, kaaviot, setKaaviot,setTentit,setTietoa,setAktiivinenTentti
+  dispatch, vastaukset, setVastaukset, hallinta, setHallinta, kaaviot, setKaaviot,setTentit,setTietoa,setAktiivinenTentti,lang
 }) => {
 
   const fetchTenttiData = async () => {
@@ -18,7 +18,8 @@ const Tenttivalikko = ({tenttiData,setTenttiData,aktiivinenKayttaja, setDataAlus
             tenttiid : result.data[i].tenttiid,
             tentti : result.data[i].tentti,
             minimipisteet: result.data[i].minimipisteet,
-            julkaisupvm: new Date(result.data[i].julkaisupvm).toLocaleDateString(),
+            julkaisupvm: new Intl.DateTimeFormat(lang).format(new Date(result.data[i].julkaisupvm)),
+            // julkaisupvm: new Date(result.data[i].julkaisupvm).toLocaleDateString(),
             kurssiid: result.data[i].kurssiid,
             kurssi: result.data[i].kurssi,
             kayttajaid: result.data[i].kayttajaid,
