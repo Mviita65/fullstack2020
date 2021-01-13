@@ -1,6 +1,7 @@
 import Axios from 'axios';
 import '../oma.css';
 import React, { useEffect } from 'react';
+import strings from './merkkijonot';
 
 const Kurssivalikko = ({
   aktiivinenKurssi,setAktiivinenKurssi,
@@ -34,7 +35,7 @@ const Kurssivalikko = ({
   useEffect(fetchKurssiData)
 
   return (
-    <div className="grid-item"><br/>KURSSIVALINTA:
+    <div className="grid-item">{strings.kurssivalinta}
         {kurssiData.map((item, index) =>
             <div key={item.kurssiid} className="kysymys">
                 <span className="t-nav-item" onClick={() =>{

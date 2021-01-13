@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import cathead from './img/cathead.jpg'
+import cathead from './img/cathead.jpg';
+import strings from './merkkijonot';
 
 const Register = ({luoTunnus,register,setRegister}) => {
     
@@ -37,16 +38,16 @@ const Register = ({luoTunnus,register,setRegister}) => {
     return (
         <div className="grid-item"><br/>
         <section className="kysymys">
-            Rekisteröidy
-        <br></br>
+            {strings.rekisteröidy}
+                    <br></br>
         <form className="vastaus" onSubmit={e => evaluate(e)}>
-            Etunimi:<br/> <input onChange={e=> setFirstname(e.target.value)} value={firstname}/> 
-            <br/>Sukunimi:<br/> <input onChange={e=> setSurename(e.target.value)} value={surename}/>
-            <br/>Sähköposti:<br/> <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
-            <br/>Salasana:<br/> <input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
-            <br/>Salasana uudelleen:<br/> <input onChange={e=> setVerify(e.target.value)} type="password" value={verify} required/> {password!=="" && password===verify ? <img alt="cathead" src={cathead}/> : ""}
-            <br/>Olen opettaja: <input type="checkbox" onChange={e=> setValinta(e.target.checked)} value={valinta}/>
-            <br/><br/><input className="button" type="submit" /> <button className="button" onClick={e=>setRegister(false)}>Paluu</button><br/>
+            {strings.etunimi}<br/> <input onChange={e=> setFirstname(e.target.value)} value={firstname}/> 
+            <br/>{strings.sukunimi}<br/> <input onChange={e=> setSurename(e.target.value)} value={surename}/>
+            <br/>{strings.sähköposti}<br/> <input onChange={e=> setUsername(e.target.value)} value={username} required/> 
+            <br/>{strings.salasana}<br/> <input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
+            <br/>{strings.uudelleen}<br/> <input onChange={e=> setVerify(e.target.value)} type="password" value={verify} required/> {password!=="" && password===verify ? <img alt="cathead" src={cathead}/> : ""}
+            <br/>{strings.opettaja} <input type="checkbox" onChange={e=> setValinta(e.target.checked)} value={valinta}/>
+            <br/><br/><input className="button" type="submit" value={strings.lähetä}/> <button className="button" onClick={e=>setRegister(false)}>{strings.paluu}</button><br/>
         </form>
         </section>
         </div>

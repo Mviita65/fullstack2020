@@ -2,6 +2,7 @@ import Axios from 'axios';
 import '../oma.css';
 import Kysymykset from './kysymykset.js';
 import React, { useEffect } from 'react';
+import strings from './merkkijonot';
 
 
 const Tenttivalikko = ({tenttiData,setTenttiData,aktiivinenKayttaja, setDataAlustettu,
@@ -22,6 +23,8 @@ const Tenttivalikko = ({tenttiData,setTenttiData,aktiivinenKayttaja, setDataAlus
             // julkaisupvm: new Date(result.data[i].julkaisupvm).toLocaleDateString(),
             kurssiid: result.data[i].kurssiid,
             kurssi: result.data[i].kurssi,
+            etunimi: result.data[i].etunimi,
+            sukunimi: result.data[i].sukunimi,
             kayttajaid: result.data[i].kayttajaid,
             sahkoposti: result.data[i].sahkoposti,
             kysymykset: []
@@ -77,13 +80,13 @@ const Tenttivalikko = ({tenttiData,setTenttiData,aktiivinenKayttaja, setDataAlus
   }
 
   return (
-    <div className="grid-item"><br/>TENTTIVALINTA
+    <div className="grid-item">{strings.tenttivalinta}
         {tenttiData.map((item, index) =>
             <div key={index} className="kysymys">
                 <span className="t-nav-item" onClick={() =>{
                   fetchTenttiKysymykset(item.tenttiid);
-            }}>{item.tentti} ({item.kurssi}) ● {item.julkaisupvm}</span> <br/>
-              <span className="vastaus"> minimi {item.minimipisteet}p., {item.sahkoposti}</span>
+            }}>{item.tentti} ({item.kurssi})</span> <br/>
+              <span className="vastaus"> ● {item.julkaisupvm}, {strings.minimi} {item.minimipisteet}p., {item.etunimi} {item.sukunimi}</span>
             </div>
         )}
     </div>

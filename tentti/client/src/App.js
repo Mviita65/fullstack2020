@@ -9,7 +9,6 @@ import Register from './components/register'
 import {
   muutaTentti,
   lisaaTentti,
-  poistaTenttiKurssilta,
 } from './components/dataManipulation.js';
 import initialData from './components/initialData.js'
 import Kurssivalikko from './components/kurssivalinta.js'
@@ -18,11 +17,12 @@ import reducer from './components/reducer.js';
 import Kysymykset from './components/kysymykset.js';
 import ChartExample from './components/chart.js';
 import ConfirmDialog from './components/confirmDialog.js';
+import strings from './components/merkkijonot.js';
 
 
 function App() {
 
-  const versio = "versio 0.52"
+  const versio = "ver. 0.55"
   const [dataAlustettu, setDataAlustettu] = useState(false)
   const [state, dispatch] = useReducer(reducer, [])
   const [tentit, setTentit] = useState(0)
@@ -183,15 +183,15 @@ function App() {
       <nav className="sovellusvalikko">
         <span className="s-nav-item" onClick={e => {
           setTentit(0);setTietoa(0);setAktiivinenTentti(null);setAktiivinenKurssi(null); setKurssiDataIndex(null);
-        }}>KURSSIT </span>
+        }}>{strings.kurssit} </span>
         {kurssiDataIndex !== null ? <span className="s-nav-item" onClick={e => {
           setAktiivinenTentti(null); setTentit(1); setTietoa(0); setVastaukset(0); setKaaviot(0);
-        }}>TENTIT </span>:<span className="s-nav-item" onClick={e => {
+        }}>{strings.tentit} </span>:<span className="s-nav-item" onClick={e => {
           setTentit(1);setTietoa(0);setAktiivinenTentti(null);setAktiivinenKurssi(null); setKurssiDataIndex(null);
-        }}>TENTIT </span>}
+        }}>{strings.tentit} </span>}
         <span className="s-nav-item" onClick={e => { 
           setTentit(0); setKaaviot(0); setTietoa(1);  
-        }}>TIETOA SOVELLUKSESTA </span>
+        }}>{strings.tietoa}</span>
         <span className="s-nav-item" onClick={e => { 
           setHallinta(!hallinta) 
         }}><BuildIcon fontSize="small"/> </span>
@@ -199,18 +199,18 @@ function App() {
           setTentit(0); setKaaviot(0); setLogin(false); setAktiivinenKayttaja(null); setAktiivinenKurssi(null);
           window.localStorage.removeItem('loggedAppUser');
           window.location.reload();
-        }}>POISTU </span> 
+        }}>{strings.poistu} </span> 
         <span className="s-nav-item-right">{kayttajaNimi} - </span> 
       </nav> 
         {aktiivinenKurssi === null && !tentit?      // kurssivalikko näkyviin, ei vielä valittua kurssia
-        <section className="grid-container">
+        <section className="tenttivalikko">
            <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex} lang={lang}/>
         </section> 
         : aktiivinenKurssi === null && tentit?      // tenttivalikko näkyviin, ei ole valittua kurssia
-        <section className="grid-container">
+        <section className="tenttivalikko">
            <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} aktiivinenKayttaja={aktiivinenKayttaja} dispatch={dispatch} vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot} setAktiivinenTentti={setAktiivinenTentti} setTentit={setTentit} setTietoa={setTietoa} setDataAlustettu={setDataAlustettu} lang={lang}/>
         </section> : aktiivinenKurssi !== null && tentit?   // kurssi valittu, näytetään kurssin tentit
-        <div className="grid-item"> KURSSI: <span className="kurssivalinta">{kurssiData[kurssiDataIndex].kurssi}</span>
+        <div className="grid-item"> {strings.kurssi} <span className="kurssivalinta">{kurssiData[kurssiDataIndex].kurssi}</span>
           <nav className="tenttivalikko">
             {aktiivinenTentti===null ?              // ei ole vielä valittu kurssilta tenttiä
             state.map((item,index) => 
@@ -228,7 +228,7 @@ function App() {
                 // if (window.confirm("Poistetaanko tentti ("+state[aktiivinenTentti].tentti+") kurssilta?")){
                 //   poistaTenttiKurssilta(dispatch,state[aktiivinenTentti],aktiivinenTentti,aktiivinenKurssi)
                 //   setAktiivinenTentti(null)}
-                setVahvista(true);setVahvistusOtsikko("Tentin poisto"); setVahvistusTeksti(`Poistetaanko tentti (${state[aktiivinenTentti].tentti}) kurssilta?`); setVahvistusTehtava("poistaTenttiKurssilta"); setVahvistusPoisto(aktiivinenTentti);setAktiivinenTentti(null)   
+                setVahvista(true);setVahvistusOtsikko(strings.tpoisto); setVahvistusTeksti(`${strings.tvahvistus} (${state[aktiivinenTentti].tentti})?`); setVahvistusTehtava("poistaTenttiKurssilta"); setVahvistusPoisto(aktiivinenTentti);setAktiivinenTentti(null)   
                 }}><DeleteTwoToneIcon /></button> 
             </span> : state[aktiivinenTentti].tentti}
             {hallinta && aktiivinenTentti===null ? <span className="add-item" onClick={() =>{ // lisätään uutta tenttiä kurssille
@@ -240,22 +240,21 @@ function App() {
         : tietoa ? 
         <section className="vastaus">{window.open("https://www.youtube.com/watch?v=sAqnNWUD79Q","_self")}</section> :""}
         {(aktiivinenTentti!==null && !tietoa && !kaaviot) ? 
-          <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti}
-              vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot}/> 
+          <Kysymykset dispatch={dispatch} data={state[aktiivinenTentti]} tenttiIndex={aktiivinenTentti} vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot} setVahvista={setVahvista} vahvista={vahvista} setVahvistusOtsikko={setVahvistusOtsikko}  vahvistusOtsikko={vahvistusOtsikko} setVahvistusTeksti={setVahvistusTeksti} vahvistusTeksti={vahvistusTeksti} setVahvistusTehtava={setVahvistusTehtava} vahvistusTehtava={vahvistusTehtava} setVahvistusPoisto={setVahvistusPoisto} vahvistusPoisto={vahvistusPoisto}/> 
           : kaaviot ? 
           <section className="charts">
-            <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Pistejakauma aihealueittain"} valinta={"Doughnut"}/>
-            <ChartExample otsikot={['kriminologia', 'scientologia', 'psykologia', 'ornitologia']} tiedot={[5,22,10,10]} tyyppi={"Aihealueiden pisteet"} valinta={"Bar"}/>
-                <span className="button" onClick={()=>{setKaaviot(0)}}>Paluu</span>
-          </section>: vahvista? <ConfirmDialog otsikko={vahvistusOtsikko} teksti={vahvistusTeksti} vahvista={vahvista} setVahvista={setVahvista} onConfirmAction={vahvistusTehtava} dispatch={dispatch} data={state[vahvistusPoisto]} tenttiIndex={vahvistusPoisto} kurssi={aktiivinenKurssi}/>:"" }  
+            <ChartExample otsikot={strings.gotsikot} tiedot={[5,22,10,10]} tyyppi={strings.jakauma} valinta={"Doughnut"}/>
+            <ChartExample otsikot={strings.gotsikot} tiedot={[5,22,10,10]} tyyppi={strings.aluepisteet} valinta={"Bar"}/>
+                <span className="button" onClick={()=>{setKaaviot(0)}}>{strings.paluu}</span>
+          </section>: vahvista? <ConfirmDialog otsikko={vahvistusOtsikko} teksti={vahvistusTeksti} vahvista={vahvista} setVahvista={setVahvista} onConfirmAction={vahvistusTehtava} dispatch={dispatch} data={state[vahvistusPoisto]} index={vahvistusPoisto} index2={aktiivinenKurssi}/>:"" }  
       </section>
       :register ? 
       <section className="grid-container">
-        <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA<span className="s-nav-item-right">{versio}</span></nav>
+        <nav className="sovellusvalikko">{strings.tervetuloa}<span className="s-nav-item-right">{versio}</span></nav>
         <Register luoTunnus={luoTunnus} register={register} setRegister={setRegister}/>
       </section>
       :<section className="grid-container">
-        <nav className="sovellusvalikko">KURSSITENTIT - TERVETULOA <span className="s-nav-item-right">{versio}</span></nav>
+        <nav className="sovellusvalikko">{strings.tervetuloa}<span className="s-nav-item-right">{versio}</span></nav>
         <Login handleSubmit={tarkistaLogin} register={register} setRegister={setRegister}/>
       </section>}
     </div>

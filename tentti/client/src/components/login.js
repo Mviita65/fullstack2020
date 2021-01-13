@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import strings from './merkkijonot';
 
 const Login = ({handleSubmit,register,setRegister}) => {
     
@@ -19,21 +20,21 @@ const Login = ({handleSubmit,register,setRegister}) => {
     return (
         <div className="grid-item"><br/>
         <section className="kysymys">
-            Kirjaudu sähköpostiosoitteella
+            {strings.kirjaudu}
         <br/>
         <form className="vastaus" onSubmit={e => doSubmit(e)}>
-            Sähköposti: <br/><input onChange={e=> setUsername(e.target.value)} value={username} required/> 
-            <br/>Salasana kurssitentteihin: <br/><input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
-            <br/><br/><input className="button" type="submit" /><br/>
+            {strings.sähköposti}<br/><input onChange={e=> setUsername(e.target.value)} value={username} required/> 
+            <br/>{strings.salasana}<br/><input onChange={e=> setPassword(e.target.value)} type="password" value={password} required />
+            <br/><br/><input className="button" type="submit" value={strings.lähetä}/><br/>
         </form>
         </section>
         <section className="kysymys">
-            Rekisteröidy 
+            {strings.rekisteröidy}
         <br/>
         <div className="vastaus">
-            Sähköpostia ei ole vielä rekisteröity käyttäjätiliksi? <br/><br/>
+            {strings.rekisteröimätön}<br/><br/>
             <button className="button" onClick={e => {setRegister(true)}}>
-            Luo tili</button><br/>
+            {strings.luo}</button><br/>
         </div>
         </section>
         </div>

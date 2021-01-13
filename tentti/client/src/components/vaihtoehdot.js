@@ -2,16 +2,18 @@ import {
     muutaVaihtoehtoTeksti,
     muutaVaihtoehtoArvo,
     vastausAnnettu,
-    lisaaVaihtoehto,
-    poistaVaihtoehto
+    lisaaVaihtoehto
   } from './dataManipulation.js'
 import cathead from './img/cathead.jpg'
 import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
+import ConfirmDialog from './confirmDialog.js';
+import strings from './merkkijonot';
+
 
 function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi jos merkitään vastaukseksi
 
     return <section>
-        {props.hallinta ? props.data.vaihtoehdot.map((item, veIndex) =>           // jos hallinta valittu
+        {props.hallinta && !props.vahvista ? props.data.vaihtoehdot.map((item, veIndex) =>           // jos hallinta valittu
           <div key={item.vaihtoehtoid} className="vastaus">
             <input type="checkbox" checked={item.korrekti} onChange={(event) => { // voidaan muuttaa mikä on oikea vaihtoehto
                 muutaVaihtoehtoArvo(event,props,veIndex)}}></input>
@@ -21,11 +23,14 @@ function Vaihtoehdot(props) { // näytölle kysymysten vaihtoehdot ja reagointi 
               muutaVaihtoehtoTeksti(newText, props, veIndex);
             }}> 
             </input> <button className="delButton" onClick={()=>{                 // voidaan poistaa vaihtoehto
-              if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].vaihtoehto+")?")){
-                poistaVaihtoehto(props,veIndex)
-              }
+              // if (window.confirm("Poistetaanko vaihtoehto ("+props.data.vaihtoehdot[veIndex].vaihtoehto+")?")){
+              //   poistaVaihtoehto(props,veIndex)
+              // }
+              props.setVahvistusOtsikko(strings.vpoisto);props.setVahvistusTeksti(`${strings.vvahvistus} (${props.data.vaihtoehdot[veIndex].vaihtoehto})?`);props.setVahvistusTehtava("poistaVaihtoehto");props.setVahvistusPoisto(veIndex);props.setVahvista(true)
             }}><DeleteTwoToneIcon /></button> {!props.hallinta && item.valittu && item.korrekti ? <img alt="cathead" src={cathead}/> : ""}
-          </div>):                                                                // muu kuin hallintatila
+          </div>): 
+          props.vahvista ? 
+          <ConfirmDialog otsikko={props.vahvistusOtsikko} teksti={props.vahvistusTeksti} vahvista={props.vahvista} setVahvista={props.setVahvista} onConfirmAction={props.vahvistusTehtava} dispatch={props.dispatch} kysymysIndex={props.kysymysIndex} data={props.data} index={props.vahvistusPoisto} index2={""}/> :                                                                // muu kuin hallintatila
           props.vastaukset ? props.data.vaihtoehdot.map((item, veIndex) =>        // oikeiden vastausten näyttö valittu: valintoja ei voi muuttaa 
             <div key={item.vaihtoehtoid} className="vastaus">
               <input type="checkbox" checked={item.valittu} readOnly></input>            
