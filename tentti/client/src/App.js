@@ -1,6 +1,8 @@
-import React, { useEffect,useReducer } from 'react';
+import React, { useEffect,useReducer,useCallback } from 'react';
 import { useState } from 'react'
 import './oma.css';
+import {useDropzone} from 'react-dropzone';
+import request from 'superagent';
 import DeleteTwoToneIcon from '@material-ui/icons/DeleteTwoTone';
 import BuildIcon from '@material-ui/icons/Build';
 import Axios from 'axios'
@@ -143,7 +145,22 @@ function App() {
 
   useEffect(userHook, [])
 
- 
+  const onDrop = useCallback(files => {
+    console.log(files);
+
+    const req = request.post('http://localhost:4000/upload');
+
+    files.forEach(file => {
+      req.attach('file', file);
+    });
+    req.end((err, res) => {
+      console.log(res)
+    });
+
+  }, []);
+
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
   const tarkistaLogin = async(e, userdata) => {
     e.preventDefault();
     try {
@@ -200,8 +217,14 @@ function App() {
           window.localStorage.removeItem('loggedAppUser');
           window.location.reload();
         }}>{strings.poistu} </span> 
-        <span className="s-nav-item-right">{kayttajaNimi} - </span> 
+        <span className="s-nav-item-right">{kayttajaNimi} - </span>
       </nav> 
+      <div className="dropzone" {...getRootProps()}>
+        <input {...getInputProps()}/>
+          {
+            isDragActive ? "":""
+          }
+      </div> 
         {aktiivinenKurssi === null && !tentit?      // kurssivalikko näkyviin, ei vielä valittua kurssia
         <section className="tenttivalikko">
            <Kurssivalikko aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiData={setKurssiData} tentit={tentit} setTentit={setTentit} kurssiDataIndex={kurssiDataIndex} setKurssiDataIndex={setKurssiDataIndex} lang={lang}/>
@@ -245,16 +268,16 @@ function App() {
           <section className="charts">
             <ChartExample otsikot={strings.gotsikot} tiedot={[5,22,10,10]} tyyppi={strings.jakauma} valinta={"Doughnut"}/>
             <ChartExample otsikot={strings.gotsikot} tiedot={[5,22,10,10]} tyyppi={strings.aluepisteet} valinta={"Bar"}/>
-                <span className="button" onClick={()=>{setKaaviot(0)}}>{strings.paluu}</span>
+                <button className="button" onClick={()=>{setKaaviot(0)}}>{strings.paluu}</button>
           </section>: vahvista? <ConfirmDialog otsikko={vahvistusOtsikko} teksti={vahvistusTeksti} vahvista={vahvista} setVahvista={setVahvista} onConfirmAction={vahvistusTehtava} dispatch={dispatch} data={state[vahvistusPoisto]} index={vahvistusPoisto} index2={aktiivinenKurssi}/>:"" }  
       </section>
       :register ? 
       <section className="grid-container">
-        <nav className="sovellusvalikko">{strings.tervetuloa}<span className="s-nav-item-right">{versio}</span></nav>
+        <nav className="sovellusvalikko"><span className="s-nav-item">{strings.tervetuloa}</span><span className="s-nav-item-right">{versio}</span></nav>
         <Register luoTunnus={luoTunnus} register={register} setRegister={setRegister}/>
       </section>
       :<section className="grid-container">
-        <nav className="sovellusvalikko">{strings.tervetuloa}<span className="s-nav-item-right">{versio}</span></nav>
+        <nav className="sovellusvalikko"><span className="s-nav-item">{strings.tervetuloa}</span><span className="s-nav-item-right">{versio}</span></nav>
         <Login handleSubmit={tarkistaLogin} register={register} setRegister={setRegister}/>
       </section>}
     </div>

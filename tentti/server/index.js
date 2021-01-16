@@ -3,6 +3,10 @@ const express = require('express')
 var bodyParser = require('body-parser')
 const app = express()
 app.use(bodyParser.json())
+const fileUpload = require('express-fileupload');
+app.use(fileUpload({
+  limits: { fileSize: 2 * 1024 * 1024 * 1024 },
+}));
 
 var corsOptions = {  // tietoturva: määritellään mistä originista sallitaan http-pyynnöt
   origin: 'http://localhost:3000',
@@ -598,6 +602,41 @@ app.get('/kysymys/:id/tentti', (req,res,next) => {
     res.send(result.rows)
   })    
 })
+
+//---------------------------Drag'n'drop-------------------------------------------------------------
+app.post('/upload', async (req, res) => {
+  try {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded.');
+    } else {
+      console.log(req.files)
+      let data = []
+      if(!Array.isArray(req.files.file)) {
+        req.files.file.mv('./uploads/'+req.files.file.name)
+        data.push({
+          name: req.files.file.name,
+          type: req.files.file.mimetype,
+          size: req.files.file.size
+        })
+      } else { 
+        Object.keys(req.files.file).forEach(item => {
+          req.files.file[item].mv('./uploads/'+req.files.file[item].name) 
+          data.push({
+            name: req.files.file[item].name,
+            type: req.files.file[item].mimetype,
+            size: req.files.file[item].size
+          })
+        })
+      } 
+      res.send({
+        message: 'Uploaded',
+        data: data
+      })
+    }
+  } catch (err) {
+     res.status(500).send(err)
+  }
+});
 
 // --------------------------Älä kommentoi pois ------------------------------------------------------
 

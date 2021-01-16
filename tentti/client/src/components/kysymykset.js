@@ -38,9 +38,9 @@ function Kysymykset(props) {  //näytölle tentin kysymykset ja kutsuu Vaihtoehd
         lisaaKysymys(props)}}> + </span>
       </div> : ""}
       <div>
-        {props.hallinta ? "" : <div className="alavalinta"><span className="button" onClick={()=>         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
-          props.setVastaukset(!props.vastaukset)}>{strings.oikeat}</span> <span className="button" onClick={()=>{         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
-            props.setKaaviot(1)}}>{strings.kaaviot}</span></div> }
+        {props.hallinta ? "" : <div className="alavalinta"><button className="button" onClick={()=>         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
+          props.setVastaukset(!props.vastaukset)}>{strings.oikeat}</button> <button className="button" onClick={()=>{         // jos tentti menossa, voi valita tai piilottaa oikeiden vastausten näytön
+            props.setKaaviot(1)}}>{strings.kaaviot}</button></div> }
       </div>
     </section>
   }

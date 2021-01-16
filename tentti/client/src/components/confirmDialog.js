@@ -44,7 +44,7 @@ const ConfirmDialog = (props) => {
               default : throw new Error();
             }
           }}
-          color="default"
+          // color="default"
         >
           OK
         </button>
@@ -52,7 +52,7 @@ const ConfirmDialog = (props) => {
           className="button" 
           // variant="contained"
           onClick={() => setVahvista(false)}
-          color="secondary"
+          // color="secondary"
         >
           {strings.peruuta}
         </button>
