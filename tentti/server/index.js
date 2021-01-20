@@ -3,10 +3,20 @@ const express = require('express')
 var bodyParser = require('body-parser')
 const app = express()
 app.use(bodyParser.json())
+
 const fileUpload = require('express-fileupload');
 app.use(fileUpload({
   limits: { fileSize: 2 * 1024 * 1024 * 1024 },
-}));
+})); 
+
+const httpServer = require('http').createServer()  // tarvittiin webSocket vaiheessa
+
+const io = require('socket.io')(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+})
 
 var corsOptions = {  // tietoturva: määritellään mistä originista sallitaan http-pyynnöt
   origin: 'http://localhost:3000',
@@ -16,6 +26,41 @@ var corsOptions = {  // tietoturva: määritellään mistä originista sallitaan
 
 app.use(cors(corsOptions))
 
+app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io')) //static socket.io
+// var io = require('socket.io')(5000); 
+
+const port = 4000
+const db = require('./db')
+const { response } = require('express')
+
+var jwt = require('jsonwebtoken')
+var bcrypt = require('bcrypt')
+const SALT_ROUNDS = 12
+
+var pg = require('pg'); 
+var con_string = 'tcp://postgres:MAVLtd@localhost/Tenttikanta';
+var pg_client = new pg.Client(con_string);
+pg_client.connect();
+var query1 = pg_client.query('LISTEN uusikurssitentti');
+var query2 = pg_client.query('LISTEN uusitentti');
+var query3 = pg_client.query('LISTEN uusijulkaisupvm');
+
+
+// pg_client.on('notification',async(data)=>{
+//   console.log(data.payload); 
+// })
+ 
+io.sockets.on('connection', function (socket) {
+    socket.emit('connected', { connected: true });
+    socket.on('ready for data', function (data) {
+        pg_client.on('notification', function(payload) {
+          socket.emit('update', { message: payload });
+      });
+  });
+});
+
+httpServer.listen(9000)
+
 // var requestTime = function (req, res, next) {
 //   // req.requestTime = Date.now()
 //   console.log('Kello on:',Date.now())
@@ -23,13 +68,6 @@ app.use(cors(corsOptions))
 // }
 
 // app.use(requestTime)
-
-const port = 4000
-const db = require('./db')
-const { response } = require('express')
-var jwt = require('jsonwebtoken')
-var bcrypt = require('bcrypt')
-const SALT_ROUNDS = 12
 
 //------------------------------------------REGISTER--------------------------------------------------------------------------
 app.post('/register',(req, res, next) => {
@@ -610,16 +648,16 @@ app.post('/upload', async (req, res) => {
       return res.status(400).send('No files were uploaded.');
     } else {
       console.log(req.files)
-      let data = []
-      if(!Array.isArray(req.files.file)) {
+      let data = []                         // yksittäinen tiedosto ei tule taulukkona
+      if(!Array.isArray(req.files.file)) {  // eli tässä tulee vain yksittäinen tiedosto
         req.files.file.mv('./uploads/'+req.files.file.name)
         data.push({
           name: req.files.file.name,
           type: req.files.file.mimetype,
           size: req.files.file.size
         })
-      } else { 
-        Object.keys(req.files.file).forEach(item => {
+      } else {                                        // tulee useampi tiedosto kerralla
+        Object.keys(req.files.file).forEach(item => { // ja taulukko käydään läpi tässä
           req.files.file[item].mv('./uploads/'+req.files.file[item].name) 
           data.push({
             name: req.files.file[item].name,

@@ -231,7 +231,7 @@ function App() {
         </section> 
         : aktiivinenKurssi === null && tentit?      // tenttivalikko näkyviin, ei ole valittua kurssia
         <section className="tenttivalikko">
-           <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} aktiivinenKayttaja={aktiivinenKayttaja} dispatch={dispatch} vastaukset={vastaukset} setVastaukset={setVastaukset} hallinta={hallinta} setHallinta={setHallinta} kaaviot={kaaviot} setKaaviot={setKaaviot} setAktiivinenTentti={setAktiivinenTentti} setTentit={setTentit} setTietoa={setTietoa} setDataAlustettu={setDataAlustettu} lang={lang}/>
+           <Tenttivalikko tenttiData={tenttiData} setTenttiData={setTenttiData} aktiivinenTentti={aktiivinenTentti} setAktiivinenTentti={setAktiivinenTentti} aktiivinenKurssi={aktiivinenKurssi} setAktiivinenKurssi={setAktiivinenKurssi} kurssiData={kurssiData} setKurssiDataIndex={setKurssiDataIndex} lang={lang}/>
         </section> : aktiivinenKurssi !== null && tentit?   // kurssi valittu, näytetään kurssin tentit
         <div className="grid-item"> {strings.kurssi} <span className="kurssivalinta">{kurssiData[kurssiDataIndex].kurssi}</span>
           <nav className="tenttivalikko">
